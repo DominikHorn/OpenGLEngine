@@ -1,4 +1,4 @@
-package com.openglengine.events;
+package com.openglengine.eventsystem.events;
 
 /**
  * Global update event

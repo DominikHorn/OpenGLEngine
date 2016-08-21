@@ -1,4 +1,4 @@
-package com.openglengine.events;
+package com.openglengine.eventsystem.events;
 
 /**
  * Base Event class from which all events sent through EventManager must be derived

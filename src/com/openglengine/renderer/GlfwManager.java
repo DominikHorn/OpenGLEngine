@@ -1,4 +1,4 @@
-package com.openglengine.core;
+package com.openglengine.renderer;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -6,7 +6,9 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.glfw.*;
 
-import com.openglengine.events.*;
+import com.openglengine.core.*;
+import com.openglengine.eventsystem.*;
+import com.openglengine.eventsystem.events.*;
 
 /**
  * Manager for all the glfw code
@@ -18,7 +20,7 @@ public class GlfwManager {
 	// glfw window handle
 	private long window;
 
-	protected GlfwManager(int screenWidth, int screenHeight, boolean fullscreen) {
+	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen) {
 		if (fullscreen) {
 			System.err.println("Fullscreen not supported for now");
 			System.exit(-1);

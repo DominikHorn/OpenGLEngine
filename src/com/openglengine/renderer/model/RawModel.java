@@ -1,4 +1,4 @@
-package com.openglengine.tutorial2;
+package com.openglengine.renderer.model;
 
 public class RawModel {
 	private int vaoID;

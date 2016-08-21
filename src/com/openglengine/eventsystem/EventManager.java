@@ -1,8 +1,9 @@
-package com.openglengine.core;
+package com.openglengine.eventsystem;
 
 import java.util.*;
 
-import com.openglengine.events.*;
+import com.openglengine.eventsystem.*;
+import com.openglengine.eventsystem.events.*;
 
 /**
  * Manager for dispatching and receiving events

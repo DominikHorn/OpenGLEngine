@@ -4,7 +4,11 @@ import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.opengl.*;
 
-import com.openglengine.tutorial2.*;
+import com.openglengine.renderer.*;
+import com.openglengine.renderer.model.*;
+import com.openglengine.renderer.shader.*;
+import com.openglengine.renderer.texture.*;
+import com.openglengine.util.*;
 
 /**
  * Game entry point
@@ -17,6 +21,9 @@ public class OpenGLGame {
 	public static final String DISPLAY_TITLE = "OpenGLEngine " + APP_VERSION;
 	public static final int DEFAULT_DISPLAY_WIDTH = 1920;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 1080;
+
+	/* TODO: refactor */
+	public static final Logger LOGGER = new DebugLogger();
 
 	private final GlfwManager glfwManager;
 
@@ -55,8 +62,9 @@ public class OpenGLGame {
 
 	private void loop() {
 		// TODO: tmp
-		Loader loader = new Loader();
+		ModelLoader loader = new ModelLoader();
 		Renderer renderer = new Renderer();
+		StaticShader shader = new StaticShader();
 
 		//@formatter:off
 		float[] vertices = {
@@ -66,24 +74,40 @@ public class OpenGLGame {
 			+0.5f, +0.5f, +0.0f
 		};
 		
+		float[] textureCoords = {
+			0,0,
+			0,1,
+			1,1,
+			1,0
+		};
+		
 		int [] indices = {
 			0,1,3,
 			3,1,2,
 		};		
 		//@formatter:on
 
-		RawModel model = loader.loadToVAO(vertices, indices);
+		RawModel model = loader.loadToVAO(vertices, textureCoords, indices);
+		Texture texture = TextureManager.loadTexture("panda");
+		TexturedModel texturedModel = new TexturedModel(model, texture);
+
+		// TODO: Enable transparency
+		// glEnable(GL_BLEND);
+		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		while (!this.glfwManager.getWindowShouldClose()) {
 			renderer.prepare();
 
-			renderer.render(model);
+			shader.startUsingShader();
+			renderer.render(texturedModel);
+			shader.stopUsingShader();
 
 			this.glfwManager.swapBuffers();
 			this.glfwManager.pollEvents();
 		}
 
 		// TODO: tmp
+		shader.cleanup();
 		loader.cleanup();
 	}
 
