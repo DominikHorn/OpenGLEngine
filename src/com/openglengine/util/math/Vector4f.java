@@ -42,6 +42,35 @@ public class Vector4f {
 	}
 
 	/**
+	 * Fast normalize, though this is only accurate when the vector is almost normalized already. This uses a polynomial
+	 * approximation of the sqrt() function. This function modifies this vector
+	 * 
+	 * @return
+	 */
+	public Vector4f reNormalize() {
+		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		this.x /= length;
+		this.y /= length;
+		this.z /= length;
+		this.w /= length;
+
+		return this;
+	}
+
+	/**
+	 * Fast normalize, though this is only accurate when the vector is almost normalized already. This uses a polynomial
+	 * approximation of the sqrt() function. This function returns a completely new vector containing the fast
+	 * normalization result
+	 * 
+	 * @return
+	 */
+	public Vector4f getReNormalizeResult() {
+		float length = MathUtil.fastSqrt(this.getSquaredLength());
+
+		return new Vector4f(this.x / length, this.y / length, this.z / length, this.w / length);
+	}
+
+	/**
 	 * Returns a new vector containing the normalisation result
 	 * 
 	 * @return

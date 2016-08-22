@@ -28,6 +28,34 @@ public class Vector3f {
 	}
 
 	/**
+	 * Fast normalize, though this is only accurate when the vector is almost normalized already. This uses a polynomial
+	 * approximation of the sqrt() function. This function modifies this vector
+	 * 
+	 * @return
+	 */
+	public Vector3f reNormalize() {
+		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		this.x /= length;
+		this.y /= length;
+		this.z /= length;
+
+		return this;
+	}
+
+	/**
+	 * Fast normalize, though this is only accurate when the vector is almost normalized already. This uses a polynomial
+	 * approximation of the sqrt() function. This function returns a completely new vector containing the fast
+	 * normalization result
+	 * 
+	 * @return
+	 */
+	public Vector3f getReNormalizeResult() {
+		float length = MathUtil.fastSqrt(this.getSquaredLength());
+
+		return new Vector3f(this.x / length, this.y / length, this.z / length);
+	}
+
+	/**
 	 * Returns a new vector containing the normalisation result
 	 * 
 	 * @return

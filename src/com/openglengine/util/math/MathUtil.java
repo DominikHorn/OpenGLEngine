@@ -191,4 +191,20 @@ public class MathUtil {
 	public static Matrix4f createRotationMatrix(float angle, Vector3f axis) {
 		return createRotationMatrix(angle, axis.x, axis.y, axis.z);
 	}
+
+	/**
+	 * This uses polynomial approximation to get results. The polynom used is a second degree polynom. This function's
+	 * results will only be accurate around x=0.75 up to x=1.25, meaning this is only useful for renormalizing almost
+	 * normalized vectors (floating point error fixing f.e.)
+	 * 
+	 * @param x
+	 * @return
+	 */
+	protected static float fastSqrt(float x) {
+		float a0 = 15.0f / 8.0f;
+		float a1 = -5.0f / 4.0f;
+		float a2 = 3.0f / 8.0f;
+
+		return a0 + a1 * x + a2 * x * x;
+	}
 }
