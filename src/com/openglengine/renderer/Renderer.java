@@ -9,6 +9,7 @@ import com.openglengine.entities.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
+import com.openglengine.util.math.*;
 
 /**
  * TODO REFACTOR
@@ -38,8 +39,11 @@ public class Renderer {
 		transformMatrix.rotateZ(entity.getRotZ());
 		transformMatrix.scale(entity.getScale(), entity.getScale(), entity.getScale());
 
+		Matrix4f viewMatrix = OpenGLEngine.VIEW_MATRIX_STACK.getCurrentMatrix();
+
 		shader.startUsingShader();
 		shader.loadTransformationMatrix(transformMatrix.getCurrentMatrix());
+		shader.loadViewMatrix(viewMatrix);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texturedModel.getTexture().getTextureID());

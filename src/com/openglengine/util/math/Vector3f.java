@@ -158,10 +158,23 @@ public class Vector3f {
 	/**
 	 * Inverts this vector
 	 * 
+	 * TODO: optimize (instead of multiply, use "-this.x")
+	 * 
 	 * @return convenience return
 	 */
 	public Vector3f invert() {
 		return this.scaleVector(-1);
+	}
+
+	/**
+	 * returns the result of inverting this vector in a new vector
+	 * 
+	 * TODO: optimize
+	 * 
+	 * @return
+	 */
+	public Vector3f getInvertResult() {
+		return this.getScaleResult(-1);
 	}
 
 	/**

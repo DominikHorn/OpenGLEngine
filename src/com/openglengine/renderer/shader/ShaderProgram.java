@@ -72,6 +72,8 @@ public abstract class ShaderProgram {
 
 	public abstract void loadTransformationMatrix(Matrix4f matrix);
 
+	public abstract void loadViewMatrix(Matrix4f matrix);
+
 	private int loadShader(String file, int type) {
 		StringBuilder shaderSource = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -94,4 +96,5 @@ public abstract class ShaderProgram {
 
 		return shaderID;
 	}
+
 }
