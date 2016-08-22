@@ -1,4 +1,4 @@
-package com.openglengine.renderer;
+package com.openglengine.util;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -6,7 +6,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.glfw.*;
 
-import com.openglengine.eventsystem.*;
+import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 /**
@@ -15,9 +15,9 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public class GlfwManager {
+public class GlfwManager extends Manager {
 	// glfw window handle
-	private long window;
+	private long windowID;
 
 	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
 		if (fullscreen) {
@@ -26,6 +26,8 @@ public class GlfwManager {
 		}
 
 		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
+		
+		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
 	}
 
 	private void init(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
@@ -42,45 +44,40 @@ public class GlfwManager {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
-		if (window == NULL) throw new RuntimeException("Failed to create the GLFW window");
+		windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
+		if (windowID == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(window,
-				(window, key, scancode, action, mods) -> EventManager
-						.dispatch(new GlfwKeyInputEvent(window, key, scancode, action, mods)));
-		
 		// Get the resolution of the primary monitor
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 		// Center our window
-		glfwSetWindowPos(window, (vidmode.width() - screenWidth) / 2, (vidmode.height() - screenHeight) / 2);
+		glfwSetWindowPos(windowID, (vidmode.width() - screenWidth) / 2, (vidmode.height() - screenHeight) / 2);
 
 		// Make the OpenGL context current
-		glfwMakeContextCurrent(window);
+		glfwMakeContextCurrent(windowID);
 
 		// Enable vsync TODO: refactor
 		glfwSwapInterval(1);
 
 		// Make the window visible
-		glfwShowWindow(window);
+		glfwShowWindow(windowID);
 	}
 
 	public boolean getWindowShouldClose() {
-		return glfwWindowShouldClose(this.window);
+		return glfwWindowShouldClose(this.windowID);
 	}
 
 	public void swapBuffers() {
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(windowID);
 	}
 
-	public void pollEvents() {
-		glfwPollEvents();
+	public long getWindowID() {
+		return this.windowID;
 	}
 
 	public void cleanup() {
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
+		glfwFreeCallbacks(windowID);
+		glfwDestroyWindow(windowID);
 
 		// Terminate GLFW and free the error callback
 		glfwTerminate();

@@ -2,6 +2,8 @@ package com.openglengine.renderer.texture;
 
 import org.lwjgl.opengl.*;
 
+import com.openglengine.core.*;
+
 /* private inner container class */
 /* TODO: refactor */
 /**
@@ -38,11 +40,18 @@ public class Texture {
 		this.numReferences--;
 		if (numReferences <= 0) {
 			// Delete texture
-			GL11.glDeleteTextures(this.textureID);
+			this.forceDelete();
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public void forceDelete() {
+		if (numReferences != 0)
+			Engine.LOGGER.warn("Deleting texture that has " + numReferences + " references left!");
+
+		GL11.glDeleteTextures(this.textureID);
 	}
 }

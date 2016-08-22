@@ -2,10 +2,9 @@ package com.openglengine.util;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-import com.openglengine.eventsystem.*;
-import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.core.*;
 
-public class InputManager {
+public class InputManager extends Manager {
 
 	//@formatter:off
 	public static final int 
@@ -18,11 +17,13 @@ public class InputManager {
 	private int[] keys = new int[GLFW_KEY_LAST];
 
 	public InputManager() {
-		EventManager.registerListenerForEvent(GlfwKeyInputEvent.class, e -> keyEvent((GlfwKeyInputEvent) e));
+		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
+		glfwSetKeyCallback(Engine.GLFW_MANAGER.getWindowID(),
+				(window, key, scancode, action, mods) -> this.keyEvent(window, key, scancode, action, mods));
 	}
 
-	private void keyEvent(GlfwKeyInputEvent e) {
-		keys[e.getKey()] = e.getAction();
+	private void keyEvent(long window, int key, int scancode, int action, int mods) {
+		keys[key] = action;
 	}
 
 	public boolean isKeyDown(int glfwkeycode) {
@@ -31,5 +32,10 @@ public class InputManager {
 
 	public boolean isKeyRepeat(int glfwkeycode) {
 		return keys[glfwkeycode] == GLFW_REPEAT;
+	}
+
+	@Override
+	public void cleanup() {
+		// Nothing to do for now
 	}
 }

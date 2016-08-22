@@ -6,8 +6,10 @@ import java.util.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
+import com.openglengine.renderer.shader.*;
+
 /**
- * TODO REFACTOR
+ * TODO temporary class
  * 
  * @author Dominik
  *
@@ -29,14 +31,23 @@ public class ModelLoader {
 		this.vaos.forEach((vao) -> GL30.glDeleteVertexArrays(vao));
 	}
 
-	public RawModel loadToVAO(float[] positions, float[] texCoords, int[] indices) {
+	public RawModel loadToVAO(float[] positions, int[] indices, ShaderProgram shader) {
+		int vaoID = createVAO();
+		bindIndicesBuffer(indices);
+		storeDataInAttributeList(0, 3, positions);
+		unbindVAO();
+
+		return new RawModel(vaoID, indices.length, shader);
+	}
+
+	public RawModel loadToVAO(float[] positions, float[] texCoords, int[] indices, ShaderProgram shader) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, texCoords);
 		unbindVAO();
 
-		return new RawModel(vaoID, indices.length);
+		return new RawModel(vaoID, indices.length, shader);
 	}
 
 	private void bindIndicesBuffer(int[] indices) {

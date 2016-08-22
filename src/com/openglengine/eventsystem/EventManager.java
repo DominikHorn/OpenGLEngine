@@ -2,6 +2,7 @@ package com.openglengine.eventsystem;
 
 import java.util.*;
 
+import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 /**
@@ -10,38 +11,16 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public class EventManager {
-
-	private static EventManager eventManager;
-
+public class EventManager extends Manager {
 	private Map<Class<? extends BaseEvent>, List<EventListener>> listeners;
 
-	private EventManager() {
+	public EventManager() {
 		this.listeners = new HashMap<>();
-	}
-
-	public static EventManager getInstance() {
-		if (eventManager == null)
-			eventManager = new EventManager();
-
-		return eventManager;
-	}
-
-	public static void dispatch(BaseEvent event) {
-		getInstance()._dispatch(event);
-	}
-
-	public static boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, EventListener listener) {
-		return getInstance()._registerListenerForEvent(listener, eventClass);
-	}
-
-	public static boolean deleteListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
-		return getInstance()._deleteListenerForEvent(listener, eventClass);
 	}
 
 	/** actual class implementations */
 
-	private void _dispatch(BaseEvent event) {
+	public void dispatch(BaseEvent event) {
 		// Dispatch this event to all listeners
 		listeners.get(event.getClass()).forEach(listener -> listener.eventReceived(event));
 	}
@@ -54,7 +33,7 @@ public class EventManager {
 	 * @return true if the listener was added, false if it previously had been registered already and thus was not added
 	 *         a second time successfully
 	 */
-	private boolean _registerListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
+	public boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, EventListener listener) {
 		// Extract previous values
 		List<EventListener> eventListenerList = this.listeners.get(eventClass);
 		boolean alreadyRegistered = false;
@@ -83,7 +62,7 @@ public class EventManager {
 	 * @return whether or not deletion was successful. Note: this can be unsuccessful if the listener was not actually
 	 *         registered previously
 	 */
-	private boolean _deleteListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
+	public boolean deleteListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
 		List<EventListener> eventListenerList = this.listeners.get(eventClass);
 
 		if (eventListenerList != null && eventListenerList.contains(listener)) {
@@ -92,5 +71,10 @@ public class EventManager {
 		}
 
 		return false;
+	}
+
+	@Override
+	public void cleanup() {
+		this.listeners.clear();
 	}
 }

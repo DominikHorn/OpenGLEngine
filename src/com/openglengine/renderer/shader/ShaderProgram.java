@@ -9,10 +9,26 @@ import org.lwjgl.opengl.*;
 import com.openglengine.core.*;
 import com.openglengine.util.math.*;
 
+/**
+ * standard shader consisting of a vertex shader and fragment shader pair. All vertexShaders loaded with ShaderProgram
+ * will have all three default matricies automatically uploaded
+ * 
+ * @author Dominik
+ *
+ */
 public abstract class ShaderProgram {
+	private static final String UNIFORM_NAME_TRANSFORMATION_MATRIX = "transformationMatrix";
+	private static final String UNIFORM_NAME_PROJECTION_MATRIX = "projectionMatrix";
+	private static final String UNIFORM_NAME_VIEW_MATRIX = "viewMatrix";
+
 	private int programID;
 	private int vertexShaderID;
 	private int fragmentShaderID;
+
+	/* standard shader uniform variables */
+	private int location_transformationMatrix;
+	private int location_projectionMatrix;
+	private int location_viewMatrix;
 
 	private static FloatBuffer matrixFloatBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
@@ -26,12 +42,16 @@ public abstract class ShaderProgram {
 		GL20.glLinkProgram(this.programID);
 		GL20.glValidateProgram(this.programID);
 		getAllUniformLocations();
+
+		// Upload projection matrix only once
+		this.startUsingShader();
+		this.loadMatrix(this.location_projectionMatrix, Engine.PROJECTION_MATRIX_STACK.getCurrentMatrix());
+		this.stopUsingShader();
 	}
 
-	protected abstract void getAllUniformLocations();
-
-	protected int getUniformLocation(String uniformName) {
-		return GL20.glGetUniformLocation(this.programID, uniformName);
+	public void uploadStandardUniforms() {
+		this.loadMatrix(this.location_transformationMatrix, Engine.TRANSFORM_MATRIX_STACK.getCurrentMatrix());
+		this.loadMatrix(this.location_viewMatrix, Engine.VIEW_MATRIX_STACK.getCurrentMatrix());
 	}
 
 	public void startUsingShader() {
@@ -49,6 +69,16 @@ public abstract class ShaderProgram {
 		GL20.glDeleteShader(this.vertexShaderID);
 		GL20.glDeleteShader(this.fragmentShaderID);
 		GL20.glDeleteProgram(this.programID);
+	}
+
+	protected void getAllUniformLocations() {
+		this.location_projectionMatrix = this.getUniformLocation(UNIFORM_NAME_PROJECTION_MATRIX);
+		this.location_transformationMatrix = this.getUniformLocation(UNIFORM_NAME_TRANSFORMATION_MATRIX);
+		this.location_viewMatrix = this.getUniformLocation(UNIFORM_NAME_VIEW_MATRIX);
+	}
+
+	protected int getUniformLocation(String uniformName) {
+		return GL20.glGetUniformLocation(this.programID, uniformName);
 	}
 
 	protected void bindAttribute(int attribute, String variableName) {
@@ -70,10 +100,7 @@ public abstract class ShaderProgram {
 		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer); // TODO: breaking?!
 	}
 
-	public abstract void loadTransformationMatrix(Matrix4f matrix);
-
-	public abstract void loadViewMatrix(Matrix4f matrix);
-
+	// TODO: introduce shaderManager and shaderProgramManager
 	private int loadShader(String file, int type) {
 		StringBuilder shaderSource = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -82,19 +109,19 @@ public abstract class ShaderProgram {
 				shaderSource.append(line).append("\n");
 
 		} catch (FileNotFoundException e) {
-			OpenGLEngine.LOGGER.err("Shader file \"" + file + "\" was not found");
+			Engine.LOGGER.err("Shader file \"" + file + "\" was not found");
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
-			OpenGLEngine.LOGGER.err("IOException while reading file \"" + file + "\":");
+			Engine.LOGGER.err("IOException while reading file \"" + file + "\":");
 		}
 
 		int shaderID = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderID, shaderSource);
 		GL20.glCompileShader(shaderID);
 		if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
-			OpenGLEngine.LOGGER.err("Could not compile shader \"" + file + "\":\n" + GL20.glGetShaderInfoLog(shaderID));
+			Engine.LOGGER
+					.err("Could not compile shader \"" + file + "\":\n" + GL20.glGetShaderInfoLog(shaderID));
 
 		return shaderID;
 	}
-
 }

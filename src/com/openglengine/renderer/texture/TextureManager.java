@@ -77,6 +77,11 @@ public class TextureManager {
 				this.loadedTextures.put(filePath, null);
 
 		} else
-			OpenGLEngine.LOGGER.warn("Tex file \"" + filePath + "\" is not loaded into memory");
+			Engine.LOGGER.warn("Tex file \"" + filePath + "\" is not loaded into memory");
+	}
+
+	public void cleanup() {
+		for (Texture texture : this.loadedTextures.values())
+			texture.forceDelete();
 	}
 }
