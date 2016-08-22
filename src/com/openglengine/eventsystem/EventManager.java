@@ -3,7 +3,7 @@ package com.openglengine.eventsystem;
 import java.util.*;
 
 import com.openglengine.eventsystem.*;
-import com.openglengine.eventsystem.events.*;
+import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Manager for dispatching and receiving events

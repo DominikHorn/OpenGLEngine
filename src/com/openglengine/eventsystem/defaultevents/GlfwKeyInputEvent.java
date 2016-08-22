@@ -1,4 +1,4 @@
-package com.openglengine.eventsystem.events;
+package com.openglengine.eventsystem.defaultevents;
 
 /**
  * Event sent when a glfw key input happens

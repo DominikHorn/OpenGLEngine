@@ -6,9 +6,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.glfw.*;
 
-import com.openglengine.core.*;
 import com.openglengine.eventsystem.*;
-import com.openglengine.eventsystem.events.*;
+import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Manager for all the glfw code
@@ -20,16 +19,16 @@ public class GlfwManager {
 	// glfw window handle
 	private long window;
 
-	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen) {
+	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
 		if (fullscreen) {
 			System.err.println("Fullscreen not supported for now");
 			System.exit(-1);
 		}
 
-		this.init(screenWidth, screenHeight, fullscreen);
+		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
 	}
 
-	private void init(int screenWidth, int screenHeight, boolean fullscreen) {
+	private void init(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -43,7 +42,7 @@ public class GlfwManager {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		window = glfwCreateWindow(screenWidth, screenHeight, OpenGLGame.DISPLAY_TITLE, NULL, NULL);
+		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
 		if (window == NULL) throw new RuntimeException("Failed to create the GLFW window");
 
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.

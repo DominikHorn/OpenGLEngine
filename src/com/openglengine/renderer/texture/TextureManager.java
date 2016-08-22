@@ -44,7 +44,7 @@ public class TextureManager {
 			return getInstance()._loadTexture(fileName, "png");
 		} catch (IOException e) {
 			e.printStackTrace();
-			OpenGLGame.LOGGER.err("IO Error loading texture \"" + fileName + "\"");
+			OpenGLEngine.LOGGER.err("IO Error loading texture \"" + fileName + "\"");
 		}
 		return null;
 	}
@@ -106,6 +106,6 @@ public class TextureManager {
 				this.loadedTextures.put(fileName, null);
 
 		} else
-			OpenGLGame.LOGGER.warn("Tex file \"" + fileName + "\" is not loaded into memory");
+			OpenGLEngine.LOGGER.warn("Tex file \"" + fileName + "\" is not loaded into memory");
 	}
 }

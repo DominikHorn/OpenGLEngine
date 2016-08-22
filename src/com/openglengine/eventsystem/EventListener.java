@@ -1,7 +1,7 @@
 package com.openglengine.eventsystem;
 
 import com.openglengine.eventsystem.*;
-import com.openglengine.eventsystem.events.*;
+import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Interface that needs to be implemented in order for a class to receive Events from EventManager. Lambas are
