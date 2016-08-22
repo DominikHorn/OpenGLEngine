@@ -12,12 +12,12 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class VisibleEntity extends BaseEntity {
+public abstract class VisibleEntity extends BaseEntity {
 	protected ShaderProgram shader;
-	private RawModel model;
-	private Vector3f position;
-	private float rotX, rotY, rotZ;
-	private float scale;
+	protected RawModel model;
+	protected Vector3f position;
+	protected float rotX, rotY, rotZ;
+	protected float scale;
 
 	public VisibleEntity(RawModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		this.model = model;
@@ -30,9 +30,7 @@ public class VisibleEntity extends BaseEntity {
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> update((UpdateEvent) e));
 	}
 
-	protected void update(UpdateEvent e) {
-		// TODO: implement
-	}
+	protected abstract void update(UpdateEvent e);
 
 	public void render() {
 		this.model.render(position, rotX, rotY, rotZ, scale);

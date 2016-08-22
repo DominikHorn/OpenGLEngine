@@ -26,7 +26,7 @@ public class GlfwManager extends Manager {
 		}
 
 		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
-		
+
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
 	}
 
@@ -36,7 +36,8 @@ public class GlfwManager extends Manager {
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
-		if (!glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
+		if (!glfwInit())
+			throw new IllegalStateException("Unable to initialize GLFW");
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -45,7 +46,8 @@ public class GlfwManager extends Manager {
 
 		// Create the window
 		windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
-		if (windowID == NULL) throw new RuntimeException("Failed to create the GLFW window");
+		if (windowID == NULL)
+			throw new RuntimeException("Failed to create the GLFW window");
 
 		// Get the resolution of the primary monitor
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -76,11 +78,15 @@ public class GlfwManager extends Manager {
 	}
 
 	public void cleanup() {
-		glfwFreeCallbacks(windowID);
-		glfwDestroyWindow(windowID);
+		try {
+			glfwFreeCallbacks(windowID);
+			glfwDestroyWindow(windowID);
 
-		// Terminate GLFW and free the error callback
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
+			// Terminate GLFW and free the error callback
+			glfwTerminate();
+			glfwSetErrorCallback(null).free();
+		} catch (NullPointerException e) {
+			// Ignore as this must mean that everything was successful
+		}
 	}
 }
