@@ -26,6 +26,7 @@ public class Engine {
 	public static GlfwManager GLFW_MANAGER;
 	public static InputManager INPUT_MANAGER;
 
+	// TODO: make settings with glfwmanager better
 	public static void loadDefaultEngineComponents() {
 		EVENT_MANAGER = new EventManager();
 		TEXTURE_MANAGER = new TextureManager();
