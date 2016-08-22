@@ -1,6 +1,5 @@
 package com.openglengine.eventsystem;
 
-import com.openglengine.eventsystem.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 /**
