@@ -18,55 +18,15 @@ import com.openglengine.core.*;
  */
 // TODO: refactor
 public class TextureManager {
-	/* Singleton pattern. */
-	private static TextureManager manager;
+	private Map<String, Texture> loadedTextures;
 
-	private TextureManager() {
+	public TextureManager() {
 		this.loadedTextures = new HashMap<>();
 	}
 
-	private static TextureManager getInstance() {
-		if (manager == null)
-			manager = new TextureManager();
-
-		return manager;
-	}
-
-	/* Attributes */
-
-	private Map<String, Texture> loadedTextures;
-	private String texFolderPath = "res/tex/";
-
-	/* Methods */
-	public static void setTextureFolder(String folder) {
-		getInstance()._setTextureFolder(folder);
-	}
-
-	private void _setTextureFolder(String folder) {
-		if (!folder.endsWith("/"))
-			folder += "/";
-
-		this.texFolderPath = folder;
-	}
-
-	public static Texture loadTexture(String fileName) {
-		try {
-			return getInstance()._loadTexture(fileName, "png");
-		} catch (IOException e) {
-			e.printStackTrace();
-			OpenGLEngine.LOGGER.err("IO Error loading texture \"" + fileName + "\"");
-		}
-		return null;
-	}
-
-	public static void cleanTexture(String fileName) {
-		getInstance()._cleanTexture(fileName);
-	}
-
 	// TODO. refactor http://wiki.lwjgl.org/wiki/The_Quad_textured
-	private Texture _loadTexture(String fileName, String fileExtension) throws IOException {
-		String filePath = this.texFolderPath + fileName + "." + fileExtension;
-		Texture loadedTexture = this.loadedTextures.get(fileName);
+	public Texture loadTexture(String filePath) throws IOException {
+		Texture loadedTexture = this.loadedTextures.get(filePath);
 
 		if (loadedTexture == null) {
 			// Load byte data from texture file
@@ -107,15 +67,15 @@ public class TextureManager {
 		return loadedTexture;
 	}
 
-	private void _cleanTexture(String fileName) {
-		if (this.loadedTextures.containsKey(fileName)) {
-			Texture loadedTexture = this.loadedTextures.get(fileName);
+	public void cleanTexture(String filePath) {
+		if (this.loadedTextures.containsKey(filePath)) {
+			Texture loadedTexture = this.loadedTextures.get(filePath);
 
 			// remove reference
 			if (loadedTexture.cleanup())
-				this.loadedTextures.put(fileName, null);
+				this.loadedTextures.put(filePath, null);
 
 		} else
-			OpenGLEngine.LOGGER.warn("Tex file \"" + fileName + "\" is not loaded into memory");
+			OpenGLEngine.LOGGER.warn("Tex file \"" + filePath + "\" is not loaded into memory");
 	}
 }

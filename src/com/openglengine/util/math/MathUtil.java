@@ -94,17 +94,6 @@ public class MathUtil {
 	}
 
 	/**
-	 * returns new Translation matrix
-	 * 
-	 * @param translation
-	 *            a 3D vector describing the translation
-	 * @return
-	 */
-	public static Matrix4f createTranslationMatrix(Vector3f translation) {
-		return createTranslationMatrix(translation.x, translation.y, translation.z);
-	}
-
-	/**
 	 * returns new scale matrix
 	 * 
 	 * @param x
@@ -120,17 +109,6 @@ public class MathUtil {
 		result.matrixValues[2 + 2 * 4] = z;
 
 		return result;
-	}
-
-	/**
-	 * returns new scale matrix
-	 * 
-	 * @param scale
-	 *            3D vector describing the amount of scaling on each axis
-	 * @return
-	 */
-	public static Matrix4f createScaleMatrix(Vector3f scale) {
-		return createScaleMatrix(scale.x, scale.y, scale.z);
 	}
 
 	/**
@@ -177,19 +155,6 @@ public class MathUtil {
 		matRotZ.matrixValues[1 + 1 * 4] = +cosZ;
 
 		return matRotX.multiply(matRotY.multiply(matRotZ));
-	}
-
-	/**
-	 * returns the rotation matrix
-	 * 
-	 * @param angle
-	 *            amount of rotation
-	 * @param axis
-	 *            3D vector describing the axis rotation
-	 * @return
-	 */
-	public static Matrix4f createRotationMatrix(float angle, Vector3f axis) {
-		return createRotationMatrix(angle, axis.x, axis.y, axis.z);
 	}
 
 	/**
