@@ -18,8 +18,6 @@ import com.openglengine.core.*;
  */
 // TODO: refactor
 public class TextureManager {
-	private static final String TEX_FOLDER_PATH = "res/tex/";
-
 	/* Singleton pattern. */
 	private static TextureManager manager;
 
@@ -37,8 +35,20 @@ public class TextureManager {
 	/* Attributes */
 
 	private Map<String, Texture> loadedTextures;
+	private String texFolderPath = "res/tex/";
 
 	/* Methods */
+	public static void setTextureFolder(String folder) {
+		getInstance()._setTextureFolder(folder);
+	}
+
+	private void _setTextureFolder(String folder) {
+		if (!folder.endsWith("/"))
+			folder += "/";
+
+		this.texFolderPath = folder;
+	}
+
 	public static Texture loadTexture(String fileName) {
 		try {
 			return getInstance()._loadTexture(fileName, "png");
@@ -55,7 +65,7 @@ public class TextureManager {
 
 	// TODO. refactor http://wiki.lwjgl.org/wiki/The_Quad_textured
 	private Texture _loadTexture(String fileName, String fileExtension) throws IOException {
-		String filePath = TEX_FOLDER_PATH + fileName + "." + fileExtension;
+		String filePath = this.texFolderPath + fileName + "." + fileExtension;
 		Texture loadedTexture = this.loadedTextures.get(fileName);
 
 		if (loadedTexture == null) {
