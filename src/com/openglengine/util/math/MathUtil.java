@@ -12,7 +12,7 @@ public class MathUtil {
 	 * @param far
 	 * @return
 	 */
-	public static Matrix4f getOrthographicMatrix(float left, float right, float bottom, float top, float near,
+	public static Matrix4f createOrthographicMatrix(float left, float right, float bottom, float top, float near,
 			float far) {
 		Matrix4f ortho = new Matrix4f();
 

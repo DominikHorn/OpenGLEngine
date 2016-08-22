@@ -2,6 +2,7 @@ package com.openglengine.renderer.model;
 
 import com.openglengine.renderer.texture.*;
 
+// TODO: REFACTOR
 public class TexturedModel {
 	private RawModel rawModel;
 	private Texture texture;

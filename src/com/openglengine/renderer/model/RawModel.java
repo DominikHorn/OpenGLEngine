@@ -1,5 +1,11 @@
 package com.openglengine.renderer.model;
 
+/**
+ * TODO: REFACTOR
+ * 
+ * @author Dominik
+ *
+ */
 public class RawModel {
 	private int vaoID;
 	private int indiciesCount;

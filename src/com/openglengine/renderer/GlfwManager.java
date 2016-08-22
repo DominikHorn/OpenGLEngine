@@ -49,7 +49,7 @@ public class GlfwManager {
 		glfwSetKeyCallback(window,
 				(window, key, scancode, action, mods) -> EventManager
 						.dispatch(new GlfwKeyInputEvent(window, key, scancode, action, mods)));
-
+		
 		// Get the resolution of the primary monitor
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 

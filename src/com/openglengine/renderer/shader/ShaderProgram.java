@@ -70,6 +70,8 @@ public abstract class ShaderProgram {
 		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer); // TODO: breaking?!
 	}
 
+	public abstract void loadTransformationMatrix(Matrix4f matrix);
+
 	private int loadShader(String file, int type) {
 		StringBuilder shaderSource = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {

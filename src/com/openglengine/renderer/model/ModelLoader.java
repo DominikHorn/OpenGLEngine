@@ -6,6 +6,13 @@ import java.util.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
+/**
+ * TODO REFACTOR
+ * 
+ * @author Dominik
+ *
+ */
+
 public class ModelLoader {
 
 	/* Trac created buffers so that we can delete them on shutdown */

@@ -24,7 +24,8 @@ public class TextureManager {
 		this.loadedTextures = new HashMap<>();
 	}
 
-	// TODO. refactor http://wiki.lwjgl.org/wiki/The_Quad_textured
+	// TODO: refactor http://wiki.lwjgl.org/wiki/The_Quad_textured (tex parameters might not be good since texture turns
+	// blury when rotated)
 	public Texture loadTexture(String filePath) throws IOException {
 		Texture loadedTexture = this.loadedTextures.get(filePath);
 

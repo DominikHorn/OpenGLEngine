@@ -31,7 +31,7 @@ public class EventManager {
 		getInstance()._dispatch(event);
 	}
 
-	public static boolean registerListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
+	public static boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, EventListener listener) {
 		return getInstance()._registerListenerForEvent(listener, eventClass);
 	}
 

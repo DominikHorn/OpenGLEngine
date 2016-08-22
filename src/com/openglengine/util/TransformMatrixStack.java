@@ -1,47 +1,17 @@
 package com.openglengine.util;
 
-import java.util.*;
-
 import com.openglengine.util.math.*;
 
-public class TransformMatrixStack {
-	private List<Matrix4f> matricesStack;
-	private Matrix4f currentMatrix;
-
-	public TransformMatrixStack() {
-		this.currentMatrix = new Matrix4f();
-		this.matricesStack = new ArrayList<>();
-		this.matricesStack.add(this.currentMatrix);
-	}
-
+public class TransformMatrixStack extends MatrixStack {
 	/**
-	 * returns the current matrix
+	 * translate by x, y, z
 	 * 
-	 * @return
+	 * @param x
+	 * @param y
+	 * @param z
 	 */
-	public Matrix4f getCurrentMatrix() {
-		return this.currentMatrix;
-	}
-
-	/**
-	 * pops the last matrix into the current matrix
-	 */
-	public void pop() {
-		this.currentMatrix = this.matricesStack.remove(this.matricesStack.size() - 1);
-	}
-
-	/**
-	 * push last matrix onto stack (save for later, until next pop)
-	 */
-	public void push() {
-		this.matricesStack.add(this.currentMatrix.getCopy());
-	}
-
-	/**
-	 * load identity matrix into current matrix
-	 */
-	public void loadIdentity() {
-		this.currentMatrix.loadIdentityMatrix();
+	public void translate(float x, float y, float z) {
+		this.getCurrentMatrix().multiply(MathUtil.createTranslationMatrix(x, y, z));
 	}
 
 	/**
@@ -51,12 +21,12 @@ public class TransformMatrixStack {
 	 * @param y
 	 * @param z
 	 */
-	public void translate(float x, float y, float z) {
-		this.currentMatrix.multiply(MathUtil.createTranslationMatrix(x, y, z));
+	public void translate(Vector3f trans) {
+		this.translate(trans.x, trans.y, trans.z);
 	}
 
 	/**
-	 * rotate
+	 * rotate around all axis
 	 * 
 	 * @param angle
 	 *            in radians
@@ -65,7 +35,34 @@ public class TransformMatrixStack {
 	 * @param z
 	 */
 	public void rotate(float angle, float x, float y, float z) {
-		this.currentMatrix.multiply(MathUtil.createRotationMatrix(angle, x, y, z));
+		this.getCurrentMatrix().multiply(MathUtil.createRotationMatrix(angle, x, y, z));
+	}
+
+	/**
+	 * rotate around x axis
+	 * 
+	 * @param angle
+	 */
+	public void rotateX(float angle) {
+		this.rotate(angle, 1, 0, 0);
+	}
+
+	/**
+	 * rotate around y axis
+	 * 
+	 * @param angle
+	 */
+	public void rotateY(float angle) {
+		this.rotate(angle, 0, 1, 0);
+	}
+
+	/**
+	 * rotate around z axis
+	 * 
+	 * @param angle
+	 */
+	public void rotateZ(float angle) {
+		this.rotate(angle, 0, 0, 1);
 	}
 
 	/**
@@ -76,6 +73,6 @@ public class TransformMatrixStack {
 	 * @param z
 	 */
 	public void scale(float x, float y, float z) {
-		this.currentMatrix.multiply(MathUtil.createScaleMatrix(x, y, z));
+		this.getCurrentMatrix().multiply(MathUtil.createScaleMatrix(x, y, z));
 	}
 }
