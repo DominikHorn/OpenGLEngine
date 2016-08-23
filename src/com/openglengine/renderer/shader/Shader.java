@@ -16,7 +16,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public abstract class ShaderProgram {
+public abstract class Shader {
 	private static final String UNIFORM_NAME_TRANSFORMATION_MATRIX = "transformationMatrix";
 	private static final String UNIFORM_NAME_PROJECTION_MATRIX = "projectionMatrix";
 	private static final String UNIFORM_NAME_VIEW_MATRIX = "viewMatrix";
@@ -32,7 +32,7 @@ public abstract class ShaderProgram {
 
 	private static FloatBuffer matrixFloatBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
-	public ShaderProgram(String vertexShaderPath, String fragmentShaderPath) {
+	public Shader(String vertexShaderPath, String fragmentShaderPath) {
 		this.vertexShaderID = loadShader(vertexShaderPath, GL20.GL_VERTEX_SHADER);
 		this.fragmentShaderID = loadShader(fragmentShaderPath, GL20.GL_FRAGMENT_SHADER);
 		this.programID = GL20.glCreateProgram();
@@ -50,7 +50,7 @@ public abstract class ShaderProgram {
 	}
 
 	public void uploadStandardUniforms() {
-		this.loadMatrix(this.location_transformationMatrix, Engine.TRANSFORM_MATRIX_STACK.getCurrentMatrix());
+		this.loadMatrix(this.location_transformationMatrix, Engine.MODEL_MATRIX_STACK.getCurrentMatrix());
 		this.loadMatrix(this.location_viewMatrix, Engine.VIEW_MATRIX_STACK.getCurrentMatrix());
 	}
 

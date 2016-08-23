@@ -2,7 +2,7 @@ package com.openglengine.util;
 
 import com.openglengine.util.math.*;
 
-public class TransformMatrixStack extends MatrixStack {
+public class ModelMatrixStack extends MatrixStack {
 	/**
 	 * translate by x, y, z
 	 * 

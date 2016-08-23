@@ -37,7 +37,7 @@ public class Camera {
 	}
 
 	public void applyCameraTransforms() {
-		TransformMatrixStack vm = Engine.VIEW_MATRIX_STACK;
+		ModelMatrixStack vm = Engine.VIEW_MATRIX_STACK;
 		vm.loadIdentity();
 		vm.rotate(this.pitch, 1, 0, 0);
 		vm.rotate(this.yaw, 0, 1, 0);

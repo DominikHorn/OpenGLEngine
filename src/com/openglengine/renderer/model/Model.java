@@ -1,13 +1,34 @@
 package com.openglengine.renderer.model;
 
-import com.openglengine.util.math.*;
+import org.lwjgl.opengl.*;
+
+import com.openglengine.util.*;
 
 /**
- * Model base class. A model does have an openGL representation that it can render
+ * Container class for model data used by ModelManager.
  * 
  * @author Dominik
  *
  */
-public abstract class Model {
-	public abstract void render(Vector3f position, float rotX, float rotY, float rotZ, float scale);
+public abstract class Model extends ReferenceCountedDeletableContainer {
+	protected int vaoID;
+	protected int indicesCount;
+
+	public Model(int vaoID, int indicesCount) {
+		this.vaoID = vaoID;
+		this.indicesCount = indicesCount;
+	}
+
+	@Override
+	protected void forceDelete() {
+		GL30.glDeleteVertexArrays(this.vaoID);
+	}
+
+	public int getVaoID() {
+		return vaoID;
+	}
+
+	public int getIndicesCount() {
+		return indicesCount;
+	}
 }

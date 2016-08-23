@@ -13,17 +13,15 @@ public abstract class Basic3DGame {
 			float aspect, float near_plane, float far_plane) {
 		this.windowTitle = windowTitle;
 		Engine.loadEngineComponents(screenWidth, screenHeight, fullscreen, this.windowTitle);
-		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> update((UpdateEvent) e));
-		Engine.EVENT_MANAGER.registerListenerForEvent(RenderEvent.class, e -> render((RenderEvent) e));
 		this.setup(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
 	}
 
 	private void setup(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
 		this.initGL(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
-		this.setup();
+
+		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> this.update());
+
 		this.loop();
-		Engine.cleanup();
-		cleanup();
 	}
 
 	private void initGL(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
@@ -56,44 +54,48 @@ public abstract class Basic3DGame {
 	}
 
 	private void loop() {
-		final double nanoToSecondFactor = 1000000000.0;
-		long previous = System.nanoTime();
-		double steps = 0.0;
+		try {
+			this.setup();
 
-		// Simple fps and ups counter logic
-		double secondCounter = 0.0;
-		int fpsCounter = 0;
-		int upsCounter = 0;
+			final double nanoToSecondFactor = 1000000000.0;
+			long previous = System.nanoTime();
+			double steps = 0.0;
 
-		// TODO: tmp esc quit (until proper menus are implemented etc)
-		while (!Engine.GLFW_MANAGER.getWindowShouldClose() && !Engine.INPUT_MANAGER.isKeyDown(InputManager.KEY_ESC)) {
-			/* update */
-			long now = System.nanoTime();
-			long elapsed = now - previous;
-			secondCounter += elapsed / nanoToSecondFactor;
-			previous = now;
-			steps += elapsed / nanoToSecondFactor;
+			// Simple fps and ups counter logic
+			double secondCounter = 0.0;
+			int upsCounter = 0;
 
-			if (secondCounter > 1.0) {
-				secondCounter -= 1.0;
-				Engine.GLFW_MANAGER
-						.updateWindowTitle(this.windowTitle + ": " + upsCounter + "ups | " + fpsCounter + "fps");
-				upsCounter = 0;
-				fpsCounter = 0;
+			// TODO: tmp esc quit (until proper menus are implemented etc)
+			while (!Engine.GLFW_MANAGER.getWindowShouldClose()
+					&& !Engine.INPUT_MANAGER.isKeyDown(InputManager.KEY_ESC)) {
+				/* update */
+				long now = System.nanoTime();
+				long elapsed = now - previous;
+				secondCounter += elapsed / nanoToSecondFactor;
+				previous = now;
+				steps += elapsed / nanoToSecondFactor;
+
+				if (secondCounter > 1.0) {
+					secondCounter -= 1.0;
+					Engine.GLFW_MANAGER.updateWindowTitle(this.windowTitle + ": " + upsCounter + "ups");
+					upsCounter = 0;
+				}
+
+				/* render */
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+				while (steps >= this.secsPerUpdate) {
+					Engine.EVENT_MANAGER.dispatch(new UpdateEvent());
+					steps -= secsPerUpdate;
+					upsCounter++;
+				}
+
+				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
+				Engine.GLFW_MANAGER.swapBuffers();
 			}
-
-			while (steps >= this.secsPerUpdate) {
-				Engine.EVENT_MANAGER.dispatch(new UpdateEvent());
-				steps -= secsPerUpdate;
-				upsCounter++;
-			}
-
-			/* render */
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			Engine.EVENT_MANAGER.dispatch(new RenderEvent());
-
-			Engine.GLFW_MANAGER.swapBuffers();
-			fpsCounter++;
+		} finally {
+			Engine.cleanup();
+			this.cleanup();
 		}
 	}
 
@@ -102,10 +104,14 @@ public abstract class Basic3DGame {
 	 */
 	protected abstract void setup();
 
-	protected abstract void update(UpdateEvent e);
+	/**
+	 * Use this to update your game
+	 */
+	protected abstract void update();
 
-	protected abstract void render(RenderEvent e);
-
+	/**
+	 * Use this to clean leftover resources
+	 */
 	protected abstract void cleanup();
 
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.util.*;
 
 /**
  * Manager for dispatching and receiving events

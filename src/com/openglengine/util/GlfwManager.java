@@ -20,6 +20,9 @@ public class GlfwManager extends Manager {
 	private long windowID;
 
 	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
+		if (fullscreen == true)
+			Engine.LOGGER.err("Fullscreen not supported atm");
+
 		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
 
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
