@@ -4,6 +4,12 @@ import java.util.*;
 
 import com.openglengine.util.math.*;
 
+/**
+ * Matrix stack implementation similar to legacy opengl matrix handeling code
+ * 
+ * @author Dominik
+ *
+ */
 public class MatrixStack {
 	protected List<Matrix4f> matricesStack;
 

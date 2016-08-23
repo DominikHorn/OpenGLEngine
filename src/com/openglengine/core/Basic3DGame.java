@@ -5,10 +5,29 @@ import org.lwjgl.opengl.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 
+/**
+ * This class implements the basic functionality aswell as automatically initializing this engine. Subclass this as a
+ * starting point for your game entry point
+ * 
+ * @author Dominik
+ *
+ */
 public abstract class Basic3DGame {
 	private double secsPerUpdate = 1.0 / 60.0;
 	private String windowTitle;
 
+	/**
+	 * Initialize this game
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param fullscreen
+	 * @param windowTitle
+	 * @param fov
+	 * @param aspect
+	 * @param near_plane
+	 * @param far_plane
+	 */
 	public Basic3DGame(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle, float fov,
 			float aspect, float near_plane, float far_plane) {
 		this.windowTitle = windowTitle;
@@ -16,6 +35,16 @@ public abstract class Basic3DGame {
 		this.setup(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
 	}
 
+	/**
+	 * Actual init code
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param fov
+	 * @param aspect
+	 * @param near_plane
+	 * @param far_plane
+	 */
 	private void setup(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
 		this.initGL(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
 
@@ -24,6 +53,16 @@ public abstract class Basic3DGame {
 		this.loop();
 	}
 
+	/**
+	 * GL init code
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param fov
+	 * @param aspect
+	 * @param near_plane
+	 * @param far_plane
+	 */
 	private void initGL(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
@@ -49,10 +88,19 @@ public abstract class Basic3DGame {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 
+	/**
+	 * Use this method to dynamically set how many ups and therefore fps you want to receive (Rendering more fps than
+	 * ups does not make sense as the game will stutter regardless)
+	 * 
+	 * @param ups
+	 */
 	protected void setUPS(double ups) {
 		this.secsPerUpdate = 1.0 / ups;
 	}
 
+	/**
+	 * Internal gameloop, ups logic and glClear stuff aswell as buffer swap things
+	 */
 	private void loop() {
 		try {
 			this.setup();
@@ -85,7 +133,11 @@ public abstract class Basic3DGame {
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 				while (steps >= this.secsPerUpdate) {
-					Engine.EVENT_MANAGER.dispatch(new UpdateEvent());
+					// Update camera
+					Engine.CAMERA.update();
+
+					// send update event
+					Engine.EVENT_MANAGER.dispatch(new UpdateEvent(secsPerUpdate));
 					steps -= secsPerUpdate;
 					upsCounter++;
 				}
@@ -94,8 +146,8 @@ public abstract class Basic3DGame {
 				Engine.GLFW_MANAGER.swapBuffers();
 			}
 		} finally {
-			Engine.cleanup();
 			this.cleanup();
+			Engine.cleanup();
 		}
 	}
 

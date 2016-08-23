@@ -8,8 +8,6 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.stb.*;
 
-import com.openglengine.core.*;
-
 /**
  * Takes care of loading textures and makes sure, that each texture is loaded exactly once
  * 
@@ -18,6 +16,9 @@ import com.openglengine.core.*;
  */
 // TODO: refactor
 public class TextureManager {
+	/**
+	 * Already loaded textures
+	 */
 	private Map<String, Texture> loadedTextures;
 
 	public TextureManager() {
@@ -26,8 +27,15 @@ public class TextureManager {
 
 	// TODO: refactor http://wiki.lwjgl.org/wiki/The_Quad_textured (tex parameters might not be good since texture turns
 	// blury when rotated)
-	public Texture loadTexture(String filePath) throws IOException {
-		Texture loadedTexture = this.loadedTextures.get(filePath);
+	/**
+	 * Loads a texture file
+	 * 
+	 * @param texturePath
+	 * @return
+	 * @throws IOException
+	 */
+	public Texture getTexture(String texturePath) throws IOException {
+		Texture loadedTexture = this.loadedTextures.get(texturePath);
 
 		if (loadedTexture == null) {
 			// Load byte data from texture file
@@ -35,7 +43,7 @@ public class TextureManager {
 			IntBuffer h = BufferUtils.createIntBuffer(1);
 			IntBuffer comp = BufferUtils.createIntBuffer(1);
 
-			ByteBuffer buffer = STBImage.stbi_load(filePath, w, h, comp, 4);
+			ByteBuffer buffer = STBImage.stbi_load(texturePath, w, h, comp, 4);
 			int tWidth = w.get();
 			int tHeight = h.get();
 
@@ -59,6 +67,8 @@ public class TextureManager {
 
 			// Unbind
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+			this.loadedTextures.put(texturePath, loadedTexture);
 		}
 
 		// Increase references
@@ -68,16 +78,19 @@ public class TextureManager {
 		return loadedTexture;
 	}
 
-	public void cleanTexture(String filePath) {
-		if (this.loadedTextures.containsKey(filePath)) {
-			Texture loadedTexture = this.loadedTextures.get(filePath);
-
-			// remove reference
-			if (loadedTexture.cleanup())
-				this.loadedTextures.put(filePath, null);
-
-		} else
-			Engine.LOGGER.warn("Tex file \"" + filePath + "\" is not loaded into memory");
+	/**
+	 * cleans a texture file
+	 * 
+	 * @param texture
+	 */
+	public void cleanTexture(Texture texture) {
+		for (String key : this.loadedTextures.keySet()) {
+			Texture tex = this.loadedTextures.get(key);
+			if (tex != null && tex.equals(texture)) {
+				texture.cleanup();
+				break;
+			}
+		}
 	}
 
 	public void cleanup() {

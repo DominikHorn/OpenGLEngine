@@ -2,7 +2,6 @@ package com.openglengine.eventsystem;
 
 import java.util.*;
 
-import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 
@@ -13,6 +12,7 @@ import com.openglengine.util.*;
  *
  */
 public class EventManager extends Manager {
+	/** listeners data this class operates on */
 	private Map<Class<? extends BaseEvent>, List<EventListener>> listeners;
 
 	public EventManager() {

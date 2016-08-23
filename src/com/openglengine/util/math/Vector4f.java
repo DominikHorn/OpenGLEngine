@@ -1,15 +1,30 @@
 package com.openglengine.util.math;
 
+/**
+ * 4D vector class
+ * 
+ * @author Dominik
+ *
+ */
 public class Vector4f {
+	/** 4D position */
 	public float x, y, z, w;
 
+	/**
+	 * Initialize with 0,0,0,0 position
+	 */
 	public Vector4f() {
-		this.x = 0;
-		this.y = 0;
-		this.z = 0;
-		this.w = 0;
+		this.x = this.y = this.z = this.w = 0;
 	}
 
+	/**
+	 * Initialize with new positions
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 */
 	public Vector4f(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;

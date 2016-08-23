@@ -10,12 +10,29 @@ import com.openglengine.renderer.shader.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
 
+/**
+ * Component for rendering simple model data with a texture
+ * 
+ * @author Dominik
+ *
+ */
 public class TexturedRenderComponent extends RenderComponent {
 	private Texture texture;
 
+	/**
+	 * Initialize this TexturedRender component
+	 * 
+	 * @param texturePath
+	 *            path to the texture file
+	 * @param modelPath
+	 *            path to the model file
+	 * @param shader
+	 *            shader program to use
+	 * @throws IOException
+	 */
 	public TexturedRenderComponent(String texturePath, String modelPath, Shader shader) throws IOException {
 		super(modelPath, shader);
-		this.texture = Engine.TEXTURE_MANAGER.loadTexture(texturePath);
+		this.texture = Engine.TEXTURE_MANAGER.getTexture(texturePath);
 	}
 
 	@Override
@@ -39,7 +56,7 @@ public class TexturedRenderComponent extends RenderComponent {
 		this.shader.startUsingShader();
 
 		// Setup transform matrix
-		ModelMatrixStack tms = Engine.MODEL_MATRIX_STACK;
+		TransformationMatrixStack tms = Engine.MODEL_MATRIX_STACK;
 		tms.push();
 		tms.translate(entity.position);
 		tms.rotateX(entity.rotX);
@@ -48,7 +65,7 @@ public class TexturedRenderComponent extends RenderComponent {
 		tms.scale(entity.scale, entity.scale, entity.scale);
 
 		// Upload relevant matricies to shader TODO: refactor
-		this.shader.uploadStandardUniforms();
+		this.shader.uploadUniforms();
 
 		// Draw using our bound data
 		GL11.glDrawElements(GL11.GL_TRIANGLES, this.model.getIndicesCount(), GL11.GL_UNSIGNED_INT, 0);
@@ -65,12 +82,16 @@ public class TexturedRenderComponent extends RenderComponent {
 		// Unbind vao
 		GL30.glBindVertexArray(0);
 
-
 		// Undo changes to ModelMatrix
 		tms.pop();
 
 		// Unload shader TODO: save overhead by managing shaders centrally
 		this.shader.stopUsingShader();
+	}
 
+	@Override
+	public void cleanup() {
+		super.cleanup();
+		this.texture.cleanup();
 	}
 }

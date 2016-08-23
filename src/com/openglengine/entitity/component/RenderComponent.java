@@ -4,18 +4,35 @@ import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
-import com.openglengine.entitity.component.event.*;
+import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
 
+/**
+ * Component for rendering simple model data without a texture
+ * 
+ * @author Dominik
+ *
+ */
 public class RenderComponent extends Component {
+	/** Shader program */
 	protected Shader shader;
+
+	/** Loaded model to render */
 	protected Model model;
 
+	/**
+	 * Initialize this render component
+	 * 
+	 * @param modelPath
+	 *            path to the model file
+	 * @param shader
+	 *            shader program
+	 */
 	public RenderComponent(String modelPath, Shader shader) {
 		this.shader = shader;
-		this.model = Engine.MODEL_MANAGER.loadObjModel(modelPath);
+		this.model = Engine.MODEL_MANAGER.getModel(modelPath);
 	}
 
 	@Override
@@ -30,7 +47,7 @@ public class RenderComponent extends Component {
 		this.shader.startUsingShader();
 
 		// Setup transform matrix
-		ModelMatrixStack tms = Engine.MODEL_MATRIX_STACK;
+		TransformationMatrixStack tms = Engine.MODEL_MATRIX_STACK;
 		tms.push();
 		tms.translate(entity.position);
 		tms.rotateX(entity.rotX);
@@ -39,7 +56,7 @@ public class RenderComponent extends Component {
 		tms.scale(entity.scale, entity.scale, entity.scale);
 
 		// Upload relevant matricies to shader TODO: refactor
-		this.shader.uploadStandardUniforms();
+		this.shader.uploadUniforms();
 
 		// Draw using our bound data
 		GL11.glDrawElements(GL11.GL_TRIANGLES, this.model.getIndicesCount(), GL11.GL_UNSIGNED_INT, 0);
@@ -58,8 +75,14 @@ public class RenderComponent extends Component {
 	}
 
 	@Override
-	public void receiveEvent(ComponentEvent event) {
+	public void receiveEvent(BaseEvent event) {
 		// Do nothing for now
+	}
+
+	@Override
+	public void cleanup() {
+		this.model.cleanup();
+		this.shader.cleanup();
 	}
 
 }

@@ -28,6 +28,14 @@ public class GlfwManager extends Manager {
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
 	}
 
+	/**
+	 * Initialize our window with these Parameters
+	 * 
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param fullscreen
+	 * @param windowTitle
+	 */
 	private void init(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
@@ -67,22 +75,44 @@ public class GlfwManager extends Manager {
 		glfwShowWindow(windowID);
 	}
 
+	/**
+	 * Retrieve whether or not a window close is requested
+	 * 
+	 * @return
+	 */
 	public boolean getWindowShouldClose() {
 		return glfwWindowShouldClose(this.windowID);
 	}
 
+	/**
+	 * Update the window title to say something new
+	 * 
+	 * @param newTitle
+	 */
 	public void updateWindowTitle(String newTitle) {
 		glfwSetWindowTitle(this.windowID, newTitle);
 	}
 
+	/**
+	 * swap the buffers
+	 */
 	public void swapBuffers() {
 		glfwSwapBuffers(windowID);
 	}
 
+	/**
+	 * retrieve window id
+	 * 
+	 * @return
+	 */
 	public long getWindowID() {
 		return this.windowID;
 	}
 
+	/**
+	 * Clean up
+	 */
+	@Override
 	public void cleanup() {
 		try {
 			glfwFreeCallbacks(windowID);

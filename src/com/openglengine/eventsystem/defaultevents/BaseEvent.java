@@ -10,12 +10,26 @@ package com.openglengine.eventsystem.defaultevents;
  *
  */
 public abstract class BaseEvent {
-	private static long globalEventID = -1;
-	private long eventUID;
 
-	public long getEventUID() {
-		if (this.eventUID == -1)
-			this.eventUID = globalEventID++;
+	/** each component event has a globally unique id, this is used to generate that */
+	private static long globalID = 0;
+
+	/** globally unique id */
+	private long eventUID = -1;
+
+	/**
+	 * Initialize this event. NOTE: this must be called by subclasses. Otherwise the global UID feature will not work!
+	 */
+	public BaseEvent() {
+		this.eventUID = globalID++;
+	}
+
+	/**
+	 * Retrieve the globally unique ID of this event
+	 * 
+	 * @return
+	 */
+	public long getEventID() {
 		return this.eventUID;
 	}
 }

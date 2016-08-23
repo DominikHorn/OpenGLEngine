@@ -10,5 +10,12 @@ import com.openglengine.eventsystem.defaultevents.*;
  *
  */
 public interface EventListener {
+
+	/**
+	 * Implementing classes will receive any event they registered for as a listener in this method. Either implement a
+	 * unique event handler for every event using lamdas or do some typecasting voodo
+	 * 
+	 * @param event
+	 */
 	public void eventReceived(BaseEvent event);
 }

@@ -1,5 +1,11 @@
 package com.openglengine.util.math;
 
+/**
+ * Math utility class containing some utility functionality
+ * 
+ * @author Dominik
+ *
+ */
 public class MathUtil {
 	/**
 	 * Returns orthographic matrix, useful for 2D games
@@ -53,6 +59,14 @@ public class MathUtil {
 		return perspective;
 	}
 
+	/**
+	 * Creates a lookat matrix
+	 * 
+	 * @param eye
+	 * @param center
+	 * @param up
+	 * @return
+	 */
 	public static Matrix4f createLookAtMatrix(Vector3f eye, Vector3f center, Vector3f up) {
 		Matrix4f result = new Matrix4f();
 

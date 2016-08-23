@@ -2,7 +2,13 @@ package com.openglengine.util;
 
 import com.openglengine.util.math.*;
 
-public class ModelMatrixStack extends MatrixStack {
+/**
+ * Matrix stack specifically for transformation matricies
+ * 
+ * @author Dominik
+ *
+ */
+public class TransformationMatrixStack extends MatrixStack {
 	/**
 	 * translate by x, y, z
 	 * 

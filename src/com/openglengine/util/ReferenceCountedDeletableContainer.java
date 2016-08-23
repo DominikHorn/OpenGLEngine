@@ -1,6 +1,13 @@
 package com.openglengine.util;
 
+/**
+ * Container baseclass for all containers that want to use reference counting
+ * 
+ * @author Dominik
+ *
+ */
 public abstract class ReferenceCountedDeletableContainer {
+	/** reference counter */
 	protected int numReferences;
 
 	protected ReferenceCountedDeletableContainer() {
@@ -15,19 +22,18 @@ public abstract class ReferenceCountedDeletableContainer {
 	}
 
 	/**
-	 * cleans this entity. If it is not being referenced from anywhere anymore it will auto force delete
-	 * 
-	 * @return true if this object was deleted, false if there are still references to it
+	 * Decreases reference counter. If this container is not being referenced from anywhere anymore it will auto self
+	 * delete.
+	 *
 	 */
-	public boolean cleanup() {
-		if (--this.numReferences <= 0) {
+	public void cleanup() {
+		if (--this.numReferences == 0) {
 			this.forceDelete();
-
-			return true;
 		}
-
-		return false;
 	}
 
+	/**
+	 * This method will be called when the contained resource must be deleted, ignoring the reference counter
+	 */
 	protected abstract void forceDelete();
 }

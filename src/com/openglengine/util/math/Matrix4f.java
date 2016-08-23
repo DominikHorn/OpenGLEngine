@@ -2,11 +2,22 @@ package com.openglengine.util.math;
 
 import java.nio.*;
 
+/**
+ * 4 * 4 matrix class
+ * 
+ * @author Dominik
+ *
+ */
 public class Matrix4f {
+	/** Dimension of the matrix. Dimension 4 -> 4 * 4 matrix */
 	private static final int MATRIX_DIMENSION = 4;
 
+	/** Value container */
 	protected float[] matrixValues;
 
+	/**
+	 * Initialize to identity matrix
+	 */
 	public Matrix4f() {
 		this.matrixValues = new float[MATRIX_DIMENSION * MATRIX_DIMENSION];
 
@@ -27,7 +38,7 @@ public class Matrix4f {
 	}
 
 	/**
-	 * Loads the identity transformation matrix (no transformation at all)
+	 * Loads the identity matrix (no transformation at all)
 	 */
 	public void loadIdentityMatrix() {
 		for (int i = 0; i < MATRIX_DIMENSION * MATRIX_DIMENSION; i++) {
@@ -96,7 +107,7 @@ public class Matrix4f {
 
 	@Override
 	public String toString() {
-		String returnValue = "--------------------------\n";
+		String returnValue = "\n--------------------------\n";
 		for (int column = 0; column < MATRIX_DIMENSION; column++) {
 			returnValue += String.format("| %2.2f  ", this.matrixValues[0 + column * MATRIX_DIMENSION]);
 			returnValue += String.format("%2.2f  ", this.matrixValues[1 + column * MATRIX_DIMENSION]);
@@ -104,7 +115,7 @@ public class Matrix4f {
 			returnValue += String.format("%2.2f |", this.matrixValues[3 + column * MATRIX_DIMENSION]);
 			returnValue += "\n";
 		}
-		returnValue += "--------------------------";
+		returnValue += "--------------------------\n";
 
 		return returnValue;
 	}

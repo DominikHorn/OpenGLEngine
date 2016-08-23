@@ -1,8 +1,28 @@
 package com.openglengine.util.math;
 
+/**
+ * 2D Vector container class
+ * 
+ * @author Dominik
+ *
+ */
 public class Vector2f {
+	/** 2d position */
 	public float x, y;
 
+	/**
+	 * Initialize with 0,0 position
+	 */
+	public Vector2f() {
+		this.x = this.y = 0;
+	}
+
+	/**
+	 * Initialize with new 2d position
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public Vector2f(float x, float y) {
 		this.x = x;
 		this.y = y;
@@ -31,7 +51,7 @@ public class Vector2f {
 		float length = MathUtil.fastSqrt(this.getSquaredLength());
 		this.x /= length;
 		this.y /= length;
-		
+
 		return this;
 	}
 
@@ -58,7 +78,7 @@ public class Vector2f {
 
 		return new Vector2f(this.x / length, this.y / length);
 	}
-	
+
 	/**
 	 * Expensive length calculation
 	 * 
@@ -67,7 +87,7 @@ public class Vector2f {
 	public double getLength() {
 		return Math.sqrt(this.getSquaredLength());
 	}
-	
+
 	/**
 	 * Calculates squared length
 	 * 

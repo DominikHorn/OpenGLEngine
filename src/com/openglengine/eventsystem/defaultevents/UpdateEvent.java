@@ -7,5 +7,23 @@ package com.openglengine.eventsystem.defaultevents;
  *
  */
 public class UpdateEvent extends BaseEvent {
-	// Empty class
+	private double deltatime;
+
+	/**
+	 * Initialize UpdateEvent
+	 * 
+	 * @param deltatime
+	 */
+	public UpdateEvent(double deltatime) {
+		this.deltatime = deltatime;
+	}
+
+	/**
+	 * Deltatime passed since last update
+	 * 
+	 * @return
+	 */
+	public double getDeltatime() {
+		return this.deltatime;
+	}
 }

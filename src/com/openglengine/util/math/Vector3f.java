@@ -1,12 +1,29 @@
 package com.openglengine.util.math;
 
+/**
+ * 3d vector class
+ * 
+ * @author Dominik
+ *
+ */
 public class Vector3f {
+	/** 3d position */
 	public float x, y, z;
 
+	/**
+	 * Initialize with 0,0,0 position
+	 */
 	public Vector3f() {
 		this.x = this.y = this.z = 0;
 	}
 
+	/**
+	 * initialize with new coordinates
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public Vector3f(float x, float y, float z) {
 		this.x = x;
 		this.y = y;

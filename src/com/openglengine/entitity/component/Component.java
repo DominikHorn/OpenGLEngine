@@ -1,7 +1,7 @@
 package com.openglengine.entitity.component;
 
 import com.openglengine.entitity.*;
-import com.openglengine.entitity.component.event.*;
+import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Behavioural code for an entity goes in here
@@ -22,5 +22,10 @@ public abstract class Component {
 	 * 
 	 * @param event
 	 */
-	public abstract void receiveEvent(ComponentEvent event);
+	public abstract void receiveEvent(BaseEvent event);
+
+	/**
+	 * Use this method to cleanup all resources
+	 */
+	public abstract void cleanup();
 }
