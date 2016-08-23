@@ -19,7 +19,10 @@ public class InputManager extends Manager {
 			KEY_A = GLFW_KEY_A,
 			KEY_S = GLFW_KEY_S,
 			KEY_D = GLFW_KEY_D,
-			KEY_ESC = GLFW_KEY_ESCAPE;
+			KEY_ESC = GLFW_KEY_ESCAPE,
+			KEY_SPACE = GLFW_KEY_SPACE,
+			KEY_LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT,
+			KEY_LEFT_CTRL = GLFW_KEY_LEFT_CONTROL;
 	//@formatter:on
 
 	/** internal structure holding all the key information */

@@ -16,11 +16,7 @@ public class StaticModel extends Model {
 	/** Internal list used to keep track of all the vbos that were create for this model */
 	private List<Integer> vbos;
 
-	public StaticModel(float[] positions, int[] indices) {
-		this(positions, null, indices);
-	}
-
-	public StaticModel(float[] positions, float[] texCoords, int[] indices) {
+	public StaticModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
 		// Initialize to 0
 		super(0, indices.length);
 
@@ -28,7 +24,7 @@ public class StaticModel extends Model {
 		this.vbos = new ArrayList<>();
 
 		// Load actual values
-		this.loadToVAO(positions, texCoords, indices);
+		this.loadToVAO(positions, texCoords, normals, indices);
 	}
 
 	@Override
@@ -44,7 +40,7 @@ public class StaticModel extends Model {
 	 * @param texCoords
 	 * @param indices
 	 */
-	private void loadToVAO(float[] vertices, float[] texCoords, int[] indices) {
+	private void loadToVAO(float[] vertices, float[] texCoords, float[] normals, int[] indices) {
 		// Create new VAO
 		this.vaoID = GL30.glGenVertexArrays();
 
@@ -66,12 +62,14 @@ public class StaticModel extends Model {
 		// Upload buffer data
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 
-		// Store vertex data in attribute list 0
+		// Store vertex data in attribute list slot 0
 		this.storeDataInAttributeList(0, 3, vertices);
 
-		if (texCoords != null)
-			// Store tex data in attribute list 1
-			this.storeDataInAttributeList(1, 2, texCoords);
+		// Store tex data in attribute list slot 1
+		this.storeDataInAttributeList(1, 2, texCoords);
+
+		// Store normal data in attribute list slot 2
+		this.storeDataInAttributeList(2, 3, normals);
 
 		// Unbind VAO
 		GL30.glBindVertexArray(0);

@@ -28,6 +28,14 @@ public class CameraInputComponent extends Component {
 		if (input.isKeyDown(InputManager.KEY_S)) {
 			entity.position.z += CAMERA_SPEED;
 		}
+
+		if (input.isKeyDown(InputManager.KEY_LEFT_SHIFT)) {
+			entity.position.y -= CAMERA_SPEED;
+		}
+
+		if (input.isKeyDown(InputManager.KEY_SPACE)) {
+			entity.position.y += CAMERA_SPEED;
+		}
 	}
 
 	@Override

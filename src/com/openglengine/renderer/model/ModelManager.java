@@ -147,7 +147,7 @@ public class ModelManager extends Manager {
 			Engine.LOGGER.err("Could not load obj file \"" + modelPath + "\"");
 		}
 
-		return new StaticModel(verticesArray, textureArray, indicesArray);
+		return new StaticModel(verticesArray, textureArray, normalsArray, indicesArray);
 	}
 
 	/***

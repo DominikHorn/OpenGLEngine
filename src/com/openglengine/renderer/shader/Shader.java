@@ -160,9 +160,15 @@ public abstract class Shader {
 	}
 
 	/**
-	 * Use this method to bind your attributes using bindAttribute()
+	 * Use this method to bind your attributes using bindAttribute(). This method will bind default attributes
+	 * "position" and "textureCoords"
 	 */
-	protected abstract void bindAttributes();
+	protected void bindAttributes() {
+		// Bind default attributes
+		this.bindAttribute(0, "position");
+		this.bindAttribute(1, "textureCoords");
+		this.bindAttribute(2, "normal");
+	}
 
 	/**
 	 * Upload a float to the shader

@@ -46,6 +46,9 @@ public class TexturedRenderComponent extends RenderComponent {
 		// Enable vertex attrib array 1 (Texture data)
 		GL20.glEnableVertexAttribArray(1);
 
+		// Enable vertex attrib array 2 (Normal data)
+		GL20.glEnableVertexAttribArray(2);
+
 		// Enable texture 0 TODO: potential overhead
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 
@@ -78,6 +81,9 @@ public class TexturedRenderComponent extends RenderComponent {
 
 		// Disable vertex attrib array 1 (Texture data)
 		GL20.glDisableVertexAttribArray(1);
+
+		// Disable vertex attrib array 2 (Normal data)
+		GL20.glDisableVertexAttribArray(2);
 
 		// Unbind vao
 		GL30.glBindVertexArray(0);
