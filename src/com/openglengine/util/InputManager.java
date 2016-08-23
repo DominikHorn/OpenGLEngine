@@ -11,9 +11,10 @@ public class InputManager extends Manager {
 			KEY_W = GLFW_KEY_W,
 			KEY_A = GLFW_KEY_A,
 			KEY_S = GLFW_KEY_S,
-			KEY_D = GLFW_KEY_D;
+			KEY_D = GLFW_KEY_D,
+			KEY_ESC = GLFW_KEY_ESCAPE;
 	//@formatter:on
-	
+
 	private int[] keys = new int[GLFW_KEY_LAST];
 
 	public InputManager() {
@@ -23,7 +24,9 @@ public class InputManager extends Manager {
 	}
 
 	private void keyEvent(long window, int key, int scancode, int action, int mods) {
-		keys[key] = action;
+		// TODO: investigate mouse input etc
+		if (key > 0 && key < keys.length)
+			keys[key] = action;
 	}
 
 	public boolean isKeyDown(int glfwkeycode) {

@@ -20,11 +20,6 @@ public class GlfwManager extends Manager {
 	private long windowID;
 
 	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
-		if (fullscreen) {
-			System.err.println("Fullscreen not supported for now");
-			System.exit(-1);
-		}
-
 		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
 
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
@@ -45,7 +40,11 @@ public class GlfwManager extends Manager {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
-		windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
+		if (fullscreen)
+			windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, glfwGetPrimaryMonitor(), NULL);
+		else
+			windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
+
 		if (windowID == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
@@ -67,6 +66,10 @@ public class GlfwManager extends Manager {
 
 	public boolean getWindowShouldClose() {
 		return glfwWindowShouldClose(this.windowID);
+	}
+
+	public void updateWindowTitle(String newTitle) {
+		glfwSetWindowTitle(this.windowID, newTitle);
 	}
 
 	public void swapBuffers() {

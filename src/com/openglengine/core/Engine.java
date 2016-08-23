@@ -12,8 +12,6 @@ import com.openglengine.util.*;
  */
 public class Engine {
 	public static final String ENGINE_VERSION = "0.0.1_a";
-	public static final int DEFAULT_SCREEN_WIDTH = 1920;
-	public static final int DEFAULT_SCREEN_HEIGHT = 1080;
 
 	public static final Logger LOGGER = new DebugLogger();
 
@@ -25,13 +23,14 @@ public class Engine {
 	public static TextureManager TEXTURE_MANAGER;
 	public static GlfwManager GLFW_MANAGER;
 	public static InputManager INPUT_MANAGER;
+	public static Camera CAMERA;
 
-	// TODO: make settings with glfwmanager better
-	public static void loadDefaultEngineComponents() {
+	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
 		EVENT_MANAGER = new EventManager();
 		TEXTURE_MANAGER = new TextureManager();
-		GLFW_MANAGER = new GlfwManager(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, false, ENGINE_VERSION);
+		GLFW_MANAGER = new GlfwManager(screenWidth, screenHeight, fullscreen, windowTitle);
 		INPUT_MANAGER = new InputManager();
+		CAMERA = new Camera();
 	}
 
 	public static void cleanup() {
