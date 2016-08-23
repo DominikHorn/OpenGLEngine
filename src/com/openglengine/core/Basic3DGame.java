@@ -1,7 +1,5 @@
 package com.openglengine.core;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import org.lwjgl.opengl.*;
 
 import com.openglengine.eventsystem.defaultevents.*;
@@ -37,17 +35,20 @@ public abstract class Basic3DGame {
 		GL.createCapabilities();
 
 		// Set the clear color
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		// Setup projection matrix
 		Engine.PROJECTION_MATRIX_STACK.setPerspectiveMatrix(fov, aspect, near_plane, far_plane);
 
 		// Setup viewport
-		glViewport(0, 0, screenWidth, screenHeight);
+		GL11.glViewport(0, 0, screenWidth, screenHeight);
 
 		// Enable transparency
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+		// Enable depth test
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 
 	protected void setUPS(double ups) {
@@ -88,7 +89,7 @@ public abstract class Basic3DGame {
 			}
 
 			/* render */
-			glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			Engine.EVENT_MANAGER.dispatch(new RenderEvent());
 
 			Engine.GLFW_MANAGER.swapBuffers();
