@@ -86,6 +86,10 @@ public abstract class Basic3DGame {
 
 		// Enable depth test
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+		// Disable rendering inside of models
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
 	}
 
 	/**
