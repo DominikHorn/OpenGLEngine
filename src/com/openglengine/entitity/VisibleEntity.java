@@ -9,8 +9,12 @@ public class VisibleEntity extends Entity {
 	/** Visual representation */
 	private TexturedModel model;
 
+	/** scale information */
+	public float scale;
+
 	public VisibleEntity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
-		super(position, rotX, rotY, rotZ, scale);
+		super(position, rotX, rotY, rotZ);
+		this.scale = scale;
 		this.model = model;
 	}
 

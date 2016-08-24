@@ -60,7 +60,7 @@ public class Renderer {
 		shader.uploadModelUniforms(model);
 	}
 
-	private void prepareInstance(Entity entity, Shader shader) {
+	private void prepareInstance(VisibleEntity entity, Shader shader) {
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();
 		tms.translate(entity.position);

@@ -98,8 +98,6 @@ public abstract class Basic3DGame {
 				/* update */
 
 				while (steps >= this.secsPerUpdate) {
-					Engine.getCamera().update();
-
 					// send update event
 					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
 					steps -= secsPerUpdate;

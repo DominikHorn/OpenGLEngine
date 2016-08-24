@@ -30,20 +30,16 @@ public class Entity {
 	/** rotation information */
 	public float rotX, rotY, rotZ;
 
-	/** scale information */
-	public float scale;
-
 	/**
 	 * Initialize this entity
 	 */
-	public Entity(Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+	public Entity(Vector3f position, float rotX, float rotY, float rotZ) {
 		this.entityUID = globalID++;
 		this.components = new ArrayList<>();
 		this.position = position;
 		this.rotX = rotX;
 		this.rotY = rotY;
 		this.rotZ = rotZ;
-		this.scale = scale;
 	}
 
 	/**

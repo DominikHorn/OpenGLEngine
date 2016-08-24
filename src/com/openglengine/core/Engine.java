@@ -2,8 +2,6 @@ package com.openglengine.core;
 
 import java.io.*;
 
-import com.openglengine.entitity.*;
-import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
@@ -50,17 +48,10 @@ public class Engine {
 	private static ModelManager MODEL_MANAGER = new ModelManager();
 
 	/** Global batch renderering system */
-	private static RenderManager RENDER_MANAGER;
-
-	/* TODO: refactor */
-	/** Camera convenience class */
-	private static Entity CAMERA;
+	private static RenderManager RENDER_MANAGER = new RenderManager();
 
 	/** Input system manager */
-	private static InputManager INPUT_MANAGER;
-
-	/** This file will be used if no texture was found */
-	private static Texture DEFAULT_TEXTURE;
+	private static InputManager INPUT_MANAGER = new InputManager();
 
 	// TODO: refactor (Allow for multiple light sources f.e.)
 	/** Global light source */
@@ -102,28 +93,12 @@ public class Engine {
 		return LOGGER;
 	}
 
-	public static Entity getCamera() {
-		return CAMERA;
-	}
-
-	public static void setCamera(Entity camera) {
-		CAMERA = camera;
-	}
-
 	public static RenderManager getRenderManager() {
 		return RENDER_MANAGER;
 	}
 
 	public static void setRenderManager(RenderManager renderer) {
 		RENDER_MANAGER = renderer;
-	}
-
-	public static Texture getDefaultTexture() {
-		return DEFAULT_TEXTURE;
-	}
-
-	public static void setDefaultTexture(Texture defaultTexture) {
-		DEFAULT_TEXTURE = defaultTexture;
 	}
 
 	public static LightSource getLightSource() {
@@ -144,26 +119,13 @@ public class Engine {
 	 * @throws IOException
 	 */
 	public static void loadEngineComponents() throws IOException {
-		RENDER_MANAGER = new RenderManager();
-		INPUT_MANAGER = new InputManager();
-		CAMERA = new Entity(new Vector3f(0, 0, 0), 0, 0, 0, 1).addComponent(new CameraInputComponent())
-				.addComponent(new CameraComponent());
 		LIGHT_SOURCE = new LightSource(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-
-		/** TODO: refactor */
-		DEFAULT_TEXTURE = null;
 	}
 
 	/**
 	 * Clean/Delete all data
 	 */
 	public static void cleanup() {
-		if (DEFAULT_TEXTURE != null)
-			DEFAULT_TEXTURE.cleanup();
-
-		if (CAMERA != null)
-			CAMERA.cleanup();
-
 		GLOBAL_EVENT_MANAGER.cleanup();
 		TEXTURE_MANAGER.cleanup();
 		MODEL_MANAGER.cleanup();
