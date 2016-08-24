@@ -56,7 +56,7 @@ public class Engine {
 	public static Logger LOGGER = new Logger();
 
 	/** Event dispatch/receive system manager */
-	public static EventManager EVENT_MANAGER;
+	public static GlobalEventManager EVENT_MANAGER;
 
 	/** Texture system manager */
 	public static TextureManager TEXTURE_MANAGER;
@@ -91,7 +91,7 @@ public class Engine {
 	 */
 	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen,
 			String windowTitle) throws IOException {
-		EVENT_MANAGER = new EventManager();
+		EVENT_MANAGER = new GlobalEventManager();
 		TEXTURE_MANAGER = new TextureManager();
 		MODEL_MANAGER = new ModelManager();
 		GLFW_MANAGER = new GlfwManager(screenWidth, screenHeight, fullscreen, windowTitle);

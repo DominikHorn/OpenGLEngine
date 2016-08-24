@@ -5,6 +5,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
@@ -73,6 +74,13 @@ public class GlfwManager extends Manager {
 
 		// Make the window visible
 		glfwShowWindow(windowID);
+
+		// This line is critical for LWJGL's interoperation with GLFW's
+		// OpenGL context, or any context that is managed externally.
+		// LWJGL detects the context that is current in the current thread,
+		// creates the GLCapabilities instance and makes the OpenGL
+		// bindings available for use.
+		GL.createCapabilities();
 	}
 
 	/**

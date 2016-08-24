@@ -59,13 +59,6 @@ public abstract class Basic3DGame {
 	 * @param far_plane
 	 */
 	private void initGL(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
-		// This line is critical for LWJGL's interoperation with GLFW's
-		// OpenGL context, or any context that is managed externally.
-		// LWJGL detects the context that is current in the current thread,
-		// creates the GLCapabilities instance and makes the OpenGL
-		// bindings available for use.
-		GL.createCapabilities();
-
 		// Set the clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -111,6 +104,7 @@ public abstract class Basic3DGame {
 			// Simple fps and ups counter logic
 			double secondCounter = 0.0;
 			int upsCounter = 0;
+			int fpsCounter = 0;
 
 			// TODO: tmp esc quit (until proper menus are implemented etc)
 			while (!Engine.GLFW_MANAGER.getWindowShouldClose()
@@ -124,8 +118,10 @@ public abstract class Basic3DGame {
 
 				if (secondCounter > 1.0) {
 					secondCounter -= 1.0;
-					Engine.GLFW_MANAGER.updateWindowTitle(this.windowTitle + ": " + upsCounter + "ups");
+					Engine.GLFW_MANAGER
+							.updateWindowTitle(this.windowTitle + ": " + fpsCounter + "fps | " + upsCounter + "ups");
 					upsCounter = 0;
+					fpsCounter = 0;
 				}
 
 				/* update */
@@ -145,6 +141,7 @@ public abstract class Basic3DGame {
 
 				// Render our scene
 				Engine.EVENT_MANAGER.dispatch(new RenderEvent(elapsed));
+				fpsCounter++;
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
 				Engine.GLFW_MANAGER.swapBuffers();

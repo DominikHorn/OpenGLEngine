@@ -11,11 +11,11 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public class EventManager extends Manager {
+public class GlobalEventManager extends Manager {
 	/** listeners data this class operates on */
-	private Map<Class<? extends BaseEvent>, List<EventListener>> listeners;
+	private Map<Class<? extends BaseEvent>, List<GlobalEventListener>> listeners;
 
-	public EventManager() {
+	public GlobalEventManager() {
 		this.listeners = new HashMap<>();
 	}
 
@@ -34,9 +34,9 @@ public class EventManager extends Manager {
 	 * @return true if the listener was added, false if it previously had been registered already and thus was not added
 	 *         a second time successfully
 	 */
-	public boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, EventListener listener) {
+	public boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, GlobalEventListener listener) {
 		// Extract previous values
-		List<EventListener> eventListenerList = this.listeners.get(eventClass);
+		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
 		boolean alreadyRegistered = false;
 
 		// Make sure we actually have an array list, and if we do make sure we don't duplicate listeners
@@ -63,8 +63,8 @@ public class EventManager extends Manager {
 	 * @return whether or not deletion was successful. Note: this can be unsuccessful if the listener was not actually
 	 *         registered previously
 	 */
-	public boolean deleteListenerForEvent(EventListener listener, Class<? extends BaseEvent> eventClass) {
-		List<EventListener> eventListenerList = this.listeners.get(eventClass);
+	public boolean deleteListenerForEvent(GlobalEventListener listener, Class<? extends BaseEvent> eventClass) {
+		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
 
 		if (eventListenerList != null && eventListenerList.contains(listener)) {
 			eventListenerList.remove(listener);

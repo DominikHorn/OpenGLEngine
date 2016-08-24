@@ -9,7 +9,7 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public interface EventListener {
+public interface GlobalEventListener {
 
 	/**
 	 * Implementing classes will receive any event they registered for as a listener in this method. Either implement a
