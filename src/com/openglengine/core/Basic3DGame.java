@@ -1,8 +1,11 @@
 package com.openglengine.core;
 
+import java.io.*;
+
 import org.lwjgl.opengl.*;
 
 import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.renderer.*;
 import com.openglengine.util.*;
 
 /**
@@ -27,26 +30,18 @@ public abstract class Basic3DGame {
 	 * @param aspect
 	 * @param near_plane
 	 * @param far_plane
+	 * @throws IOException
 	 */
 	public Basic3DGame(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle, float fov,
-			float aspect, float near_plane, float far_plane) {
+			float aspect, float near_plane, float far_plane) throws IOException {
 		this.windowTitle = windowTitle;
-		Engine.loadEngineComponents(screenWidth, screenHeight, fullscreen, this.windowTitle);
-		this.setup(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
-	}
 
-	/**
-	 * Actual init code
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 * @param fov
-	 * @param aspect
-	 * @param near_plane
-	 * @param far_plane
-	 */
-	private void setup(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
+		Engine.loadEngineComponents(screenWidth, screenHeight, fullscreen, this.windowTitle);
 		this.initGL(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
+
+		// TODO: tmp
+		Engine.RENDERER = new RenderManager();
+		Engine.NO_TEX_TEXTURE = Engine.TEXTURE_MANAGER.referenceTexture(Engine.TEX_FOLDER + "notex.png");
 
 		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> this.update());
 
@@ -133,8 +128,7 @@ public abstract class Basic3DGame {
 					upsCounter = 0;
 				}
 
-				/* render */
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+				/* update */
 
 				while (steps >= this.secsPerUpdate) {
 					// Update camera
@@ -145,6 +139,12 @@ public abstract class Basic3DGame {
 					steps -= secsPerUpdate;
 					upsCounter++;
 				}
+
+				/* render */
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+				// Render our scene
+				Engine.EVENT_MANAGER.dispatch(new RenderEvent(elapsed));
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
 				Engine.GLFW_MANAGER.swapBuffers();

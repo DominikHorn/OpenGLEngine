@@ -13,7 +13,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public final class Entity {
+public class Entity {
 	/** Each entity has a unique global id. This is used to generate those ids */
 	private static int globalID = 0;
 

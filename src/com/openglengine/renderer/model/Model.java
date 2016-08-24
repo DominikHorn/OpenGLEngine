@@ -24,7 +24,7 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	 * @param vaoID
 	 * @param indicesCount
 	 */
-	public Model(int vaoID, int indicesCount) {
+	protected Model(int vaoID, int indicesCount) {
 		this.vaoID = vaoID;
 		this.indicesCount = indicesCount;
 	}

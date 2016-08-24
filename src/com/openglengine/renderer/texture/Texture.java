@@ -17,6 +17,12 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 */
 	private int textureID;
 
+	/** shine dampener factor of this texture */
+	private float shineDamper = 10.0f;
+
+	/** reflecivity factor of this texture */
+	private float reflectivity = 1.0f;
+
 	/**
 	 * Initialize Texture
 	 * 
@@ -24,6 +30,42 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 */
 	protected Texture(int textureID) {
 		this.textureID = textureID;
+	}
+
+	/**
+	 * Set a new shine damper for this texture
+	 * 
+	 * @param newDamper
+	 */
+	public void setShineDamper(float newDamper) {
+		this.shineDamper = newDamper;
+	}
+
+	/**
+	 * retrieve shine damper
+	 * 
+	 * @return
+	 */
+	public float getShineDamper() {
+		return this.shineDamper;
+	}
+
+	/**
+	 * Set a new reflectivity for this texture
+	 * 
+	 * @param newReflectivity
+	 */
+	public void setReflectivity(float newReflectivity) {
+		this.reflectivity = newReflectivity;
+	}
+
+	/**
+	 * retrieve reflectivity
+	 * 
+	 * @return
+	 */
+	public float getReflectivity() {
+		return this.reflectivity;
 	}
 
 	/**

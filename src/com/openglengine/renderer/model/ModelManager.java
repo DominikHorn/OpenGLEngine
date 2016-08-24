@@ -47,8 +47,8 @@ public class ModelManager extends Manager {
 	 * @param modelPath
 	 * @return
 	 */
-	public Model getModel(String modelPath) {
-		Model loadedModel = this.loadedModels.get(modelPath);
+	public TexturedModel getTexturedModel(String modelPath) {
+		TexturedModel loadedModel = (TexturedModel) this.loadedModels.get(modelPath);
 
 		if (loadedModel == null) {
 			if (modelPath.endsWith(".obj"))
@@ -73,7 +73,7 @@ public class ModelManager extends Manager {
 	 * @param fileBasePath
 	 * @return
 	 */
-	private Model loadObjModel(String modelPath) {
+	private TexturedModel loadObjModel(String modelPath) {
 		FileReader fr = null;
 		try {
 			fr = new FileReader(new File(modelPath));
@@ -147,7 +147,7 @@ public class ModelManager extends Manager {
 			Engine.LOGGER.err("Could not load obj file \"" + modelPath + "\"");
 		}
 
-		return new StaticModel(verticesArray, textureArray, normalsArray, indicesArray);
+		return new TexturedModel(verticesArray, textureArray, normalsArray, indicesArray);
 	}
 
 	/***

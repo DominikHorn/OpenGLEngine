@@ -1,8 +1,11 @@
 package com.openglengine.core;
 
+import java.io.*;
+
 import com.openglengine.entitity.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
+import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
@@ -34,6 +37,21 @@ public class Engine {
 	 */
 	public static final ProjectionMatrixStack PROJECTION_MATRIX_STACK = new ProjectionMatrixStack();
 
+	/** Path to our resources */
+	public static String RES_FOLDER = "res/";
+
+	/** Path to our shaders */
+	public static String SHADER_FOLDER = RES_FOLDER + "shader/";
+
+	/** Path to our models */
+	public static String MODEL_FOLDER = RES_FOLDER + "model/";
+
+	/** Path to our textures */
+	public static String TEX_FOLDER = RES_FOLDER + "tex/";
+
+	/** This file will be used if no texture was found */
+	public static Texture NO_TEX_TEXTURE;
+
 	/** Logger that can be used for conveniently printing messages to the console */
 	public static Logger LOGGER = new Logger();
 
@@ -55,15 +73,24 @@ public class Engine {
 	/** Camera convenience class */
 	public static Entity CAMERA;
 
+	/** Global batch renderering system */
+	public static RenderManager RENDERER;
+
+	// TODO: refactor
+	/** Global light source */
+	public static LightSource LIGHT_SOURCE;
+
 	/**
-	 * Initialize GameEngine with the following parameters
+	 * Initialize all parts of the GameEngine that are opengl context independent with the following parameters
 	 * 
 	 * @param screenWidth
 	 * @param screenHeight
 	 * @param fullscreen
 	 * @param windowTitle
+	 * @throws IOException
 	 */
-	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
+	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen,
+			String windowTitle) throws IOException {
 		EVENT_MANAGER = new EventManager();
 		TEXTURE_MANAGER = new TextureManager();
 		MODEL_MANAGER = new ModelManager();
@@ -71,12 +98,14 @@ public class Engine {
 		INPUT_MANAGER = new InputManager();
 		CAMERA = new Entity(new Vector3f(0, 0, 0), 0, 0, 0, 1).addComponent(new CameraInputComponent())
 				.addComponent(new CameraComponent());
+		LIGHT_SOURCE = new LightSource(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 	}
 
 	/**
 	 * Clean/Delete all data
 	 */
 	public static void cleanup() {
+		NO_TEX_TEXTURE.cleanup();
 		CAMERA.cleanup();
 		EVENT_MANAGER.cleanup();
 		TEXTURE_MANAGER.cleanup();

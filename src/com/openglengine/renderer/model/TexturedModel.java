@@ -1,10 +1,14 @@
 package com.openglengine.renderer.model;
 
+import java.io.*;
 import java.nio.*;
 import java.util.*;
 
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
+
+import com.openglengine.core.*;
+import com.openglengine.renderer.texture.*;
 
 /**
  * Container class for static models that will never change
@@ -12,13 +16,17 @@ import org.lwjgl.opengl.*;
  * @author Dominik
  *
  */
-public class StaticModel extends Model {
+public class TexturedModel extends Model {
 	/** Internal list used to keep track of all the vbos that were create for this model */
 	private List<Integer> vbos;
+	private Texture texture;
 
-	public StaticModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
+	protected TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
 		// Initialize to 0
 		super(0, indices.length);
+
+		// Initialize to no texture
+		this.texture = Engine.NO_TEX_TEXTURE;
 
 		// Initialize
 		this.vbos = new ArrayList<>();
@@ -27,10 +35,34 @@ public class StaticModel extends Model {
 		this.loadToVAO(positions, texCoords, normals, indices);
 	}
 
+	/**
+	 * Set texture for this model
+	 * 
+	 * @param texPath
+	 * @throws IOException
+	 */
+	public void setTexture(Texture texture) {
+		this.texture = texture;
+	}
+
+	/**
+	 * Retrieve texture from this model
+	 * 
+	 * @return
+	 */
+	public Texture getTexture() {
+		return this.texture;
+	}
+
 	@Override
 	protected void forceDelete() {
 		super.forceDelete();
+
+		// We own this -> force delete
 		this.vbos.forEach(vbo -> GL15.glDeleteBuffers(vbo));
+
+		// We don't own this, hence only remove reference
+		this.texture.cleanup();
 	}
 
 	/**

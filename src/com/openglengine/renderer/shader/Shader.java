@@ -93,11 +93,16 @@ public abstract class Shader {
 	}
 
 	/**
-	 * This method by default uploads the model and view matrix to the shaders, although subclasses could obviously
-	 * alter this behaviour
+	 * Upload the model matrix to the shader
 	 */
-	public void uploadUniforms() {
+	public void uploadModelMatrix() {
 		this.loadMatrix4f(this.location_modelMatrix, Engine.MODEL_MATRIX_STACK.getCurrentMatrix());
+	}
+
+	/**
+	 * Upload the view matrix to the shader
+	 */
+	public void uploadViewMatrix() {
 		this.loadMatrix4f(this.location_viewMatrix, Engine.VIEW_MATRIX_STACK.getCurrentMatrix());
 	}
 
