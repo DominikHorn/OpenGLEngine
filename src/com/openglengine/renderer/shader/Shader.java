@@ -1,5 +1,6 @@
 package com.openglengine.renderer.shader;
 
+import java.io.*;
 import java.nio.*;
 
 import org.lwjgl.*;
@@ -8,7 +9,6 @@ import org.lwjgl.opengl.*;
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.renderer.model.*;
-import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
 // TODO: refactor. f.e. implement ShaderManager etc
@@ -21,7 +21,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class Shader extends ReferenceCountedDeletableContainer {
+public class Shader {
 	/** uniform name of model matrix */
 	private static final String UNIFORM_NAME_MODEL_MATRIX = "transformationMatrix";
 
@@ -99,7 +99,6 @@ public class Shader extends ReferenceCountedDeletableContainer {
 			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
 
 		this.loadMatrix4f(this.location_modelMatrix, Engine.getModelMatrixStack().getCurrentMatrix());
-
 	}
 
 	/**
@@ -118,8 +117,7 @@ public class Shader extends ReferenceCountedDeletableContainer {
 		this.shaderInUse = false;
 	}
 
-	@Override
-	protected void forceDelete() {
+	public void forceDelete() {
 		stopUsingShader();
 		GL20.glDetachShader(this.programID, this.vertexShaderID);
 		GL20.glDetachShader(this.programID, this.fragmentShaderID);
@@ -129,12 +127,12 @@ public class Shader extends ReferenceCountedDeletableContainer {
 	}
 
 	/**
-	 * Compiles a shader to this shader from sources
+	 * Compiles this shader from source
 	 * 
 	 * @param vertexShaderSource
 	 * @param fragmentShaderSource
 	 */
-	protected void compileShaderFromSource(String vertexShaderSource, String fragmentShaderSource) {
+	public void compileShaderFromSource(String vertexShaderSource, String fragmentShaderSource) {
 		if (this.vertexShaderID != -1 || this.fragmentShaderID != -1)
 			this.forceDelete();
 
@@ -157,6 +155,10 @@ public class Shader extends ReferenceCountedDeletableContainer {
 
 		// Retrieve uniform locations from shader
 		this.getAllUniformLocations();
+	}
+
+	public void compileShaderFromFiles(String vertexShaderPath, String fragmentShaderPath) {
+		this.compileShaderFromSource(getShaderSource(vertexShaderPath), getShaderSource(fragmentShaderPath));
 	}
 
 	/**
@@ -243,4 +245,28 @@ public class Shader extends ReferenceCountedDeletableContainer {
 
 		return shaderID;
 	}
+
+	/**
+	 * Loads shader source from a file
+	 * 
+	 * @param file
+	 * @return
+	 */
+	private String getShaderSource(String file) {
+		StringBuilder shaderSource = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			String line;
+			while ((line = reader.readLine()) != null)
+				shaderSource.append(line).append("\n");
+
+		} catch (FileNotFoundException e) {
+			Engine.getLogger().err("Shader file \"" + file + "\" was not found");
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+			Engine.getLogger().err("IOException while reading file \"" + file + "\":");
+		}
+
+		return shaderSource.toString();
+	}
+
 }

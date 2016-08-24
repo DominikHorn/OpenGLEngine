@@ -3,6 +3,7 @@ package com.openglengine.util;
 import static org.lwjgl.glfw.GLFW.*;
 
 import com.openglengine.core.*;
+import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Input Manager class. This deals with glfw input
@@ -32,8 +33,16 @@ public class InputManager extends Manager {
 	 * Setup input manager
 	 */
 	public InputManager() {
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class,
+				e -> setupListeners((DisplayCreatedEvent) e));
+	}
+
+	/**
+	 * 
+	 */
+	private void setupListeners(DisplayCreatedEvent e) {
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(Engine.getGlfwManager().getWindowID(),
+		glfwSetKeyCallback(e.getSender().getWindowID(),
 				(window, key, scancode, action, mods) -> this.keyEvent(window, key, scancode, action, mods));
 	}
 

@@ -1,4 +1,4 @@
-package com.openglengine.util;
+package com.openglengine.core;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -7,8 +7,8 @@ import static org.lwjgl.system.MemoryUtil.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
-import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.util.*;
 
 /**
  * Manager for all the glfw code
@@ -16,28 +16,39 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public class GlfwManager extends Manager {
-	// glfw window handle
+public class Display extends Manager {
+	/** glfw window handle */
 	private long windowID;
 
-	public GlfwManager(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
-		if (fullscreen == true)
-			Engine.getLogger().err("Fullscreen not supported atm");
+	/** screen width of glfw view space */
+	private int screenWidth;
 
-		this.init(screenWidth, screenHeight, fullscreen, windowTitle);
+	/** screen height of glfw view space */
+	private int screenHeight;
+
+	/** whether or not view space should take up full screen */
+	private boolean fullscreen;
+
+	/** window title */
+	private String windowBaseTitle;
+
+	public Display(int screenWidth, int screenHeight, boolean fullscreen, String windowBaseTitle) {
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		this.fullscreen = fullscreen;
+		this.windowBaseTitle = windowBaseTitle;
+		this.windowID = -1;
 
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
 	}
 
 	/**
-	 * Initialize our window with these Parameters
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 * @param fullscreen
-	 * @param windowTitle
+	 * Initialize our window with Parameters set
 	 */
-	private void init(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle) {
+	public void create() {
+		if (fullscreen == true)
+			Engine.getLogger().err("Fullscreen not supported atm");
+
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -53,27 +64,29 @@ public class GlfwManager extends Manager {
 
 		// Create the window
 		if (fullscreen)
-			windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, glfwGetPrimaryMonitor(), NULL);
+			this.windowID = glfwCreateWindow(this.screenWidth, this.screenHeight, this.windowBaseTitle,
+					glfwGetPrimaryMonitor(), NULL);
 		else
-			windowID = glfwCreateWindow(screenWidth, screenHeight, windowTitle, NULL, NULL);
+			this.windowID = glfwCreateWindow(this.screenWidth, this.screenHeight, this.windowBaseTitle, NULL, NULL);
 
-		if (windowID == NULL)
+		if (this.windowID == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
 		// Get the resolution of the primary monitor
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 		// Center our window
-		glfwSetWindowPos(windowID, (vidmode.width() - screenWidth) / 2, (vidmode.height() - screenHeight) / 2);
+		glfwSetWindowPos(this.windowID, (vidmode.width() - this.screenWidth) / 2,
+				(vidmode.height() - this.screenHeight) / 2);
 
 		// Make the OpenGL context current
-		glfwMakeContextCurrent(windowID);
+		glfwMakeContextCurrent(this.windowID);
 
 		// Enable vsync TODO: refactor
 		glfwSwapInterval(1);
 
 		// Make the window visible
-		glfwShowWindow(windowID);
+		glfwShowWindow(this.windowID);
 
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
@@ -81,6 +94,9 @@ public class GlfwManager extends Manager {
 		// creates the GLCapabilities instance and makes the OpenGL
 		// bindings available for use.
 		GL.createCapabilities();
+
+		// Notify listeners that the display was created
+		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
 	}
 
 	/**
@@ -88,7 +104,7 @@ public class GlfwManager extends Manager {
 	 * 
 	 * @return
 	 */
-	public boolean getWindowShouldClose() {
+	public boolean isCloseRequested() {
 		return glfwWindowShouldClose(this.windowID);
 	}
 
@@ -98,7 +114,7 @@ public class GlfwManager extends Manager {
 	 * @param newTitle
 	 */
 	public void updateWindowTitle(String newTitle) {
-		glfwSetWindowTitle(this.windowID, newTitle);
+		glfwSetWindowTitle(this.windowID, this.windowBaseTitle + ": " + newTitle);
 	}
 
 	/**
@@ -115,6 +131,14 @@ public class GlfwManager extends Manager {
 	 */
 	public long getWindowID() {
 		return this.windowID;
+	}
+
+	public int getScreenWidth() {
+		return screenWidth;
+	}
+
+	public int getScreenHeight() {
+		return screenHeight;
 	}
 
 	/**

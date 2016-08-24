@@ -40,9 +40,6 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 			Engine.getLogger().warn("Force deleting model that has " + numReferences + " references left!");
 
 		GL30.glDeleteVertexArrays(this.vaoID);
-
-		// We don't own this resource, hence just clean
-		this.shader.cleanup();
 	}
 
 	/**

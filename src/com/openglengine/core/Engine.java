@@ -7,7 +7,6 @@ import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
-import com.openglengine.renderer.shader.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
@@ -41,33 +40,27 @@ public class Engine {
 	/** Event dispatch/receive system manager */
 	private static final GlobalEventManager GLOBAL_EVENT_MANAGER = new GlobalEventManager();
 
-	/** Texture system manager */
-	private static final TextureManager TEXTURE_MANAGER = new TextureManager();
-
-	/** Model system manager */
-	private static final ModelManager MODEL_MANAGER = new ModelManager();
-
 	/** Logger that can be used for conveniently printing messages to the console */
 	private static final Logger LOGGER = new Logger();
 
-	/** Camera convenience class */
-	private static Entity CAMERA;
+	/** Texture system manager */
+	private static TextureManager TEXTURE_MANAGER = new TextureManager();
+
+	/** Model system manager */
+	private static ModelManager MODEL_MANAGER = new ModelManager();
 
 	/** Global batch renderering system */
-	private static RenderManager RENDERER;
+	private static RenderManager RENDER_MANAGER;
 
 	/* TODO: refactor */
-	/** Glfw system manager */
-	private static GlfwManager GLFW_MANAGER;
+	/** Camera convenience class */
+	private static Entity CAMERA;
 
 	/** Input system manager */
 	private static InputManager INPUT_MANAGER;
 
 	/** This file will be used if no texture was found */
 	private static Texture DEFAULT_TEXTURE;
-
-	/** Default shader program if no shader was found */
-	private static Shader DEFAULT_SHADER;
 
 	// TODO: refactor (Allow for multiple light sources f.e.)
 	/** Global light source */
@@ -109,14 +102,6 @@ public class Engine {
 		return LOGGER;
 	}
 
-	public static GlfwManager getGlfwManager() {
-		return GLFW_MANAGER;
-	}
-
-	public static void setGlfwManager(GlfwManager glfwManager) {
-		GLFW_MANAGER = glfwManager;
-	}
-
 	public static Entity getCamera() {
 		return CAMERA;
 	}
@@ -125,12 +110,12 @@ public class Engine {
 		CAMERA = camera;
 	}
 
-	public static RenderManager getRenderer() {
-		return RENDERER;
+	public static RenderManager getRenderManager() {
+		return RENDER_MANAGER;
 	}
 
-	public static void setRenderer(RenderManager renderer) {
-		RENDERER = renderer;
+	public static void setRenderManager(RenderManager renderer) {
+		RENDER_MANAGER = renderer;
 	}
 
 	public static Texture getDefaultTexture() {
@@ -158,9 +143,8 @@ public class Engine {
 	 * @param windowTitle
 	 * @throws IOException
 	 */
-	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle)
-			throws IOException {
-		GLFW_MANAGER = new GlfwManager(screenWidth, screenHeight, fullscreen, windowTitle);
+	public static void loadEngineComponents() throws IOException {
+		RENDER_MANAGER = new RenderManager();
 		INPUT_MANAGER = new InputManager();
 		CAMERA = new Entity(new Vector3f(0, 0, 0), 0, 0, 0, 1).addComponent(new CameraInputComponent())
 				.addComponent(new CameraComponent());
@@ -176,8 +160,6 @@ public class Engine {
 	public static void cleanup() {
 		if (DEFAULT_TEXTURE != null)
 			DEFAULT_TEXTURE.cleanup();
-		if (DEFAULT_SHADER != null)
-			DEFAULT_SHADER.cleanup();
 
 		if (CAMERA != null)
 			CAMERA.cleanup();
@@ -185,7 +167,6 @@ public class Engine {
 		GLOBAL_EVENT_MANAGER.cleanup();
 		TEXTURE_MANAGER.cleanup();
 		MODEL_MANAGER.cleanup();
-		GLFW_MANAGER.cleanup();
 		INPUT_MANAGER.cleanup();
 	}
 }

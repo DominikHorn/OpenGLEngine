@@ -5,7 +5,6 @@ import java.io.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.eventsystem.defaultevents.*;
-import com.openglengine.renderer.*;
 import com.openglengine.util.*;
 
 /**
@@ -17,34 +16,13 @@ import com.openglengine.util.*;
  */
 public abstract class Basic3DGame {
 	private double secsPerUpdate = 1.0 / 60.0;
-	private String windowTitle;
 
-	/**
-	 * Initialize this game
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 * @param fullscreen
-	 * @param windowTitle
-	 * @param fov
-	 * @param aspect
-	 * @param near_plane
-	 * @param far_plane
-	 * @throws IOException
-	 */
-	public Basic3DGame(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle, float fov,
-			float aspect, float near_plane, float far_plane) throws IOException {
-		this.windowTitle = windowTitle;
-
-		Engine.loadEngineComponents(screenWidth, screenHeight, fullscreen, this.windowTitle);
-		this.initGL(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
-
-		// TODO: tmp
-		Engine.setRenderer(new RenderManager());
-
+	public Basic3DGame(float fov, float near_plane, float far_plane) throws IOException {
+		Engine.loadEngineComponents();
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class,
+				e -> initGL(fov, near_plane, far_plane));
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.loop());
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
-
-		this.loop();
 	}
 
 	/**
@@ -57,12 +35,16 @@ public abstract class Basic3DGame {
 	 * @param near_plane
 	 * @param far_plane
 	 */
-	private void initGL(int screenWidth, int screenHeight, float fov, float aspect, float near_plane, float far_plane) {
+	private void initGL(float fov, float near_plane, float far_plane) {
+		int screenWidth = this.getGameDisplay().getScreenWidth();
+		int screenHeight = this.getGameDisplay().getScreenHeight();
+
 		// Set the clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		// Setup projection matrix
-		Engine.getProjectionMatrixStack().setPerspectiveMatrix(fov, aspect, near_plane, far_plane);
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(fov, (float) screenWidth / (float) screenHeight,
+				near_plane, far_plane);
 
 		// Setup viewport
 		GL11.glViewport(0, 0, screenWidth, screenHeight);
@@ -77,16 +59,6 @@ public abstract class Basic3DGame {
 		// Disable rendering inside of models
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
-	}
-
-	/**
-	 * Use this method to dynamically set how many ups and therefore fps you want to receive (Rendering more fps than
-	 * ups does not make sense as the game will stutter regardless)
-	 * 
-	 * @param ups
-	 */
-	protected void setUPS(double ups) {
-		this.secsPerUpdate = 1.0 / ups;
 	}
 
 	/**
@@ -106,7 +78,7 @@ public abstract class Basic3DGame {
 			int fpsCounter = 0;
 
 			// TODO: tmp esc quit (until proper menus are implemented etc)
-			while (!Engine.getGlfwManager().getWindowShouldClose()
+			while (!this.getGameDisplay().isCloseRequested()
 					&& !Engine.getInputManager().isKeyDown(InputManager.KEY_ESC)) {
 				/* update */
 				long now = System.nanoTime();
@@ -117,8 +89,8 @@ public abstract class Basic3DGame {
 
 				if (secondCounter > 1.0) {
 					secondCounter -= 1.0;
-					Engine.getGlfwManager()
-							.updateWindowTitle(this.windowTitle + ": " + fpsCounter + "fps | " + upsCounter + "ups");
+					this.getGameDisplay()
+							.updateWindowTitle(fpsCounter + "fps | " + upsCounter + "ups");
 					upsCounter = 0;
 					fpsCounter = 0;
 				}
@@ -126,7 +98,6 @@ public abstract class Basic3DGame {
 				/* update */
 
 				while (steps >= this.secsPerUpdate) {
-					// Update camera
 					Engine.getCamera().update();
 
 					// send update event
@@ -143,12 +114,24 @@ public abstract class Basic3DGame {
 				fpsCounter++;
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
-				Engine.getGlfwManager().swapBuffers();
+				this.getGameDisplay().swapBuffers();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			this.cleanup();
 			Engine.cleanup();
 		}
+	}
+
+	/**
+	 * Use this method to dynamically set how many ups and therefore fps you want to receive (Rendering more fps than
+	 * ups does not make sense as the game will stutter regardless)
+	 * 
+	 * @param ups
+	 */
+	public void setUPS(double ups) {
+		this.secsPerUpdate = 1.0 / ups;
 	}
 
 	/**
@@ -165,5 +148,12 @@ public abstract class Basic3DGame {
 	 * Use this to clean leftover resources
 	 */
 	protected abstract void cleanup();
+
+	/**
+	 * Return the games display
+	 * 
+	 * @return
+	 */
+	protected abstract Display getGameDisplay();
 
 }
