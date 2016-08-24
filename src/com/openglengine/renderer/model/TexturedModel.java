@@ -7,7 +7,6 @@ import java.util.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
-import com.openglengine.core.*;
 import com.openglengine.renderer.texture.*;
 
 /**
@@ -19,6 +18,8 @@ import com.openglengine.renderer.texture.*;
 public class TexturedModel extends Model {
 	/** Internal list used to keep track of all the vbos that were create for this model */
 	private List<Integer> vbos;
+
+	/** Texture used when rendering this model */
 	private Texture texture;
 
 	protected TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
@@ -26,7 +27,7 @@ public class TexturedModel extends Model {
 		super(0, indices.length);
 
 		// Initialize to no texture
-		this.texture = Engine.NO_TEX_TEXTURE;
+		this.texture = null;
 
 		// Initialize
 		this.vbos = new ArrayList<>();
@@ -74,10 +75,10 @@ public class TexturedModel extends Model {
 	 */
 	private void loadToVAO(float[] vertices, float[] texCoords, float[] normals, int[] indices) {
 		// Create new VAO
-		this.vaoID = GL30.glGenVertexArrays();
+		this.setVaoID(GL30.glGenVertexArrays());
 
 		// Bind that VAO for modification
-		GL30.glBindVertexArray(this.vaoID);
+		GL30.glBindVertexArray(this.getVaoID());
 
 		// Create indices VBO
 		int indicesID = GL15.glGenBuffers();

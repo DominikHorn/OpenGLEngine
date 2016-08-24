@@ -19,6 +19,10 @@ public class Logger {
 
 	private LogLevel logLevel;
 
+	public Logger() {
+		this.logLevel = LogLevel.LOG_STANDARD;
+	}
+
 	public void setLogLevel(LogLevel logLevel) {
 		this.logLevel = logLevel;
 	}

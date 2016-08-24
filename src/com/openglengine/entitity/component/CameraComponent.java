@@ -9,7 +9,7 @@ public class CameraComponent extends Component {
 
 	@Override
 	public void update(Entity entity) {
-		TransformationMatrixStack vm = Engine.VIEW_MATRIX_STACK;
+		TransformationMatrixStack vm = Engine.getViewMatrixStack();
 		vm.loadIdentity();
 		vm.rotate(entity.rotX, 1, 0, 0);
 		vm.rotate(entity.rotY, 0, 1, 0);

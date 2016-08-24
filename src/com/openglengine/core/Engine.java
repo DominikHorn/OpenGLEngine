@@ -7,6 +7,7 @@ import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
+import com.openglengine.renderer.shader.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
@@ -25,60 +26,128 @@ public class Engine {
 	 * Model matrix. Use this for moving/rotating and scaling objects. This matrix will be uploaded to the shader
 	 * automatically. See Shader class for more info
 	 */
-	public static final TransformationMatrixStack MODEL_MATRIX_STACK = new TransformationMatrixStack();
+	private static final TransformationMatrixStack MODEL_MATRIX_STACK = new TransformationMatrixStack();
 
 	/**
 	 * View matrix. The Camera class uses this for influencing the scene appropriately
 	 */
-	public static final TransformationMatrixStack VIEW_MATRIX_STACK = new TransformationMatrixStack();
+	private static final TransformationMatrixStack VIEW_MATRIX_STACK = new TransformationMatrixStack();
 
 	/**
 	 * Projection matrix. This projects the vertex data correctly onto the 2d screen
 	 */
-	public static final ProjectionMatrixStack PROJECTION_MATRIX_STACK = new ProjectionMatrixStack();
-
-	/** Path to our resources */
-	public static String RES_FOLDER = "res/";
-
-	/** Path to our shaders */
-	public static String SHADER_FOLDER = RES_FOLDER + "shader/";
-
-	/** Path to our models */
-	public static String MODEL_FOLDER = RES_FOLDER + "model/";
-
-	/** Path to our textures */
-	public static String TEX_FOLDER = RES_FOLDER + "tex/";
-
-	/** This file will be used if no texture was found */
-	public static Texture NO_TEX_TEXTURE;
-
-	/** Logger that can be used for conveniently printing messages to the console */
-	public static Logger LOGGER = new Logger();
+	private static final ProjectionMatrixStack PROJECTION_MATRIX_STACK = new ProjectionMatrixStack();
 
 	/** Event dispatch/receive system manager */
-	public static GlobalEventManager EVENT_MANAGER;
+	private static final GlobalEventManager GLOBAL_EVENT_MANAGER = new GlobalEventManager();
 
 	/** Texture system manager */
-	public static TextureManager TEXTURE_MANAGER;
+	private static final TextureManager TEXTURE_MANAGER = new TextureManager();
 
 	/** Model system manager */
-	public static ModelManager MODEL_MANAGER;
+	private static final ModelManager MODEL_MANAGER = new ModelManager();
 
-	/** Glfw system manager */
-	public static GlfwManager GLFW_MANAGER;
-
-	/** Input system manager */
-	public static InputManager INPUT_MANAGER;
+	/** Logger that can be used for conveniently printing messages to the console */
+	private static final Logger LOGGER = new Logger();
 
 	/** Camera convenience class */
-	public static Entity CAMERA;
+	private static Entity CAMERA;
 
 	/** Global batch renderering system */
-	public static RenderManager RENDERER;
+	private static RenderManager RENDERER;
 
-	// TODO: refactor
+	/* TODO: refactor */
+	/** Glfw system manager */
+	private static GlfwManager GLFW_MANAGER;
+
+	/** Input system manager */
+	private static InputManager INPUT_MANAGER;
+
+	/** This file will be used if no texture was found */
+	private static Texture DEFAULT_TEXTURE;
+
+	/** Default shader program if no shader was found */
+	private static Shader DEFAULT_SHADER;
+
+	// TODO: refactor (Allow for multiple light sources f.e.)
 	/** Global light source */
-	public static LightSource LIGHT_SOURCE;
+	private static LightSource LIGHT_SOURCE;
+
+	public static String getEngineVersion() {
+		return ENGINE_VERSION;
+	}
+
+	public static TransformationMatrixStack getModelMatrixStack() {
+		return MODEL_MATRIX_STACK;
+	}
+
+	public static TransformationMatrixStack getViewMatrixStack() {
+		return VIEW_MATRIX_STACK;
+	}
+
+	public static ProjectionMatrixStack getProjectionMatrixStack() {
+		return PROJECTION_MATRIX_STACK;
+	}
+
+	public static GlobalEventManager getGlobalEventManager() {
+		return GLOBAL_EVENT_MANAGER;
+	}
+
+	public static TextureManager getTextureManager() {
+		return TEXTURE_MANAGER;
+	}
+
+	public static ModelManager getModelManager() {
+		return MODEL_MANAGER;
+	}
+
+	public static InputManager getInputManager() {
+		return INPUT_MANAGER;
+	}
+
+	public static Logger getLogger() {
+		return LOGGER;
+	}
+
+	public static GlfwManager getGlfwManager() {
+		return GLFW_MANAGER;
+	}
+
+	public static void setGlfwManager(GlfwManager glfwManager) {
+		GLFW_MANAGER = glfwManager;
+	}
+
+	public static Entity getCamera() {
+		return CAMERA;
+	}
+
+	public static void setCamera(Entity camera) {
+		CAMERA = camera;
+	}
+
+	public static RenderManager getRenderer() {
+		return RENDERER;
+	}
+
+	public static void setRenderer(RenderManager renderer) {
+		RENDERER = renderer;
+	}
+
+	public static Texture getDefaultTexture() {
+		return DEFAULT_TEXTURE;
+	}
+
+	public static void setDefaultTexture(Texture defaultTexture) {
+		DEFAULT_TEXTURE = defaultTexture;
+	}
+
+	public static LightSource getLightSource() {
+		return LIGHT_SOURCE;
+	}
+
+	public static void setLightSource(LightSource lightSource) {
+		LIGHT_SOURCE = lightSource;
+	}
 
 	/**
 	 * Initialize all parts of the GameEngine that are opengl context independent with the following parameters
@@ -89,25 +158,31 @@ public class Engine {
 	 * @param windowTitle
 	 * @throws IOException
 	 */
-	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen,
-			String windowTitle) throws IOException {
-		EVENT_MANAGER = new GlobalEventManager();
-		TEXTURE_MANAGER = new TextureManager();
-		MODEL_MANAGER = new ModelManager();
+	public static void loadEngineComponents(int screenWidth, int screenHeight, boolean fullscreen, String windowTitle)
+			throws IOException {
 		GLFW_MANAGER = new GlfwManager(screenWidth, screenHeight, fullscreen, windowTitle);
 		INPUT_MANAGER = new InputManager();
 		CAMERA = new Entity(new Vector3f(0, 0, 0), 0, 0, 0, 1).addComponent(new CameraInputComponent())
 				.addComponent(new CameraComponent());
 		LIGHT_SOURCE = new LightSource(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+
+		/** TODO: refactor */
+		DEFAULT_TEXTURE = null;
 	}
 
 	/**
 	 * Clean/Delete all data
 	 */
 	public static void cleanup() {
-		NO_TEX_TEXTURE.cleanup();
-		CAMERA.cleanup();
-		EVENT_MANAGER.cleanup();
+		if (DEFAULT_TEXTURE != null)
+			DEFAULT_TEXTURE.cleanup();
+		if (DEFAULT_SHADER != null)
+			DEFAULT_SHADER.cleanup();
+
+		if (CAMERA != null)
+			CAMERA.cleanup();
+
+		GLOBAL_EVENT_MANAGER.cleanup();
 		TEXTURE_MANAGER.cleanup();
 		MODEL_MANAGER.cleanup();
 		GLFW_MANAGER.cleanup();

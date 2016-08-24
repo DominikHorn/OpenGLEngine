@@ -6,32 +6,35 @@ import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.renderer.model.*;
-import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
 
+/**
+ * Class for managing batch rendering behavior. This is not pretty coding, but necessary to minimize the opengl overhead
+ * call amount
+ * 
+ * @author Dominik
+ *
+ */
 public class RenderManager extends Manager {
-	private static final String VERTEX_SHADER = "vertex.glsl";
-	private static final String FRAGMENT_SHADER = "fragment.glsl";
-
-	private StaticShader shader;
+	/** actual renderer containing rendering code */
 	private Renderer renderer;
 
+	/** Batch rendering storage. This list maintains all entities that need to be rendered */
 	private Map<TexturedModel, List<VisibleEntity>> texturedEntities;
 
+	/**
+	 * Create new RenderManager
+	 */
 	public RenderManager() {
-		this.shader = new StaticShader(Engine.SHADER_FOLDER + VERTEX_SHADER, Engine.SHADER_FOLDER + FRAGMENT_SHADER);
 		this.renderer = new Renderer();
 		this.texturedEntities = new HashMap<>();
 
-		Engine.EVENT_MANAGER.registerListenerForEvent(RenderEvent.class, e -> render());
+		Engine.getGlobalEventManager().registerListenerForEvent(RenderEvent.class, e -> render());
 	}
 
 	public void render() {
-		this.shader.startUsingShader();
-		this.shader.uploadDiffuseData(Engine.LIGHT_SOURCE);
-		this.shader.uploadViewMatrix();
-		renderer.render(this.texturedEntities, this.shader);
-		this.shader.stopUsingShader();
+		/** rendering */
+		renderer.render(this.texturedEntities);
 		texturedEntities.clear();
 	}
 

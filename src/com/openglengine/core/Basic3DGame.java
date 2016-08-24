@@ -40,10 +40,9 @@ public abstract class Basic3DGame {
 		this.initGL(screenWidth, screenHeight, fov, aspect, near_plane, far_plane);
 
 		// TODO: tmp
-		Engine.RENDERER = new RenderManager();
-		Engine.NO_TEX_TEXTURE = Engine.TEXTURE_MANAGER.referenceTexture(Engine.TEX_FOLDER + "notex.png");
+		Engine.setRenderer(new RenderManager());
 
-		Engine.EVENT_MANAGER.registerListenerForEvent(UpdateEvent.class, e -> this.update());
+		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
 
 		this.loop();
 	}
@@ -63,7 +62,7 @@ public abstract class Basic3DGame {
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		// Setup projection matrix
-		Engine.PROJECTION_MATRIX_STACK.setPerspectiveMatrix(fov, aspect, near_plane, far_plane);
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(fov, aspect, near_plane, far_plane);
 
 		// Setup viewport
 		GL11.glViewport(0, 0, screenWidth, screenHeight);
@@ -107,8 +106,8 @@ public abstract class Basic3DGame {
 			int fpsCounter = 0;
 
 			// TODO: tmp esc quit (until proper menus are implemented etc)
-			while (!Engine.GLFW_MANAGER.getWindowShouldClose()
-					&& !Engine.INPUT_MANAGER.isKeyDown(InputManager.KEY_ESC)) {
+			while (!Engine.getGlfwManager().getWindowShouldClose()
+					&& !Engine.getInputManager().isKeyDown(InputManager.KEY_ESC)) {
 				/* update */
 				long now = System.nanoTime();
 				long elapsed = now - previous;
@@ -118,7 +117,7 @@ public abstract class Basic3DGame {
 
 				if (secondCounter > 1.0) {
 					secondCounter -= 1.0;
-					Engine.GLFW_MANAGER
+					Engine.getGlfwManager()
 							.updateWindowTitle(this.windowTitle + ": " + fpsCounter + "fps | " + upsCounter + "ups");
 					upsCounter = 0;
 					fpsCounter = 0;
@@ -128,10 +127,10 @@ public abstract class Basic3DGame {
 
 				while (steps >= this.secsPerUpdate) {
 					// Update camera
-					Engine.CAMERA.update();
+					Engine.getCamera().update();
 
 					// send update event
-					Engine.EVENT_MANAGER.dispatch(new UpdateEvent(secsPerUpdate));
+					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
 					steps -= secsPerUpdate;
 					upsCounter++;
 				}
@@ -140,11 +139,11 @@ public abstract class Basic3DGame {
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 				// Render our scene
-				Engine.EVENT_MANAGER.dispatch(new RenderEvent(elapsed));
+				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));
 				fpsCounter++;
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
-				Engine.GLFW_MANAGER.swapBuffers();
+				Engine.getGlfwManager().swapBuffers();
 			}
 		} finally {
 			this.cleanup();

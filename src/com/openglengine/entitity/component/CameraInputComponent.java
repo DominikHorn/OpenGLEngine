@@ -11,7 +11,7 @@ public class CameraInputComponent extends Component {
 
 	@Override
 	public void update(Entity entity) {
-		InputManager input = Engine.INPUT_MANAGER;
+		InputManager input = Engine.getInputManager();
 
 		if (input.isKeyDown(InputManager.KEY_W)) {
 			entity.position.z -= CAMERA_SPEED;

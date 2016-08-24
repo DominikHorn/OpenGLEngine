@@ -54,7 +54,7 @@ public class ModelManager extends Manager {
 			if (modelPath.endsWith(".obj"))
 				loadedModel = this.loadObjModel(modelPath);
 			else
-				Engine.LOGGER.err("Model file format not supported for file \"" + modelPath + "\"");
+				Engine.getLogger().err("Model file format not supported for file \"" + modelPath + "\"");
 
 			this.loadedModels.put(modelPath, loadedModel);
 
@@ -78,7 +78,7 @@ public class ModelManager extends Manager {
 		try {
 			fr = new FileReader(new File(modelPath));
 		} catch (FileNotFoundException e) {
-			Engine.LOGGER.err("Model Obj file \"" + modelPath + "\" not found");
+			Engine.getLogger().err("Model Obj file \"" + modelPath + "\" not found");
 		}
 
 		float[] verticesArray = null;
@@ -144,7 +144,7 @@ public class ModelManager extends Manager {
 				indicesArray[i] = indices.get(i);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Engine.LOGGER.err("Could not load obj file \"" + modelPath + "\"");
+			Engine.getLogger().err("Could not load obj file \"" + modelPath + "\"");
 		}
 
 		return new TexturedModel(verticesArray, textureArray, normalsArray, indicesArray);

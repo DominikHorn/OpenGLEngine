@@ -1,12 +1,14 @@
 package com.openglengine.renderer.shader;
 
-import java.io.*;
 import java.nio.*;
 
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
+import com.openglengine.entitity.*;
+import com.openglengine.renderer.model.*;
+import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
 // TODO: refactor. f.e. implement ShaderManager etc
@@ -19,7 +21,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public abstract class Shader {
+public class Shader extends ReferenceCountedDeletableContainer {
 	/** uniform name of model matrix */
 	private static final String UNIFORM_NAME_MODEL_MATRIX = "transformationMatrix";
 
@@ -47,20 +49,97 @@ public abstract class Shader {
 	/** uniform location of view matrix */
 	private int location_viewMatrix;
 
+	/** whether or not startUsingShader() was called */
+	private boolean shaderInUse;
+
 	/** Float buffer used to upload 4x4 matrices to shader */
 	private static FloatBuffer matrixFloatBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
 	/**
-	 * Crafts a new shader program from a vertex and a fragment shader. This method will autoupload the currently set
-	 * projection matrix to the shader
+	 * Crafts a new shader program from a vertex and a fragment shader.
 	 *
 	 * @param vertexShaderPath
 	 * @param fragmentShaderPath
 	 */
-	public Shader(String vertexShaderPath, String fragmentShaderPath) {
-		// Create and load both shaders
-		this.vertexShaderID = loadShader(vertexShaderPath, GL20.GL_VERTEX_SHADER);
-		this.fragmentShaderID = loadShader(fragmentShaderPath, GL20.GL_FRAGMENT_SHADER);
+	protected Shader() {
+		this.shaderInUse = false;
+		this.vertexShaderID = this.fragmentShaderID = -1;
+	}
+
+	/**
+	 * Upload uniforms that don't need to change for each draw call. These are dependent on the rendered frame
+	 * 
+	 * NOTE: that you'll have to call startUsingShader() beforehand
+	 */
+	public void uploadGlobalUniforms() {
+		if (!this.shaderInUse) // TODO: performance relevant?
+			Engine.getLogger().warn("startUsingShader() has not been called before static uniform upload");
+
+		this.loadMatrix4f(this.location_projectionMatrix, Engine.getProjectionMatrixStack().getCurrentMatrix());
+		this.loadMatrix4f(this.location_viewMatrix, Engine.getViewMatrixStack().getCurrentMatrix());
+	}
+
+	/**
+	 * Upload uniforms that need to change for each model we render. These are model dependent
+	 * 
+	 * NOTE: that you'll have to call startUsingShader() beforehand
+	 */
+	public void uploadModelUniforms(TexturedModel model) {
+		if (!this.shaderInUse)// TODO: performance relevant?
+			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
+	}
+
+	/**
+	 * Upload uniforms that need to change for each draw call. These are entity dependent
+	 * 
+	 * NOTE: that you'll have to call startUsingShader() beforehand
+	 */
+	public void uploadEntityUniforms(Entity entity) {
+		if (!this.shaderInUse)// TODO: performance relevant?
+			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
+
+		this.loadMatrix4f(this.location_modelMatrix, Engine.getModelMatrixStack().getCurrentMatrix());
+
+	}
+
+	/**
+	 * Enable this shader program. Must be invoked before rendering to use this shader
+	 */
+	public void startUsingShader() {
+		GL20.glUseProgram(this.programID);
+		this.shaderInUse = true;
+	}
+
+	/**
+	 * Disable this shader program
+	 */
+	public void stopUsingShader() {
+		GL20.glUseProgram(0);
+		this.shaderInUse = false;
+	}
+
+	@Override
+	protected void forceDelete() {
+		stopUsingShader();
+		GL20.glDetachShader(this.programID, this.vertexShaderID);
+		GL20.glDetachShader(this.programID, this.fragmentShaderID);
+		GL20.glDeleteShader(this.vertexShaderID);
+		GL20.glDeleteShader(this.fragmentShaderID);
+		GL20.glDeleteProgram(this.programID);
+	}
+
+	/**
+	 * Compiles a shader to this shader from sources
+	 * 
+	 * @param vertexShaderSource
+	 * @param fragmentShaderSource
+	 */
+	protected void compileShaderFromSource(String vertexShaderSource, String fragmentShaderSource) {
+		if (this.vertexShaderID != -1 || this.fragmentShaderID != -1)
+			this.forceDelete();
+
+		this.vertexShaderID = loadShaderFromSource(vertexShaderSource, GL20.GL_VERTEX_SHADER);
+		this.fragmentShaderID = loadShaderFromSource(fragmentShaderSource, GL20.GL_FRAGMENT_SHADER);
 
 		// Create shader program
 		this.programID = GL20.glCreateProgram();
@@ -78,58 +157,6 @@ public abstract class Shader {
 
 		// Retrieve uniform locations from shader
 		this.getAllUniformLocations();
-
-		// Upload projection matrix exactly once
-		this.uploadProjectionMatrix();
-	}
-
-	/**
-	 * Uploads the projection matrix
-	 */
-	public void uploadProjectionMatrix() {
-		this.startUsingShader();
-		this.loadMatrix4f(this.location_projectionMatrix, Engine.PROJECTION_MATRIX_STACK.getCurrentMatrix());
-		this.stopUsingShader();
-	}
-
-	/**
-	 * Upload the model matrix to the shader
-	 */
-	public void uploadModelMatrix() {
-		this.loadMatrix4f(this.location_modelMatrix, Engine.MODEL_MATRIX_STACK.getCurrentMatrix());
-	}
-
-	/**
-	 * Upload the view matrix to the shader
-	 */
-	public void uploadViewMatrix() {
-		this.loadMatrix4f(this.location_viewMatrix, Engine.VIEW_MATRIX_STACK.getCurrentMatrix());
-	}
-
-	/**
-	 * Enable this shader program. Must be invoked before rendering to use this shader
-	 */
-	public void startUsingShader() {
-		GL20.glUseProgram(this.programID);
-	}
-
-	/**
-	 * Disable this shader program
-	 */
-	public void stopUsingShader() {
-		GL20.glUseProgram(0);
-	}
-
-	/**
-	 * Delete/Clean this shader
-	 */
-	public void cleanup() {
-		stopUsingShader();
-		GL20.glDetachShader(this.programID, this.vertexShaderID);
-		GL20.glDetachShader(this.programID, this.fragmentShaderID);
-		GL20.glDeleteShader(this.vertexShaderID);
-		GL20.glDeleteShader(this.fragmentShaderID);
-		GL20.glDeleteProgram(this.programID);
 	}
 
 	/**
@@ -206,32 +233,13 @@ public abstract class Shader {
 		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer);
 	}
 
-	/**
-	 * Loads and compiles a shader
-	 * 
-	 * @param file
-	 * @param type
-	 * @return
-	 */
-	private int loadShader(String file, int type) {
-		StringBuilder shaderSource = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			String line;
-			while ((line = reader.readLine()) != null)
-				shaderSource.append(line).append("\n");
-
-		} catch (FileNotFoundException e) {
-			Engine.LOGGER.err("Shader file \"" + file + "\" was not found");
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-			Engine.LOGGER.err("IOException while reading file \"" + file + "\":");
-		}
-
+	private int loadShaderFromSource(String shaderSource, int type) {
 		int shaderID = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderID, shaderSource);
 		GL20.glCompileShader(shaderID);
 		if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
-			Engine.LOGGER.err("Could not compile shader \"" + file + "\":\n" + GL20.glGetShaderInfoLog(shaderID));
+			Engine.getLogger().err("Could not compile shader(type = " + type + ")\"" + shaderSource + "\":\n"
+					+ GL20.glGetShaderInfoLog(shaderID));
 
 		return shaderID;
 	}

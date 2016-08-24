@@ -11,8 +11,12 @@ import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
 
 public class Renderer {
-	public void render(Map<TexturedModel, List<VisibleEntity>> entities, StaticShader shader) {
+	public void render(Map<TexturedModel, List<VisibleEntity>> entities) {
 		entities.keySet().forEach(model -> {
+			Shader shader = model.getShader();
+			shader.startUsingShader();
+			shader.uploadGlobalUniforms();
+
 			// Prepare model
 			prepareTexturedModel(model, shader);
 
@@ -29,10 +33,11 @@ public class Renderer {
 
 			// Unbind all stuff
 			unbindTexturedModel();
+			shader.stopUsingShader();
 		});
 	}
 
-	private void prepareTexturedModel(TexturedModel model, StaticShader shader) {
+	private void prepareTexturedModel(TexturedModel model, Shader shader) {
 		// Bind vao for use
 		GL30.glBindVertexArray(model.getVaoID());
 
@@ -52,11 +57,11 @@ public class Renderer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
 
 		// Upload specular data
-		shader.uploadSpecularData(model.getTexture().getShineDamper(), model.getTexture().getReflectivity());
+		shader.uploadModelUniforms(model);
 	}
 
-	private void prepareInstance(Entity entity, StaticShader shader) {
-		TransformationMatrixStack tms = Engine.MODEL_MATRIX_STACK;
+	private void prepareInstance(Entity entity, Shader shader) {
+		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();
 		tms.translate(entity.position);
 		tms.rotateX(entity.rotX);
@@ -64,7 +69,7 @@ public class Renderer {
 		tms.rotateZ(entity.rotZ);
 		tms.scale(entity.scale, entity.scale, entity.scale);
 
-		shader.uploadModelMatrix();
+		shader.uploadEntityUniforms(entity);
 		tms.pop();
 	}
 

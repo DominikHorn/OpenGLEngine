@@ -33,7 +33,7 @@ public class InputManager extends Manager {
 	 */
 	public InputManager() {
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(Engine.GLFW_MANAGER.getWindowID(),
+		glfwSetKeyCallback(Engine.getGlfwManager().getWindowID(),
 				(window, key, scancode, action, mods) -> this.keyEvent(window, key, scancode, action, mods));
 	}
 
