@@ -8,14 +8,15 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.stb.*;
 
+import com.openglengine.util.*;
+
 /**
  * Takes care of loading textures and makes sure, that each texture is loaded exactly once
  * 
  * @author Dominik
  *
  */
-// TODO: refactor
-public class TextureManager {
+public class TextureManager implements ResourceManager {
 	/**
 	 * Already loaded textures
 	 */
@@ -93,8 +94,10 @@ public class TextureManager {
 		}
 	}
 
+	@Override
 	public void cleanup() {
-		for (Texture texture : this.loadedTextures.values())
-			texture.forceDelete();
+		this.loadedTextures.values().forEach(tex -> tex.forceDelete());
+		this.loadedTextures.clear();
+		this.loadedTextures = null;
 	}
 }

@@ -15,7 +15,7 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public class RenderManager extends Manager {
+public class RenderManager implements ResourceManager {
 	/** actual renderer containing rendering code */
 	private Renderer renderer;
 
@@ -51,6 +51,7 @@ public class RenderManager extends Manager {
 
 	@Override
 	public void cleanup() {
-		// TODO implement
+		this.texturedEntities.clear();
+		this.texturedEntities = null;
 	}
 }

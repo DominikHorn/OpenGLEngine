@@ -11,7 +11,7 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public class GlobalEventManager extends Manager {
+public class GlobalEventManager implements ResourceManager {
 	/** listeners data this class operates on */
 	private Map<Class<? extends BaseEvent>, List<GlobalEventListener>> listeners;
 
@@ -77,5 +77,6 @@ public class GlobalEventManager extends Manager {
 	@Override
 	public void cleanup() {
 		this.listeners.clear();
+		this.listeners = null;
 	}
 }

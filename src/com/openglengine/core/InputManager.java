@@ -1,9 +1,9 @@
-package com.openglengine.util;
+package com.openglengine.core;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-import com.openglengine.core.*;
 import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.util.*;
 
 /**
  * Input Manager class. This deals with glfw input
@@ -11,7 +11,7 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public class InputManager extends Manager {
+public class InputManager implements ResourceManager {
 
 	/** defined keys that are being tracked */
 	//@formatter:off

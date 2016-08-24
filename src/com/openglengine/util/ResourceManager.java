@@ -6,6 +6,9 @@ package com.openglengine.util;
  * @author Dominik
  *
  */
-public abstract class Manager {
-	public abstract void cleanup();
+public interface ResourceManager {
+	/**
+	 * ResourceManagers will become invalid after this method has been called
+	 */
+	public void cleanup();
 }

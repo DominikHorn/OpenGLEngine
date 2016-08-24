@@ -10,7 +10,7 @@ import com.openglengine.util.math.*;
 /**
  * Class for loading model data from files. Currently only .obj (wavefront) is supported
  */
-public class ModelManager extends Manager {
+public class ModelManager implements ResourceManager {
 	private Map<String, Model> loadedModels;
 
 	/**
@@ -22,7 +22,9 @@ public class ModelManager extends Manager {
 
 	@Override
 	public void cleanup() {
-		this.loadedModels.keySet().forEach(key -> this.loadedModels.get(key).forceDelete());
+		this.loadedModels.values().forEach(model -> model.forceDelete());
+		this.loadedModels.clear();
+		this.loadedModels = null;
 	}
 
 	/**

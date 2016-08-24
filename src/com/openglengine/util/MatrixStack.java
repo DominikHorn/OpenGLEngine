@@ -10,7 +10,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class MatrixStack {
+public class MatrixStack implements ResourceManager {
 	protected List<Matrix4f> matricesStack;
 
 	public MatrixStack() {
@@ -60,5 +60,11 @@ public class MatrixStack {
 	 */
 	public void loadIdentity() {
 		this.getCurrentMatrix().loadIdentityMatrix();
+	}
+
+	@Override
+	public void cleanup() {
+		this.matricesStack.clear();
+		this.matricesStack = null;
 	}
 }

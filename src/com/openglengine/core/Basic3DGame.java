@@ -5,7 +5,6 @@ import java.io.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.eventsystem.defaultevents.*;
-import com.openglengine.util.*;
 
 /**
  * This class implements the basic functionality aswell as automatically initializing this engine. Subclass this as a
@@ -15,14 +14,39 @@ import com.openglengine.util.*;
  *
  */
 public abstract class Basic3DGame {
+	/**
+	 * amount of seconds that pass between updates
+	 */
 	private double secsPerUpdate = 1.0 / 60.0;
 
+	/**
+	 * Each basic3d game has one display. this is said display
+	 */
+	private Display gameDisplay;
+
+	/**
+	 * Whether or not we should quit the gameloop
+	 */
+	private boolean quit = false;
+
+	// TODO: refactor
+	/** These settings are used for projection matricy setup in resize() */
+	protected float fov, near_plane, far_plane;
+
 	public Basic3DGame(float fov, float near_plane, float far_plane) throws IOException {
+		this.fov = fov;
+		this.near_plane = near_plane;
+		this.far_plane = far_plane;
+
 		Engine.loadEngineComponents();
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class,
-				e -> initGL(fov, near_plane, far_plane));
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> initGL());
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.loop());
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayResizeEvent.class,
+				e -> this.resize(((DisplayResizeEvent) e).getSender()));
+
+		this.gameDisplay = this.setupDisplay();
+		this.gameDisplay.create();
 	}
 
 	/**
@@ -35,19 +59,9 @@ public abstract class Basic3DGame {
 	 * @param near_plane
 	 * @param far_plane
 	 */
-	private void initGL(float fov, float near_plane, float far_plane) {
-		int screenWidth = this.getGameDisplay().getScreenWidth();
-		int screenHeight = this.getGameDisplay().getScreenHeight();
-
+	private void initGL() {
 		// Set the clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-		// Setup projection matrix
-		Engine.getProjectionMatrixStack().setPerspectiveMatrix(fov, (float) screenWidth / (float) screenHeight,
-				near_plane, far_plane);
-
-		// Setup viewport
-		GL11.glViewport(0, 0, screenWidth, screenHeight);
 
 		// Enable transparency
 		GL11.glEnable(GL11.GL_BLEND);
@@ -59,6 +73,26 @@ public abstract class Basic3DGame {
 		// Disable rendering inside of models
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
+
+		resize(this.gameDisplay);
+	}
+
+	/**
+	 * GL window resize code
+	 * 
+	 * @param event
+	 */
+	private void resize(Display display) {
+		int screenWidth = display.getScreenWidth();
+		int screenHeight = display.getScreenHeight();
+
+		// Setup projection matrix
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) screenWidth / (float) screenHeight,
+				this.near_plane, this.far_plane);
+
+		// Setup viewport
+		GL11.glViewport(0, 0, screenWidth, screenHeight);
+
 	}
 
 	/**
@@ -77,9 +111,8 @@ public abstract class Basic3DGame {
 			int upsCounter = 0;
 			int fpsCounter = 0;
 
-			// TODO: tmp esc quit (until proper menus are implemented etc)
-			while (!this.getGameDisplay().isCloseRequested()
-					&& !Engine.getInputManager().isKeyDown(InputManager.KEY_ESC)) {
+			// Actual gameloop
+			while (!quit) {
 				/* update */
 				long now = System.nanoTime();
 				long elapsed = now - previous;
@@ -89,8 +122,7 @@ public abstract class Basic3DGame {
 
 				if (secondCounter > 1.0) {
 					secondCounter -= 1.0;
-					this.getGameDisplay()
-							.updateWindowTitle(fpsCounter + "fps | " + upsCounter + "ups");
+					this.gameDisplay.updateWindowTitle(fpsCounter + "fps | " + upsCounter + "ups");
 					upsCounter = 0;
 					fpsCounter = 0;
 				}
@@ -112,11 +144,12 @@ public abstract class Basic3DGame {
 				fpsCounter++;
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
-				this.getGameDisplay().swapBuffers();
+				this.gameDisplay.swapBuffers();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
+			this.gameDisplay.cleanup();
 			this.cleanup();
 			Engine.cleanup();
 		}
@@ -133,9 +166,33 @@ public abstract class Basic3DGame {
 	}
 
 	/**
+	 * terminates the gameloop after it finishes the current cycle
+	 */
+	public void quit() {
+		this.quit = true;
+	}
+
+	// TODO: refactor: display is not meant to be interacted with outside of window parameter setup
+	/**
+	 * Retrieve the Display that belongs to this Basic3DGame
+	 * 
+	 * @return
+	 */
+	protected Display getGameDisplay() {
+		return this.gameDisplay;
+	}
+
+	/**
 	 * Use this function to setup your game
 	 */
 	protected abstract void setup();
+
+	/**
+	 * This method will be called to retrieve a correctly configured display from your subclass.
+	 * 
+	 * @return
+	 */
+	protected abstract Display setupDisplay();
 
 	/**
 	 * Use this to update your game
@@ -146,12 +203,5 @@ public abstract class Basic3DGame {
 	 * Use this to clean leftover resources
 	 */
 	protected abstract void cleanup();
-
-	/**
-	 * Return the games display
-	 * 
-	 * @return
-	 */
-	protected abstract Display getGameDisplay();
 
 }

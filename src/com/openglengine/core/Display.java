@@ -16,7 +16,7 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public class Display extends Manager {
+public class Display implements ResourceManager {
 	/** glfw window handle */
 	private long windowID;
 
@@ -43,11 +43,36 @@ public class Display extends Manager {
 	}
 
 	/**
+	 * Retrieve whether or not a window close is requested
+	 * 
+	 * @return
+	 */
+	public boolean isCloseRequested() {
+		return glfwWindowShouldClose(this.windowID);
+	}
+
+	/**
+	 * Update the window title to say something new
+	 * 
+	 * @param newTitle
+	 */
+	public void updateWindowTitle(String newTitle) {
+		glfwSetWindowTitle(this.windowID, this.windowBaseTitle + ": " + newTitle);
+	}
+
+	/**
 	 * Initialize our window with Parameters set
 	 */
-	public void create() {
-		if (fullscreen == true)
+	protected void create() {
+		if (fullscreen == true) {
 			Engine.getLogger().err("Fullscreen not supported atm");
+			return;
+		}
+
+		if (this.windowID != -1) {
+			Engine.getLogger().err("Display already created!");
+			return;
+		}
 
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
@@ -97,30 +122,15 @@ public class Display extends Manager {
 
 		// Notify listeners that the display was created
 		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
-	}
 
-	/**
-	 * Retrieve whether or not a window close is requested
-	 * 
-	 * @return
-	 */
-	public boolean isCloseRequested() {
-		return glfwWindowShouldClose(this.windowID);
-	}
-
-	/**
-	 * Update the window title to say something new
-	 * 
-	 * @param newTitle
-	 */
-	public void updateWindowTitle(String newTitle) {
-		glfwSetWindowTitle(this.windowID, this.windowBaseTitle + ": " + newTitle);
+		// Register resize event listener
+		glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
 	}
 
 	/**
 	 * swap the buffers
 	 */
-	public void swapBuffers() {
+	protected void swapBuffers() {
 		glfwSwapBuffers(windowID);
 	}
 
@@ -129,21 +139,28 @@ public class Display extends Manager {
 	 * 
 	 * @return
 	 */
-	public long getWindowID() {
+	protected long getWindowID() {
 		return this.windowID;
 	}
 
+	/**
+	 * get width of the screen
+	 * 
+	 * @return
+	 */
 	public int getScreenWidth() {
-		return screenWidth;
+		return this.screenWidth;
 	}
 
+	/**
+	 * get height of the screen
+	 * 
+	 * @return
+	 */
 	public int getScreenHeight() {
 		return screenHeight;
 	}
 
-	/**
-	 * Clean up
-	 */
 	@Override
 	public void cleanup() {
 		try {
@@ -155,6 +172,15 @@ public class Display extends Manager {
 			glfwSetErrorCallback(null).free();
 		} catch (NullPointerException e) {
 			// Ignore as this must mean that everything was successful
+		}
+	}
+
+	private void resize(long window, int width, int height) {
+		if (window == this.windowID) {
+			this.screenWidth = width;
+			this.screenHeight = height;
+
+			Engine.getGlobalEventManager().dispatch(new DisplayResizeEvent(this));
 		}
 	}
 }
