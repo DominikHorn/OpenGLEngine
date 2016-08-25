@@ -3,7 +3,6 @@ package com.openglengine.entitity.component;
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.eventsystem.defaultevents.*;
-import com.openglengine.util.*;
 
 public class CameraInputComponent extends Component {
 
