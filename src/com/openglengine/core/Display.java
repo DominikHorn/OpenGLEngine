@@ -17,6 +17,9 @@ import com.openglengine.util.*;
  *
  */
 public class Display implements ResourceManager {
+	/** error callback */
+	private GLFWErrorCallback errorCallback;
+
 	/** glfw window handle */
 	private long windowID;
 
@@ -38,8 +41,6 @@ public class Display implements ResourceManager {
 		this.fullscreen = fullscreen;
 		this.windowBaseTitle = windowBaseTitle;
 		this.windowID = -1;
-
-		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> glfwPollEvents());
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class Display implements ResourceManager {
 
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
-		GLFWErrorCallback.createPrint(System.err).set();
+		glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (!glfwInit())
@@ -105,14 +106,18 @@ public class Display implements ResourceManager {
 		glfwSetWindowPos(this.windowID, (vidmode.width() - this.screenWidth) / 2,
 				(vidmode.height() - this.screenHeight) / 2);
 
-		// Make the OpenGL context current
-		glfwMakeContextCurrent(this.windowID);
-
-		// Enable vsync TODO: refactor
-		glfwSwapInterval(1);
-
 		// Make the window visible
 		glfwShowWindow(this.windowID);
+
+		// Register resize event listener
+		glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
+
+		// Notify listeners that the display was created
+		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
+	}
+
+	protected void setupContextThread() {
+		glfwMakeContextCurrent(this.windowID);
 
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
@@ -121,11 +126,8 @@ public class Display implements ResourceManager {
 		// bindings available for use.
 		GL.createCapabilities();
 
-		// Register resize event listener
-		glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
-
-		// Notify listeners that the display was created
-		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
+		// Enable vsync TODO: refactor
+		glfwSwapInterval(1);
 	}
 
 	/**
@@ -170,7 +172,7 @@ public class Display implements ResourceManager {
 
 			// Terminate GLFW and free the error callback
 			glfwTerminate();
-			glfwSetErrorCallback(null).free();
+			errorCallback.free();
 		} catch (NullPointerException e) {
 			// Ignore as this must mean that everything was successful
 		}
@@ -180,8 +182,6 @@ public class Display implements ResourceManager {
 		if (window == this.windowID) {
 			this.screenWidth = width;
 			this.screenHeight = height;
-
-			Engine.getGlobalEventManager().dispatch(new DisplayResizeEvent(this.screenWidth, this.screenHeight));
 		}
 	}
 }

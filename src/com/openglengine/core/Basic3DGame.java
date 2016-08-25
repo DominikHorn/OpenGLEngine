@@ -1,5 +1,7 @@
 package com.openglengine.core;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 import java.io.*;
 
 import org.lwjgl.opengl.*;
@@ -44,11 +46,8 @@ public abstract class Basic3DGame {
 		this.far_plane = far_plane;
 
 		Engine.loadEngineComponents();
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> initGL());
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.loop());
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.run());
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayResizeEvent.class,
-				e -> this.resize((DisplayResizeEvent) e));
 
 		this.gameDisplay = this.setupDisplay();
 		this.gameDisplay.create();
@@ -69,7 +68,7 @@ public abstract class Basic3DGame {
 		int screenHeight = this.gameDisplay.getScreenHeight();
 
 		// Set the clear color
-		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(0f, 0f, 0.1f, 0.1f);
 
 		// Enable transparency
 		GL11.glEnable(GL11.GL_BLEND);
@@ -82,24 +81,37 @@ public abstract class Basic3DGame {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 
-		resize(new DisplayResizeEvent(screenWidth, screenHeight));
+		this.setViewSize(screenWidth, screenHeight);
 	}
 
-	/**
-	 * GL window resize code
-	 * 
-	 * @param event
-	 */
-	private void resize(DisplayResizeEvent event) {
-		// TODO: Implement propper resize! (Centered resize)
-
+	private void setViewSize(int screenWidth, int screenHeight) {
 		// Setup viewport
-		GL11.glViewport(0, 0, event.getNewScreenWidth(), event.getNewScreenHeight());
+		GL11.glViewport(0, 0, screenWidth, screenHeight);
 
 		// Setup projection matrix
-		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov,
-				(float) event.getNewScreenWidth() / (float) event.getNewScreenHeight(), this.near_plane,
-				this.far_plane);
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) screenWidth / (float) screenHeight,
+				this.near_plane, this.far_plane);
+	}
+
+	private void run() {
+		winProcLoop();
+
+		synchronized (this.gameDisplay) {
+			quit = true;
+			this.gameDisplay.cleanup();
+		}
+	}
+
+	// TODO: tmp
+	private void winProcLoop() {
+		/*
+		 * Start new thread to have the OpenGL context current in and which does the rendering.
+		 */
+		new Thread(() -> this.loop()).start();
+
+		while (!quit) {
+			glfwWaitEvents();
+		}
 	}
 
 	/**
@@ -107,6 +119,8 @@ public abstract class Basic3DGame {
 	 */
 	private void loop() {
 		try {
+			this.gameDisplay.setupContextThread();
+			this.initGL();
 			this.setup();
 
 			final double nanoToSecondFactor = 1000000000.0;
@@ -150,6 +164,7 @@ public abstract class Basic3DGame {
 				}
 
 				/* render */
+				this.setViewSize(this.gameDisplay.getScreenWidth(), this.gameDisplay.getScreenHeight());
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 				// Render our scene
@@ -157,12 +172,13 @@ public abstract class Basic3DGame {
 				fpsCounter++;
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
-				this.gameDisplay.swapBuffers();
+				synchronized (this.gameDisplay) {
+					this.gameDisplay.swapBuffers();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			this.gameDisplay.cleanup();
 			this.cleanup();
 			Engine.cleanup();
 		}
