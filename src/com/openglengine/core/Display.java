@@ -82,10 +82,14 @@ public class Display implements ResourceManager {
 		if (!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 
+		// Get the video mode of the primary monitor
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+
 
 		// Create the window
 		if (fullscreen)
@@ -96,9 +100,6 @@ public class Display implements ResourceManager {
 
 		if (this.windowID == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
-
-		// Get the resolution of the primary monitor
-		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 		// Center our window
 		glfwSetWindowPos(this.windowID, (vidmode.width() - this.screenWidth) / 2,

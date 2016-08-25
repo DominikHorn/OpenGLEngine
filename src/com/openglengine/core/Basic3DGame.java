@@ -22,7 +22,7 @@ public abstract class Basic3DGame {
 	/**
 	 * amount of seconds that have to pass in one gameloop tick before updates are skipped
 	 */
-	private double updateSkipThreshold = 60 * secsPerUpdate;
+	private double updateSkipThreshold = 20 * secsPerUpdate;
 
 	/**
 	 * Each basic3d game has one display. this is said display
@@ -135,13 +135,14 @@ public abstract class Basic3DGame {
 				}
 
 				/* update */
+				if (steps >= this.updateSkipThreshold) {
+					Engine.getLogger().info("Skipping all updates because we went over the threshold of "
+							+ this.updateSkipThreshold + " seconds");
+					steps = 0;
+					continue;
+				}
 
 				while (steps >= this.secsPerUpdate) {
-					if (steps >= this.updateSkipThreshold) {
-						steps = 0;
-						continue;
-					}
-
 					// send update event
 					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
 					steps -= secsPerUpdate;
