@@ -8,10 +8,15 @@ import com.openglengine.core.*;
  * @author Dominik
  *
  */
-public class DisplayCreatedEvent extends DisplayEvent {
+public class DisplayCreatedEvent extends BaseEvent {
+	// TODO: refactor
+	private Display sender;
 
 	public DisplayCreatedEvent(Display sender) {
-		super(sender);
+		this.sender = sender;
 	}
 
+	public Display getSender() {
+		return this.sender;
+	}
 }

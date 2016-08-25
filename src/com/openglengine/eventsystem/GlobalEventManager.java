@@ -76,7 +76,6 @@ public class GlobalEventManager implements ResourceManager {
 
 	@Override
 	public void cleanup() {
-		this.listeners.clear();
 		this.listeners = null;
 	}
 }

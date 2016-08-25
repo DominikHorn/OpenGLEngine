@@ -120,11 +120,11 @@ public class Display implements ResourceManager {
 		// bindings available for use.
 		GL.createCapabilities();
 
-		// Notify listeners that the display was created
-		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
-
 		// Register resize event listener
 		glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
+
+		// Notify listeners that the display was created
+		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class Display implements ResourceManager {
 			this.screenWidth = width;
 			this.screenHeight = height;
 
-			Engine.getGlobalEventManager().dispatch(new DisplayResizeEvent(this));
+			Engine.getGlobalEventManager().dispatch(new DisplayResizeEvent(this.screenWidth, this.screenHeight));
 		}
 	}
 }

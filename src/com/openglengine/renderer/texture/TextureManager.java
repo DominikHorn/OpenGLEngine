@@ -97,7 +97,5 @@ public class TextureManager implements ResourceManager {
 	@Override
 	public void cleanup() {
 		this.loadedTextures.values().forEach(tex -> tex.forceDelete());
-		this.loadedTextures.clear();
-		this.loadedTextures = null;
 	}
 }

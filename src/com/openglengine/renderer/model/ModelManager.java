@@ -23,8 +23,6 @@ public class ModelManager implements ResourceManager {
 	@Override
 	public void cleanup() {
 		this.loadedModels.values().forEach(model -> model.forceDelete());
-		this.loadedModels.clear();
-		this.loadedModels = null;
 	}
 
 	/**

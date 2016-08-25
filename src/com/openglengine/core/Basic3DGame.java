@@ -20,6 +20,11 @@ public abstract class Basic3DGame {
 	private double secsPerUpdate = 1.0 / 60.0;
 
 	/**
+	 * amount of seconds that have to pass in one gameloop tick before updates are skipped
+	 */
+	private double updateSkipThreshold = 60 * secsPerUpdate;
+
+	/**
 	 * Each basic3d game has one display. this is said display
 	 */
 	private Display gameDisplay;
@@ -43,7 +48,7 @@ public abstract class Basic3DGame {
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.loop());
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayResizeEvent.class,
-				e -> this.resize(((DisplayResizeEvent) e).getSender()));
+				e -> this.resize((DisplayResizeEvent) e));
 
 		this.gameDisplay = this.setupDisplay();
 		this.gameDisplay.create();
@@ -60,6 +65,9 @@ public abstract class Basic3DGame {
 	 * @param far_plane
 	 */
 	private void initGL() {
+		int screenWidth = this.gameDisplay.getScreenWidth();
+		int screenHeight = this.gameDisplay.getScreenHeight();
+
 		// Set the clear color
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -74,7 +82,7 @@ public abstract class Basic3DGame {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 
-		resize(this.gameDisplay);
+		resize(new DisplayResizeEvent(screenWidth, screenHeight));
 	}
 
 	/**
@@ -82,17 +90,16 @@ public abstract class Basic3DGame {
 	 * 
 	 * @param event
 	 */
-	private void resize(Display display) {
-		int screenWidth = display.getScreenWidth();
-		int screenHeight = display.getScreenHeight();
-
-		// Setup projection matrix
-		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) screenWidth / (float) screenHeight,
-				this.near_plane, this.far_plane);
+	private void resize(DisplayResizeEvent event) {
+		// TODO: Implement propper resize! (Centered resize)
 
 		// Setup viewport
-		GL11.glViewport(0, 0, screenWidth, screenHeight);
+		GL11.glViewport(0, 0, event.getNewScreenWidth(), event.getNewScreenHeight());
 
+		// Setup projection matrix
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov,
+				(float) event.getNewScreenWidth() / (float) event.getNewScreenHeight(), this.near_plane,
+				this.far_plane);
 	}
 
 	/**
@@ -130,6 +137,11 @@ public abstract class Basic3DGame {
 				/* update */
 
 				while (steps >= this.secsPerUpdate) {
+					if (steps >= this.updateSkipThreshold) {
+						steps = 0;
+						continue;
+					}
+
 					// send update event
 					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
 					steps -= secsPerUpdate;
@@ -166,20 +178,32 @@ public abstract class Basic3DGame {
 	}
 
 	/**
+	 * Set the update skip threshold.
+	 * 
+	 * Explanation: If the game loop is paused for some reason (f.e. user drags window), and starts up again the
+	 * gameloop will try to send every update that it missed. This will cause a lag spike and the game zip-forwards many
+	 * seconds. If this threshold is surpassed updates will simply be skipped.
+	 * 
+	 * @param seconds
+	 */
+	public void setUpdateSkipThreshold(double seconds) {
+		this.updateSkipThreshold = seconds;
+	}
+
+	/**
 	 * terminates the gameloop after it finishes the current cycle
 	 */
 	public void quit() {
 		this.quit = true;
 	}
 
-	// TODO: refactor: display is not meant to be interacted with outside of window parameter setup
 	/**
-	 * Retrieve the Display that belongs to this Basic3DGame
+	 * Is a quit requested by the engine?
 	 * 
 	 * @return
 	 */
-	protected Display getGameDisplay() {
-		return this.gameDisplay;
+	public boolean isQuitRequestedByEngine() {
+		return this.gameDisplay.isCloseRequested();
 	}
 
 	/**
