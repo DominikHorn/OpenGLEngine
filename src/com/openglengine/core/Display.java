@@ -24,10 +24,10 @@ public class Display implements ResourceManager {
 	private long windowID;
 
 	/** screen width of glfw view space */
-	private int screenWidth;
+	private int windowWidthInPixels;
 
 	/** screen height of glfw view space */
-	private int screenHeight;
+	private int windowHeightInPixels;
 
 	/** whether or not view space should take up full screen */
 	private boolean fullscreen;
@@ -36,8 +36,8 @@ public class Display implements ResourceManager {
 	private String windowBaseTitle;
 
 	public Display(int screenWidth, int screenHeight, boolean fullscreen, String windowBaseTitle) {
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		this.windowWidthInPixels = screenWidth;
+		this.windowHeightInPixels = screenHeight;
 		this.fullscreen = fullscreen;
 		this.windowBaseTitle = windowBaseTitle;
 		this.windowID = -1;
@@ -91,26 +91,29 @@ public class Display implements ResourceManager {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
-
 		// Create the window
 		if (fullscreen)
-			this.windowID = glfwCreateWindow(this.screenWidth, this.screenHeight, this.windowBaseTitle,
+			this.windowID = glfwCreateWindow(this.windowWidthInPixels, this.windowHeightInPixels, this.windowBaseTitle,
 					glfwGetPrimaryMonitor(), NULL);
 		else
-			this.windowID = glfwCreateWindow(this.screenWidth, this.screenHeight, this.windowBaseTitle, NULL, NULL);
+			this.windowID = glfwCreateWindow(this.windowWidthInPixels, this.windowHeightInPixels, this.windowBaseTitle,
+					NULL, NULL);
 
 		if (this.windowID == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
 		// Center our window
-		glfwSetWindowPos(this.windowID, (vidmode.width() - this.screenWidth) / 2,
-				(vidmode.height() - this.screenHeight) / 2);
+		glfwSetWindowPos(this.windowID, (vidmode.width() - this.windowWidthInPixels) / 2,
+				(vidmode.height() - this.windowHeightInPixels) / 2);
 
 		// Make the window visible
 		glfwShowWindow(this.windowID);
 
-		// Register resize event listener
-		glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
+		// Window size callback
+		// glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resizeWindow(window, width, height));
+
+		// Framebuffer size callback
+		glfwSetFramebufferSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));
 
 		// Notify listeners that the display was created
 		Engine.getGlobalEventManager().dispatch(new DisplayCreatedEvent(this));
@@ -151,8 +154,8 @@ public class Display implements ResourceManager {
 	 * 
 	 * @return
 	 */
-	public int getScreenWidth() {
-		return this.screenWidth;
+	public int getWindowWidthInPixels() {
+		return this.windowWidthInPixels;
 	}
 
 	/**
@@ -160,8 +163,8 @@ public class Display implements ResourceManager {
 	 * 
 	 * @return
 	 */
-	public int getScreenHeight() {
-		return screenHeight;
+	public int getWindowHeightInPixels() {
+		return this.windowHeightInPixels;
 	}
 
 	@Override
@@ -178,10 +181,19 @@ public class Display implements ResourceManager {
 		}
 	}
 
+	/**
+	 * Resize callback handler
+	 * 
+	 * @param window
+	 * @param width
+	 * @param height
+	 */
 	private void resize(long window, int width, int height) {
 		if (window == this.windowID) {
-			this.screenWidth = width;
-			this.screenHeight = height;
+			this.windowWidthInPixels = width;
+			this.windowHeightInPixels = height;
+			Engine.getGlobalEventManager().queueForRenderthread(
+					new FramebufferResizeEvent(this.windowWidthInPixels, this.windowHeightInPixels));
 		}
 	}
 }

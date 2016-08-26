@@ -1,4 +1,4 @@
-package com.openglengine.entitity.component.utility;
+package com.openglengine.entitity.component.defaultcomponents;
 
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;

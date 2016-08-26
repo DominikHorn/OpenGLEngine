@@ -17,6 +17,11 @@ import com.openglengine.eventsystem.defaultevents.*;
  */
 public abstract class Basic3DGame {
 	/**
+	 * Each basic3d game has one display. this is said display
+	 */
+	private Display gameDisplay;
+
+	/**
 	 * amount of seconds that pass between updates
 	 */
 	private double secsPerUpdate = 1.0 / 60.0;
@@ -27,26 +32,22 @@ public abstract class Basic3DGame {
 	private double updateSkipThreshold = 20 * secsPerUpdate;
 
 	/**
-	 * Each basic3d game has one display. this is said display
-	 */
-	private Display gameDisplay;
-
-	/**
 	 * Whether or not we should quit the gameloop
 	 */
 	private boolean quit = false;
 
-	// TODO: refactor
 	/** These settings are used for projection matricy setup in resize() */
-	protected float fov, near_plane, far_plane;
+	private float fov, nearPlane, farPlane;
 
 	public Basic3DGame(float fov, float near_plane, float far_plane) throws IOException {
 		this.fov = fov;
-		this.near_plane = near_plane;
-		this.far_plane = far_plane;
+		this.nearPlane = near_plane;
+		this.farPlane = far_plane;
 
 		Engine.loadEngineComponents();
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.run());
+		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this
+				.setViewSize(((FramebufferResizeEvent) e).getNewWidth(), ((FramebufferResizeEvent) e).getNewHeight()));
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
 
 		this.gameDisplay = this.setupDisplay();
@@ -60,12 +61,12 @@ public abstract class Basic3DGame {
 	 * @param screenHeight
 	 * @param fov
 	 * @param aspect
-	 * @param near_plane
-	 * @param far_plane
+	 * @param nearPlane
+	 * @param farPlane
 	 */
 	private void initGL() {
-		int screenWidth = this.gameDisplay.getScreenWidth();
-		int screenHeight = this.gameDisplay.getScreenHeight();
+		int pixelWidth = this.gameDisplay.getWindowWidthInPixels();
+		int pixeleight = this.gameDisplay.getWindowHeightInPixels();
 
 		// Set the clear color
 		GL11.glClearColor(0f, 0f, 0.1f, 0.1f);
@@ -81,37 +82,29 @@ public abstract class Basic3DGame {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 
-		this.setViewSize(screenWidth, screenHeight);
+		this.setViewSize(pixelWidth, pixeleight);
 	}
 
-	private void setViewSize(int screenWidth, int screenHeight) {
+	private void setViewSize(int pixelWidth, int pixelHeight) {
 		// Setup viewport
-		GL11.glViewport(0, 0, screenWidth, screenHeight);
+		GL11.glViewport(0, 0, pixelWidth, pixelHeight);
 
 		// Setup projection matrix
-		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) screenWidth / (float) screenHeight,
-				this.near_plane, this.far_plane);
+		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) pixelWidth / (float) pixelHeight,
+				this.nearPlane, this.farPlane);
 	}
 
 	private void run() {
-		winProcLoop();
-
-		synchronized (this.gameDisplay) {
-			quit = true;
-			this.gameDisplay.cleanup();
-		}
-	}
-
-	// TODO: tmp
-	private void winProcLoop() {
-		/*
-		 * Start new thread to have the OpenGL context current in and which does the rendering.
-		 */
+		// Start rendering thread
 		new Thread(() -> this.loop()).start();
 
+		// Seperate loop wating for glfw events on this thread
 		while (!quit) {
 			glfwWaitEvents();
 		}
+
+		// If we quit, wait for last render loop pass and quit
+		this.quit();
 	}
 
 	/**
@@ -148,7 +141,7 @@ public abstract class Basic3DGame {
 					fpsCounter = 0;
 				}
 
-				/* update */
+				// Skip steps if we have to many
 				if (steps >= this.updateSkipThreshold) {
 					Engine.getLogger().info("Skipping all updates because we went over the threshold of "
 							+ this.updateSkipThreshold + " seconds");
@@ -156,6 +149,10 @@ public abstract class Basic3DGame {
 					continue;
 				}
 
+				// Fetch events
+				Engine.getGlobalEventManager().fetchForRenderthread();
+
+				// Update
 				while (steps >= this.secsPerUpdate) {
 					// send update event
 					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
@@ -164,7 +161,6 @@ public abstract class Basic3DGame {
 				}
 
 				/* render */
-				this.setViewSize(this.gameDisplay.getScreenWidth(), this.gameDisplay.getScreenHeight());
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 				// Render our scene
@@ -184,8 +180,15 @@ public abstract class Basic3DGame {
 			e.printStackTrace();
 		} finally {
 			this.cleanup();
+			this.gameDisplay.cleanup();
 			Engine.cleanup();
 		}
+	}
+
+	public void setViewFrustum(float fov, float nearPlane, float farPlane) {
+		this.fov = fov;
+		this.nearPlane = nearPlane;
+		this.farPlane = farPlane;
 	}
 
 	/**
@@ -212,19 +215,19 @@ public abstract class Basic3DGame {
 	}
 
 	/**
-	 * terminates the gameloop after it finishes the current cycle
-	 */
-	public void quit() {
-		this.quit = true;
-	}
-
-	/**
 	 * Is a quit requested by the engine?
 	 * 
 	 * @return
 	 */
 	public boolean isQuitRequestedByEngine() {
 		return this.gameDisplay.isCloseRequested();
+	}
+
+	/**
+	 * terminates the main loop and quits the game
+	 */
+	public void quit() {
+		quit = true;
 	}
 
 	/**
