@@ -14,7 +14,7 @@ import com.openglengine.util.*;
  */
 public class Engine {
 	/** Version of this engine */
-	public static final String ENGINE_VERSION = "0.0.1_a";
+	public static final String ENGINE_VERSION = "0.2.0a";
 
 	/**
 	 * Model matrix. Use this for moving/rotating and scaling objects. This matrix will be uploaded to the shader
@@ -102,5 +102,6 @@ public class Engine {
 		TEXTURE_MANAGER.cleanup();
 		MODEL_MANAGER.cleanup();
 		INPUT_MANAGER.cleanup();
+		RENDER_MANAGER.cleanup();
 	}
 }

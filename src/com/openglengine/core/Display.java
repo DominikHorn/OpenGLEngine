@@ -102,6 +102,9 @@ public class Display implements ResourceManager {
 		if (this.windowID == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
+		// Set window size limits
+		glfwSetWindowSizeLimits(this.windowID, 960, 540, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
 		// Center our window
 		glfwSetWindowPos(this.windowID, (vidmode.width() - this.windowWidthInPixels) / 2,
 				(vidmode.height() - this.windowHeightInPixels) / 2);
