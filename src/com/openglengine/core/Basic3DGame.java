@@ -173,6 +173,10 @@ public abstract class Basic3DGame {
 
 				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
 				synchronized (this.gameDisplay) {
+					// Critical line to keep buffers from flickering ..
+					GL11.glFlush();
+
+					// Swap out buffers
 					this.gameDisplay.swapBuffers();
 				}
 			}
