@@ -1,13 +1,10 @@
 package com.openglengine.core;
 
-import java.io.*;
-
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
-import com.openglengine.util.math.*;
 
 /**
  * Container class for all the singleton instances. (More convenient to enforce one global instance per class this way)
@@ -53,10 +50,6 @@ public class Engine {
 	/** Input system manager */
 	private static InputManager INPUT_MANAGER = new InputManager();
 
-	// TODO: refactor (Allow for multiple light sources f.e.)
-	/** Global light source */
-	private static LightSource LIGHT_SOURCE;
-
 	public static String getEngineVersion() {
 		return ENGINE_VERSION;
 	}
@@ -99,27 +92,6 @@ public class Engine {
 
 	public static void setRenderManager(RenderManager renderer) {
 		RENDER_MANAGER = renderer;
-	}
-
-	public static LightSource getLightSource() {
-		return LIGHT_SOURCE;
-	}
-
-	public static void setLightSource(LightSource lightSource) {
-		LIGHT_SOURCE = lightSource;
-	}
-
-	/**
-	 * Initialize all parts of the GameEngine that are opengl context independent with the following parameters
-	 * 
-	 * @param screenWidth
-	 * @param screenHeight
-	 * @param fullscreen
-	 * @param windowTitle
-	 * @throws IOException
-	 */
-	public static void loadEngineComponents() throws IOException {
-		LIGHT_SOURCE = new LightSource(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 	}
 
 	/**

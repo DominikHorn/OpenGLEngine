@@ -44,7 +44,6 @@ public abstract class Basic3DGame {
 		this.nearPlane = near_plane;
 		this.farPlane = far_plane;
 
-		Engine.loadEngineComponents();
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.run());
 		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this
 				.setViewSize(((FramebufferResizeEvent) e).getNewWidth(), ((FramebufferResizeEvent) e).getNewHeight()));
