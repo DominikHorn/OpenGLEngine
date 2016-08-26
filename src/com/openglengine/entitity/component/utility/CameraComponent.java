@@ -1,7 +1,8 @@
-package com.openglengine.entitity.component;
+package com.openglengine.entitity.component.utility;
 
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
+import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 
