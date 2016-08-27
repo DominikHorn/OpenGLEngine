@@ -20,7 +20,7 @@ public class RenderManager implements ResourceManager {
 	private Renderer renderer;
 
 	/** Batch rendering storage. This list maintains all entities that need to be rendered */
-	private Map<TexturedModel, List<VisibleEntity>> texturedEntities;
+	private Map<TexturedModel, List<Entity>> texturedEntities;
 
 	/**
 	 * Create new RenderManager
@@ -38,9 +38,9 @@ public class RenderManager implements ResourceManager {
 		texturedEntities.clear();
 	}
 
-	public void processEntity(VisibleEntity entity) {
-		TexturedModel texturedModel = entity.getModel();
-		List<VisibleEntity> batch = texturedEntities.get(texturedModel);
+	public void processEntity(Entity entity) {
+		TexturedModel texturedModel = (TexturedModel) entity.getValueProperty(DefaultEntityProperties.PROPERTY_MODEL);
+		List<Entity> batch = texturedEntities.get(texturedModel);
 		if (batch == null) {
 			batch = new ArrayList<>();
 			texturedEntities.put(texturedModel, batch);

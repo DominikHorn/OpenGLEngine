@@ -9,9 +9,10 @@ import com.openglengine.entitity.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
+import com.openglengine.util.math.*;
 
 public class Renderer {
-	public void render(Map<TexturedModel, List<VisibleEntity>> entities) {
+	public void render(Map<TexturedModel, List<Entity>> entities) {
 		entities.keySet().forEach(model -> {
 			Shader shader = model.getShader();
 			shader.startUsingShader();
@@ -21,7 +22,7 @@ public class Renderer {
 			prepareTexturedModel(model, shader);
 
 			// Retrieve all entities
-			List<VisibleEntity> batch = entities.get(model);
+			List<Entity> batch = entities.get(model);
 
 			// Prepare instance
 			batch.forEach(entity -> {
@@ -60,14 +61,18 @@ public class Renderer {
 		shader.uploadModelUniforms(model);
 	}
 
-	private void prepareInstance(VisibleEntity entity, Shader shader) {
+	private void prepareInstance(Entity entity, Shader shader) {
+		Vector3f position = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_POSITION);
+		Vector3f rotation = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_ROTATION);
+		Vector3f scale = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_SCALE);
+
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();
-		tms.translate(entity.position);
-		tms.rotateX(entity.rotX);
-		tms.rotateY(entity.rotY);
-		tms.rotateZ(entity.rotZ);
-		tms.scale(entity.scale, entity.scale, entity.scale);
+		tms.translate(position);
+		tms.rotateX(rotation.x);
+		tms.rotateY(rotation.y);
+		tms.rotateZ(rotation.z);
+		tms.scale(scale.x, scale.y, scale.z);
 
 		shader.uploadEntityUniforms(entity);
 		tms.pop();

@@ -18,57 +18,12 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	private int textureID;
 
 	/**
-	 * shine dampener factor of this texture TODO: refactor (Not every texture has to have these values. Instead
-	 * introduce a material class)
-	 */
-	private float shineDamper = 10.0f;
-
-	/** reflecivity factor of this texture TODO: refactor see above*/
-	private float reflectivity = 1.0f;
-
-	/**
 	 * Initialize Texture
 	 * 
 	 * @param textureID
 	 */
 	protected Texture(int textureID) {
 		this.textureID = textureID;
-	}
-
-	/**
-	 * Set a new shine damper for this texture
-	 * 
-	 * @param newDamper
-	 */
-	public void setShineDamper(float newDamper) {
-		this.shineDamper = newDamper;
-	}
-
-	/**
-	 * retrieve shine damper
-	 * 
-	 * @return
-	 */
-	public float getShineDamper() {
-		return this.shineDamper;
-	}
-
-	/**
-	 * Set a new reflectivity for this texture
-	 * 
-	 * @param newReflectivity
-	 */
-	public void setReflectivity(float newReflectivity) {
-		this.reflectivity = newReflectivity;
-	}
-
-	/**
-	 * retrieve reflectivity
-	 * 
-	 * @return
-	 */
-	public float getReflectivity() {
-		return this.reflectivity;
 	}
 
 	/**
@@ -85,6 +40,7 @@ public class Texture extends ReferenceCountedDeletableContainer {
 		if (this.numReferences > 0)
 			Engine.getLogger().warn("Force deleting texture that has " + numReferences + " references left!");
 
+		// Actually delete this texture
 		GL11.glDeleteTextures(this.textureID);
 	}
 }

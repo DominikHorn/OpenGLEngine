@@ -23,23 +23,30 @@ public class Entity {
 	/** The entity's components */
 	private List<Component> components;
 
-	/* TODO: potentially find better way */
-	/** position to render model at */
-	public Vector3f position;
-
-	/** rotation information */
-	public float rotX, rotY, rotZ;
+	private Map<String, EntityProperty<? extends Object>> properties;
 
 	/**
 	 * Initialize this entity
 	 */
-	public Entity(Vector3f position, float rotX, float rotY, float rotZ) {
+	public Entity() {
 		this.entityUID = globalID++;
 		this.components = new ArrayList<>();
-		this.position = position;
-		this.rotX = rotX;
-		this.rotY = rotY;
-		this.rotZ = rotZ;
+		this.properties = new HashMap<>();
+	}
+
+	/**
+	 * Puts the default properties in place (convenience method)
+	 * 
+	 * TODO: needed?
+	 * 
+	 * @return convenience self return for method chaining
+	 */
+	public Entity putEmptyDefaultProperties() {
+		this.putProperty(DefaultEntityProperties.PROPERTY_POSITION, new Vector3f(0, 0, 0));
+		this.putProperty(DefaultEntityProperties.PROPERTY_ROTATION, new Vector3f(0, 0, 0));
+		this.putProperty(DefaultEntityProperties.PROPERTY_SCALE, new Vector3f(1, 1, 1));
+
+		return this;
 	}
 
 	/**
@@ -77,7 +84,55 @@ public class Entity {
 	}
 
 	/**
+	 * Retrieve a property of this entity
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	public EntityProperty<? extends Object> getProperty(String propertyName) throws PropertyNotSetException {
+		EntityProperty<? extends Object> prop = this.properties.get(propertyName);
+		if (prop == null)
+			throw new PropertyNotSetException();
+
+		return prop;
+	}
+
+	/**
+	 * Retrieve a value property property of this entity
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	public Object getValueProperty(String propertyName) throws PropertyNotSetException {
+		return this.getProperty(propertyName).getValue();
+	}
+
+	/**
+	 * Put a new property
+	 * 
+	 * @param propertyName
+	 * @param property
+	 * 
+	 * @return convenience self return for method chaining
+	 */
+	public Entity putProperty(String propertyName, Object property) {
+		this.properties.put(propertyName, new EntityProperty<Object>(property));
+		return this;
+	}
+
+	/**
+	 * Returns true when the property does exist
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	public boolean doesPropertyExist(String propertyName) {
+		return this.properties.get(propertyName) != null;
+	}
+
+	/**
 	 * notify all other components of this entity that something happened
+	 * 
 	 * 
 	 * @param event
 	 * @param sender
@@ -99,5 +154,6 @@ public class Entity {
 
 	public void cleanup() {
 		this.components.forEach(c -> c.cleanup());
+		this.properties.clear();
 	}
 }
