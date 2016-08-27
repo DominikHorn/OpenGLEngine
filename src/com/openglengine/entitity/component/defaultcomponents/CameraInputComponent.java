@@ -4,7 +4,6 @@ import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
-import com.openglengine.util.math.*;
 
 public class CameraInputComponent extends Component {
 
@@ -17,30 +16,29 @@ public class CameraInputComponent extends Component {
 	@Override
 	public void update(Entity entity) {
 		InputManager input = Engine.getInputManager();
-		Vector3f position = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_POSITION);
 
 		if (input.isKeyDown(InputManager.KEY_W)) {
-			position.z -= cameraSpeed;
+			entity.position.z -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_D)) {
-			position.x += cameraSpeed;
+			entity.position.x += cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_A)) {
-			position.x -= cameraSpeed;
+			entity.position.x -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_S)) {
-			position.z += cameraSpeed;
+			entity.position.z += cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_LEFT_SHIFT)) {
-			position.y -= cameraSpeed;
+			entity.position.y -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_SPACE)) {
-			position.y += cameraSpeed;
+			entity.position.y += cameraSpeed;
 		}
 	}
 

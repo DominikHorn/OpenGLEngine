@@ -9,7 +9,6 @@ import com.openglengine.entitity.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
-import com.openglengine.util.math.*;
 
 public class Renderer {
 	public void render(Map<TexturedModel, List<Entity>> entities) {
@@ -62,17 +61,13 @@ public class Renderer {
 	}
 
 	private void prepareInstance(Entity entity, Shader shader) {
-		Vector3f position = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_POSITION);
-		Vector3f rotation = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_ROTATION);
-		Vector3f scale = (Vector3f) entity.getValueProperty(DefaultEntityProperties.PROPERTY_SCALE);
-
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();
-		tms.translate(position);
-		tms.rotateX(rotation.x);
-		tms.rotateY(rotation.y);
-		tms.rotateZ(rotation.z);
-		tms.scale(scale.x, scale.y, scale.z);
+		tms.translate(entity.position);
+		tms.rotateX(entity.rotation.x);
+		tms.rotateY(entity.rotation.y);
+		tms.rotateZ(entity.rotation.z);
+		tms.scale(entity.scale.x, entity.scale.y, entity.scale.z);
 
 		shader.uploadEntityUniforms(entity);
 		tms.pop();

@@ -20,7 +20,7 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	private int indicesCount;
 
 	/** Shader used when rendering this model */
-	private Shader shader;
+	private Shader shader; // TODO: refactor
 
 	/**
 	 * Initialize Model

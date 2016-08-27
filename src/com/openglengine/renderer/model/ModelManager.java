@@ -47,7 +47,7 @@ public class ModelManager implements ResourceManager {
 	 * @param modelPath
 	 * @return
 	 */
-	public TexturedModel getTexturedModel(String modelPath) {
+	public TexturedModel loadTexturedModel(String modelPath) {
 		TexturedModel loadedModel = (TexturedModel) this.loadedModels.get(modelPath);
 
 		if (loadedModel == null) {

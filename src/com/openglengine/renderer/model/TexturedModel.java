@@ -7,6 +7,7 @@ import java.util.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
+import com.openglengine.renderer.material.*;
 import com.openglengine.renderer.texture.*;
 
 /**
@@ -20,14 +21,14 @@ public class TexturedModel extends Model {
 	private List<Integer> vbos;
 
 	/** Texture used when rendering this model */
-	private Texture texture;
+	private Texture texture = null;
+
+	/** Material used when rendering this model */
+	private Material material = null;
 
 	protected TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
 		// Initialize to 0
 		super(0, indices.length);
-
-		// Initialize to no texture
-		this.texture = null;
 
 		// Initialize
 		this.vbos = new ArrayList<>();
@@ -53,6 +54,22 @@ public class TexturedModel extends Model {
 	 */
 	public Texture getTexture() {
 		return this.texture;
+	}
+
+	/**
+	 * Set material
+	 */
+	public void setMaterial(Material material) {
+		this.material = material;
+	}
+
+	/**
+	 * Retrieve this model's material
+	 * 
+	 * @return
+	 */
+	public Material getMaterial() {
+		return this.material;
 	}
 
 	@Override

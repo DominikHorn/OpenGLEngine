@@ -1,4 +1,4 @@
-package com.openglengine.entitity;
+package com.openglengine.util.property;
 
 /**
  * This exception is thrown when a requested entity's property has not been set before

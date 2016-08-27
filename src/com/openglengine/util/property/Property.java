@@ -1,12 +1,6 @@
-package com.openglengine.entitity;
+package com.openglengine.util.property;
 
-/**
- * Container class for a property stored in entity
- * 
- * @author Dominik
- *
- */
-public class EntityProperty<T extends Object> {
+public class Property<T extends Object> {
 	private T value;
 
 	/**
@@ -14,7 +8,7 @@ public class EntityProperty<T extends Object> {
 	 * 
 	 * @param value
 	 */
-	protected EntityProperty(T value) {
+	public Property(T value) {
 		this.value = value;
 	}
 

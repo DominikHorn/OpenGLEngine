@@ -5,6 +5,7 @@ import java.util.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.math.*;
+import com.openglengine.util.property.*;
 
 /**
  * Entity class. One entity may contain multiple components, all of which should be as independent of one another as
@@ -13,40 +14,50 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class Entity {
+public class Entity implements PropertyContainer {
 	/** Each entity has a unique global id. This is used to generate those ids */
 	private static int globalID = 0;
 
-	/** The entity's globally unique id */
+	/** Entity's globally unique id */
 	private int entityUID = 0;
 
-	/** The entity's components */
+	/** Entity's components */
 	private List<Component> components;
 
-	private Map<String, EntityProperty<? extends Object>> properties;
+	/** Properties list */
+	private Map<String, Property<? extends Object>> properties;
+
+	/** Entity's position in the game world */
+	public Vector3f position;
+
+	/** Entity's rotation on all three axis */
+	public Vector3f rotation;
+
+	/** Entity's scale in all three directions */
+	public Vector3f scale;
 
 	/**
 	 * Initialize this entity
 	 */
 	public Entity() {
+		this(new Vector3f());
+	}
+
+	public Entity(Vector3f position) {
+		this(position, new Vector3f());
+	}
+
+	public Entity(Vector3f position, Vector3f rotation) {
+		this(position, rotation, new Vector3f(1, 1, 1));
+	}
+
+	public Entity(Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.entityUID = globalID++;
 		this.components = new ArrayList<>();
 		this.properties = new HashMap<>();
-	}
-
-	/**
-	 * Puts the default properties in place (convenience method)
-	 * 
-	 * TODO: needed?
-	 * 
-	 * @return convenience self return for method chaining
-	 */
-	public Entity putEmptyDefaultProperties() {
-		this.putProperty(DefaultEntityProperties.PROPERTY_POSITION, new Vector3f(0, 0, 0));
-		this.putProperty(DefaultEntityProperties.PROPERTY_ROTATION, new Vector3f(0, 0, 0));
-		this.putProperty(DefaultEntityProperties.PROPERTY_SCALE, new Vector3f(1, 1, 1));
-
-		return this;
+		this.position = position;
+		this.rotation = rotation;
+		this.scale = scale;
 	}
 
 	/**
@@ -84,53 +95,6 @@ public class Entity {
 	}
 
 	/**
-	 * Retrieve a property of this entity
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	public EntityProperty<? extends Object> getProperty(String propertyName) throws PropertyNotSetException {
-		EntityProperty<? extends Object> prop = this.properties.get(propertyName);
-		if (prop == null)
-			throw new PropertyNotSetException();
-
-		return prop;
-	}
-
-	/**
-	 * Retrieve a value property property of this entity
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	public Object getValueProperty(String propertyName) throws PropertyNotSetException {
-		return this.getProperty(propertyName).getValue();
-	}
-
-	/**
-	 * Put a new property
-	 * 
-	 * @param propertyName
-	 * @param property
-	 * 
-	 * @return convenience self return for method chaining
-	 */
-	public Entity putProperty(String propertyName, Object property) {
-		this.properties.put(propertyName, new EntityProperty<Object>(property));
-		return this;
-	}
-
-	/**
-	 * Returns true when the property does exist
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	public boolean doesPropertyExist(String propertyName) {
-		return this.properties.get(propertyName) != null;
-	}
-
-	/**
 	 * notify all other components of this entity that something happened
 	 * 
 	 * 
@@ -156,4 +120,30 @@ public class Entity {
 		this.components.forEach(c -> c.cleanup());
 		this.properties.clear();
 	}
+
+	/** Property container */
+	@Override
+	public Property<? extends Object> getProperty(String propertyName) throws PropertyNotSetException {
+		Property<? extends Object> prop = this.properties.get(propertyName);
+		if (prop == null)
+			throw new PropertyNotSetException();
+
+		return prop;
+	}
+
+	@Override
+	public Object getValueProperty(String propertyName) throws PropertyNotSetException {
+		return this.getProperty(propertyName).getValue();
+	}
+
+	@Override
+	public void putProperty(String propertyName, Object property) {
+		this.properties.put(propertyName, new Property<Object>(property));
+	}
+
+	@Override
+	public boolean doesPropertyExist(String propertyName) {
+		return this.properties.get(propertyName) != null;
+	}
+
 }
