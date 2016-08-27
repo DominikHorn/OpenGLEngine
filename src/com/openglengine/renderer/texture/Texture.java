@@ -17,10 +17,13 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 */
 	private int textureID;
 
-	/** shine dampener factor of this texture */
+	/**
+	 * shine dampener factor of this texture TODO: refactor (Not every texture has to have these values. Instead
+	 * introduce a material class)
+	 */
 	private float shineDamper = 10.0f;
 
-	/** reflecivity factor of this texture */
+	/** reflecivity factor of this texture TODO: refactor see above*/
 	private float reflectivity = 1.0f;
 
 	/**

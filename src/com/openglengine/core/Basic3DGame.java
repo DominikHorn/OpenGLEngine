@@ -159,9 +159,6 @@ public abstract class Basic3DGame {
 					upsCounter++;
 				}
 
-				/* render */
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
 				// Render our scene
 				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));
 				fpsCounter++;
@@ -173,6 +170,9 @@ public abstract class Basic3DGame {
 
 					// Swap out buffers
 					this.gameDisplay.swapBuffers();
+
+					// Clear new backbuffer
+					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 				}
 			}
 		} catch (Exception e) {

@@ -88,8 +88,8 @@ public class Display implements ResourceManager {
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent the window from being resized
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 		// Create the window
 		if (fullscreen)
