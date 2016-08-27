@@ -7,6 +7,10 @@ import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 
 public class CameraComponent extends Component {
+	@Override
+	public void init(Entity entity) {
+		// Do nothing
+	}
 
 	@Override
 	public void update(Entity entity) {
@@ -24,8 +28,7 @@ public class CameraComponent extends Component {
 	}
 
 	@Override
-	public void cleanup() {
+	public void cleanup(Entity entity) {
 		// No resources -> no cleanup needed
 	}
-
 }

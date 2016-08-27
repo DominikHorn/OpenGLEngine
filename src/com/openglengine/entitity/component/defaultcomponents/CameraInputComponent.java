@@ -14,6 +14,11 @@ public class CameraInputComponent extends Component {
 	}
 
 	@Override
+	public void init(Entity entity) {
+		// Do nothing
+	}
+
+	@Override
 	public void update(Entity entity) {
 		InputManager input = Engine.getInputManager();
 
@@ -48,7 +53,7 @@ public class CameraInputComponent extends Component {
 	}
 
 	@Override
-	public void cleanup() {
+	public void cleanup(Entity entity) {
 		// No resources -> no cleanup needed
 	}
 

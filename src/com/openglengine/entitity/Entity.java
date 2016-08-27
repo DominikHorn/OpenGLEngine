@@ -117,7 +117,7 @@ public class Entity implements PropertyContainer {
 	}
 
 	public void cleanup() {
-		this.components.forEach(c -> c.cleanup());
+		this.components.forEach(c -> c.cleanup(this));
 		this.properties.clear();
 	}
 

@@ -11,6 +11,13 @@ import com.openglengine.eventsystem.defaultevents.*;
  */
 public abstract class Component {
 	/**
+	 * Initialize this component/the entity for use with this component
+	 * 
+	 * @param entity
+	 */
+	public abstract void init(Entity entity);
+
+	/**
 	 * Use this to update component state / state of entity
 	 * 
 	 * @param entity
@@ -27,5 +34,5 @@ public abstract class Component {
 	/**
 	 * Use this method to cleanup all resources
 	 */
-	public abstract void cleanup();
+	public abstract void cleanup(Entity entity);
 }

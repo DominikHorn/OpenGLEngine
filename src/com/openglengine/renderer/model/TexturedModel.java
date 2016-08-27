@@ -26,7 +26,7 @@ public class TexturedModel extends Model {
 	/** Material used when rendering this model */
 	private Material material = null;
 
-	protected TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
+	public TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
 		// Initialize to 0
 		super(0, indices.length);
 
