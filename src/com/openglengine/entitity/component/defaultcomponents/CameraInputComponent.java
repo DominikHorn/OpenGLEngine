@@ -6,6 +6,7 @@ import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 public class CameraInputComponent extends Component {
+	private static final float CAMERA_SPEED_SCALAR = 5f;
 
 	private float cameraSpeed;
 
@@ -23,27 +24,45 @@ public class CameraInputComponent extends Component {
 		InputManager input = Engine.getInputManager();
 
 		if (input.isKeyDown(InputManager.KEY_W)) {
-			entity.position.z -= cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_W))
+				entity.position.z -= cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.z -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_D)) {
-			entity.position.x += cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_D))
+				entity.position.x += cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.x += cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_A)) {
-			entity.position.x -= cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_A))
+				entity.position.x -= cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.x -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_S)) {
-			entity.position.z += cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_S))
+				entity.position.z += cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.z += cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_LEFT_SHIFT)) {
-			entity.position.y -= cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_LEFT_SHIFT))
+				entity.position.y -= cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.y -= cameraSpeed;
 		}
 
 		if (input.isKeyDown(InputManager.KEY_SPACE)) {
-			entity.position.y += cameraSpeed;
+			if (input.isKeyRepeat(InputManager.KEY_SPACE))
+				entity.position.y += cameraSpeed * CAMERA_SPEED_SCALAR;
+			else
+				entity.position.y += cameraSpeed;
 		}
 	}
 

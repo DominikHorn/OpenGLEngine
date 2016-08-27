@@ -84,7 +84,7 @@ public class Shader {
 	 * 
 	 * NOTE: that you'll have to call startUsingShader() beforehand
 	 */
-	public void uploadModelUniforms(TexturedModel model) {
+	public void uploadModelUniforms(Model model) {
 		if (!this.shaderInUse)// TODO: performance relevant?
 			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
 	}

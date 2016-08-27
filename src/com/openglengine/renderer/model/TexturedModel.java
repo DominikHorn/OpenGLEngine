@@ -7,7 +7,6 @@ import java.util.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
-import com.openglengine.renderer.material.*;
 import com.openglengine.renderer.texture.*;
 
 /**
@@ -22,9 +21,6 @@ public class TexturedModel extends Model {
 
 	/** Texture used when rendering this model */
 	private Texture texture = null;
-
-	/** Material used when rendering this model */
-	private Material material = null;
 
 	public TexturedModel(float[] positions, float[] texCoords, float[] normals, int[] indices) {
 		// Initialize to 0
@@ -56,20 +52,40 @@ public class TexturedModel extends Model {
 		return this.texture;
 	}
 
-	/**
-	 * Set material
-	 */
-	public void setMaterial(Material material) {
-		this.material = material;
+	@Override
+	public void initRendercode() {
+		// Bind vao for use
+		GL30.glBindVertexArray(this.getVaoID());
+
+		// Enable first vertex attrib array (Vertex data)
+		GL20.glEnableVertexAttribArray(0);
+
+		// Enable vertex attrib array 1 (Texture data)
+		GL20.glEnableVertexAttribArray(1);
+
+		// Enable vertex attrib array 2 (Normal data)
+		GL20.glEnableVertexAttribArray(2);
+
+		// Enable texture 0 TODO: potential overhead
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+
+		// Bind our texture
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture.getTextureID());
 	}
 
-	/**
-	 * Retrieve this model's material
-	 * 
-	 * @return
-	 */
-	public Material getMaterial() {
-		return this.material;
+	@Override
+	public void deinitRendercode() {
+		// Disable first vertex attrib array (Vertex data)
+		GL20.glDisableVertexAttribArray(0);
+
+		// Disable vertex attrib array 1 (Texture data)
+		GL20.glDisableVertexAttribArray(1);
+
+		// Disable vertex attrib array 2 (Normal data)
+		GL20.glDisableVertexAttribArray(2);
+
+		// Unbind vao
+		GL30.glBindVertexArray(0);
 	}
 
 	@Override

@@ -2,8 +2,10 @@ package com.openglengine.entitity;
 
 import java.util.*;
 
+import com.openglengine.core.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 import com.openglengine.util.property.*;
 
@@ -77,6 +79,7 @@ public class Entity implements PropertyContainer {
 	 */
 	public Entity addComponent(Component component) {
 		// TODO: maybe implement component reordering because some components might be execution order dependent
+		component.init(this);
 		this.components.add(component);
 
 		return this;
@@ -116,9 +119,32 @@ public class Entity implements PropertyContainer {
 		this.components.forEach(c -> c.update(this));
 	}
 
+	/**
+	 * Cleans this entity's resources
+	 */
 	public void cleanup() {
 		this.components.forEach(c -> c.cleanup(this));
 		this.properties.clear();
+	}
+
+	/**
+	 * Prepares this instance for rendering
+	 * 
+	 * @param shader
+	 */
+	public void initRendercode() {
+		// Set model transform
+		TransformationMatrixStack tms = Engine.getModelMatrixStack();
+		tms.push();
+		tms.translate(this.position);
+		tms.rotateX(this.rotation.x);
+		tms.rotateY(this.rotation.y);
+		tms.rotateZ(this.rotation.z);
+		tms.scale(this.scale.x, this.scale.y, this.scale.z);
+	}
+
+	public void deinitRenderCode() {
+		Engine.getModelMatrixStack().pop();
 	}
 
 	/** Property container */
