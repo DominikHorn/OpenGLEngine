@@ -35,7 +35,7 @@ public class TextureManager implements ResourceManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public Texture loadTexture(String texturePath) throws IOException {
+	public Texture loadTexture(String texturePath) {
 		Texture loadedTexture = this.loadedTextures.get(texturePath);
 
 		if (loadedTexture == null) {

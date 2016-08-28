@@ -158,7 +158,7 @@ public class Entity implements PropertyContainer {
 	}
 
 	@Override
-	public Object getValueProperty(String propertyName) throws PropertyNotSetException {
+	public Object getPropertyValue(String propertyName) throws PropertyNotSetException {
 		return this.getProperty(propertyName).getValue();
 	}
 

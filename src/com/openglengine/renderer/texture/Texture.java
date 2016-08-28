@@ -38,7 +38,8 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	@Override
 	public void forceDelete() {
 		if (this.numReferences > 0)
-			Engine.getLogger().warn("Force deleting texture that has " + numReferences + " references left!");
+			Engine.getLogger().warn(
+					"Force deleting texture(" + this.textureID + ") that has " + numReferences + " references left!");
 
 		// Actually delete this texture
 		GL11.glDeleteTextures(this.textureID);

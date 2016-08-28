@@ -70,10 +70,6 @@ public abstract class Basic3DGame {
 		// Set the clear color
 		GL11.glClearColor(0f, 0f, 0f, 1.0f);
 
-		// Enable transparency
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
 		// Enable depth test
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 

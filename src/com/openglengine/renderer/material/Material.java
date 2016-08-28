@@ -19,10 +19,11 @@ public abstract class Material implements PropertyContainer {
 	 */
 	public Material() {
 		this.properties = new HashMap<>();
-		this.loadMaterialProperties();
 	}
 
-	protected abstract void loadMaterialProperties();
+	public abstract void initRendercode();
+
+	public abstract void deinitRendercode();
 
 	@Override
 	public Property<? extends Object> getProperty(String propertyName) throws PropertyNotSetException {
@@ -34,7 +35,7 @@ public abstract class Material implements PropertyContainer {
 	}
 
 	@Override
-	public Object getValueProperty(String propertyName) throws PropertyNotSetException {
+	public Object getPropertyValue(String propertyName) throws PropertyNotSetException {
 		return this.getProperty(propertyName).getValue();
 	}
 

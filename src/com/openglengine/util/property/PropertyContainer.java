@@ -21,7 +21,7 @@ public interface PropertyContainer {
 	 * @param propertyName
 	 * @return
 	 */
-	public Object getValueProperty(String propertyName) throws PropertyNotSetException;
+	public Object getPropertyValue(String propertyName) throws PropertyNotSetException;
 
 	/**
 	 * Put a new property

@@ -18,6 +18,9 @@ public class Renderer {
 			// Prepare model
 			model.initRendercode();
 
+			// Prepare model material
+			model.getMaterial().initRendercode();
+
 			// // Upload model data
 			shader.uploadModelUniforms(model);
 
@@ -41,6 +44,7 @@ public class Renderer {
 
 			// Unbind all stuff
 			model.deinitRendercode();
+			model.getMaterial().deinitRendercode();
 			shader.stopUsingShader();
 		});
 	}

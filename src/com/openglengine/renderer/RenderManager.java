@@ -39,7 +39,7 @@ public class RenderManager implements ResourceManager {
 	}
 
 	public void processEntity(Entity entity) {
-		Model texturedModel = (Model) entity.getValueProperty(DefaultEntityProperties.PROPERTY_MODEL);
+		Model texturedModel = (Model) entity.getPropertyValue(DefaultEntityProperties.PROPERTY_MODEL);
 		List<Entity> batch = texturedEntities.get(texturedModel);
 		if (batch == null) {
 			batch = new ArrayList<>();
