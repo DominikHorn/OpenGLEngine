@@ -68,7 +68,7 @@ public abstract class Basic3DGame {
 		int pixeleight = this.gameDisplay.getWindowHeightInPixels();
 
 		// Set the clear color
-		GL11.glClearColor(0f, 0f, 0f, 1.0f);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		// Enable depth test
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

@@ -205,13 +205,14 @@ public class Shader {
 	}
 
 	/**
-	 * Upload a float to the shader
+	 * Upload a matrix to the shader
 	 * 
 	 * @param location
-	 * @param value
+	 * @param matrix
 	 */
-	protected void loadFloat(int location, float value) {
-		GL20.glUniform1f(location, value);
+	protected void loadMatrix4f(int location, Matrix4f matrix) {
+		matrix.storeInFloatBuffer(matrixFloatBuffer);
+		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer);
 	}
 
 	/**
@@ -225,14 +226,23 @@ public class Shader {
 	}
 
 	/**
-	 * Upload a matrix to the shader
+	 * Upload a float to the shader
 	 * 
 	 * @param location
-	 * @param matrix
+	 * @param value
 	 */
-	protected void loadMatrix4f(int location, Matrix4f matrix) {
-		matrix.storeInFloatBuffer(matrixFloatBuffer);
-		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer);
+	protected void loadFloat(int location, float value) {
+		GL20.glUniform1f(location, value);
+	}
+
+	/**
+	 * Upload a float to the shader
+	 * 
+	 * @param location
+	 * @param value
+	 */
+	protected void loadInt(int location, int value) {
+		GL20.glUniform1i(location, value);
 	}
 
 	private int loadShaderFromSource(String shaderSource, int type) {

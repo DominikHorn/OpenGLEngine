@@ -27,7 +27,7 @@ public abstract class ReferenceCountedDeletableContainer {
 	 *
 	 */
 	public void cleanup() {
-		if (--this.numReferences == 0) {
+		if (--this.numReferences <= 0) {
 			this.forceDelete();
 		}
 	}

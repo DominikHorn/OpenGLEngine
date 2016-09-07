@@ -1,5 +1,5 @@
 package com.openglengine.entitity;
 
-public final class DefaultEntityProperties {
+public final class RenderableEntityProperties {
 	public static String PROPERTY_MODEL = "model";
 }

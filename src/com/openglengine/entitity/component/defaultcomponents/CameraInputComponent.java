@@ -6,7 +6,7 @@ import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 public class CameraInputComponent extends Component {
-	private static final float CAMERA_SPEED_SCALAR = 5f;
+	private static final float CAMERA_SPEED_SCALAR = 1f;
 
 	private float cameraSpeed;
 

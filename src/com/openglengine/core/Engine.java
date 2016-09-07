@@ -42,7 +42,7 @@ public class Engine {
 	private static TextureManager TEXTURE_MANAGER = new TextureManager();
 
 	/** Model system manager */
-	private static ModelManager MODEL_MANAGER = new ModelManager();
+	private static ModelDataManager MODEL_MANAGER = new ModelDataManager();
 
 	/** Global batch renderering system */
 	private static RenderManager RENDER_MANAGER = new RenderManager();
@@ -74,7 +74,7 @@ public class Engine {
 		return TEXTURE_MANAGER;
 	}
 
-	public static ModelManager getModelManager() {
+	public static ModelDataManager getModelDataManager() {
 		return MODEL_MANAGER;
 	}
 
