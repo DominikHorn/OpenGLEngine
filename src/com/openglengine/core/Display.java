@@ -90,6 +90,7 @@ public class Display implements ResourceManager {
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent the window from being resized
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
 		// Create the window
 		if (fullscreen)
@@ -111,9 +112,6 @@ public class Display implements ResourceManager {
 
 		// Make the window visible
 		glfwShowWindow(this.windowID);
-
-		// Window size callback
-		// glfwSetWindowSizeCallback(this.windowID, (window, width, height) -> resizeWindow(window, width, height));
 
 		// Framebuffer size callback
 		glfwSetFramebufferSizeCallback(this.windowID, (window, width, height) -> resize(window, width, height));

@@ -164,11 +164,11 @@ public abstract class Basic3DGame {
 					// Critical line to keep buffers from flickering ..
 					GL11.glFlush();
 
-					// Swap out buffers
-					this.gameDisplay.swapBuffers();
-
 					// Clear new backbuffer
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+					// Swap out buffers
+					this.gameDisplay.swapBuffers();
 				}
 			}
 		} catch (Exception e) {
