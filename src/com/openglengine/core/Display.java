@@ -135,10 +135,11 @@ public class Display implements ResourceManager {
 	}
 
 	/**
-	 * swap the buffers
+	 * swaps buffers and polls events
 	 */
-	protected void swapBuffers() {
+	protected void update() {
 		glfwSwapBuffers(windowID);
+		glfwPollEvents();
 	}
 
 	/**
@@ -193,8 +194,8 @@ public class Display implements ResourceManager {
 		if (window == this.windowID) {
 			this.windowWidthInPixels = width;
 			this.windowHeightInPixels = height;
-			Engine.getGlobalEventManager().queueForRenderthread(
-					new FramebufferResizeEvent(this.windowWidthInPixels, this.windowHeightInPixels));
+			Engine.getGlobalEventManager()
+					.dispatch(new FramebufferResizeEvent(this.windowWidthInPixels, this.windowHeightInPixels));
 		}
 	}
 }

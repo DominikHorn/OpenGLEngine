@@ -1,7 +1,5 @@
 package com.openglengine.core;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 import java.io.*;
 
 import org.lwjgl.opengl.*;
@@ -91,12 +89,7 @@ public abstract class Basic3DGame {
 
 	private void run() {
 		// Start rendering thread
-		new Thread(() -> this.loop()).start();
-
-		// Seperate loop wating for glfw events on this thread
-		while (!quit) {
-			glfwWaitEvents();
-		}
+		this.loop();
 
 		// If we quit, wait for last render loop pass and quit
 		this.quit();
@@ -144,9 +137,6 @@ public abstract class Basic3DGame {
 					continue;
 				}
 
-				// Fetch events
-				Engine.getGlobalEventManager().fetchForRenderthread();
-
 				// Update
 				while (steps >= this.secsPerUpdate) {
 					// send update event
@@ -168,7 +158,7 @@ public abstract class Basic3DGame {
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 					// Swap out buffers
-					this.gameDisplay.swapBuffers();
+					this.gameDisplay.update();
 				}
 			}
 		} catch (Exception e) {
