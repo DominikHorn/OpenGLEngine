@@ -9,7 +9,7 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public abstract class Component {
+public abstract class EntityComponent {
 	/**
 	 * Initialize this component/the entity for use with this component. This method will be called once when the
 	 * component gets added to an entity

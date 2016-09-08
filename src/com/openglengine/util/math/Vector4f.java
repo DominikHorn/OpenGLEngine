@@ -198,4 +198,9 @@ public class Vector4f {
 	public float getDotProductResult(Vector4f otherVector) {
 		return this.x * otherVector.x + this.y * otherVector.y + this.z * otherVector.z + this.w * otherVector.w;
 	}
+
+	@Override
+	public String toString() {
+		return "Vector4f: (" + this.x + ", " + this.y + ", " + this.z + this.w + ");";
+	}
 }

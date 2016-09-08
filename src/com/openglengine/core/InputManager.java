@@ -4,6 +4,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
+import com.openglengine.util.math.*;
 
 /**
  * Input Manager class. This deals with glfw input
@@ -20,30 +21,69 @@ public class InputManager implements ResourceManager {
 			KEY_A = GLFW_KEY_A,
 			KEY_S = GLFW_KEY_S,
 			KEY_D = GLFW_KEY_D,
+			KEY_Q = GLFW_KEY_Q,
+			KEY_E = GLFW_KEY_E,
 			KEY_ESC = GLFW_KEY_ESCAPE,
 			KEY_SPACE = GLFW_KEY_SPACE,
 			KEY_LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT,
 			KEY_LEFT_CTRL = GLFW_KEY_LEFT_CONTROL;
 	//@formatter:on
+	//@formatter:off
+	public static final int 
+			BUTTON_LEFT = GLFW_MOUSE_BUTTON_1,
+			BUTTON_RIGHT = GLFW_MOUSE_BUTTON_2,
+			BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_3;
+	//@formatter:on
 
 	/** internal structure holding all the key information */
 	private int[] keys = new int[GLFW_KEY_LAST];
+
+	/** internal structure holding all mouse button information */
+	private int[] mouseButtons = new int[GLFW_MOUSE_BUTTON_LAST];
+
+	/** scroll information */
+	private double scrollX;
+	private double scrollY;
+	private double lastScrollDeltaX;
+	private double lastScrollDeltaY;
+
+	/** mouse grab stuff */
+	private boolean mouseGrabbed;
+
+	/** Cursor information */
+	private boolean dropCursorEvent;
+	private Vector2f cursorPos;
+	private Vector2f cursorDelta;
+
+	/** Window id */
+	private Display gameDisplay;
 
 	/**
 	 * Setup input manager
 	 */
 	public InputManager() {
+		this.cursorPos = new Vector2f();
+		this.cursorDelta = new Vector2f();
+		this.dropCursorEvent = true;
+
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class,
 				e -> setupListeners((DisplayCreatedEvent) e));
 	}
 
 	/**
-	 * 
+	 * Sets the glfw listerner callback methods up
 	 */
 	private void setupListeners(DisplayCreatedEvent e) {
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(e.getSender().getWindowID(),
+		this.gameDisplay = e.getSender();
+
+		glfwSetKeyCallback(this.gameDisplay.getWindowID(),
 				(window, key, scancode, action, mods) -> this.keyEvent(window, key, scancode, action, mods));
+		glfwSetScrollCallback(this.gameDisplay.getWindowID(),
+				(window, xoffset, yoffset) -> scrollEvent(window, xoffset, yoffset));
+		glfwSetMouseButtonCallback(this.gameDisplay.getWindowID(),
+				(window, button, action, mods) -> mouseButtonEvent(window, button, action, mods));
+		glfwSetCursorPosCallback(this.gameDisplay.getWindowID(),
+				(window, xpos, ypos) -> cursorPosEvent(window, xpos, ypos));
 	}
 
 	/**
@@ -56,29 +96,148 @@ public class InputManager implements ResourceManager {
 	 * @param mods
 	 */
 	private void keyEvent(long window, int key, int scancode, int action, int mods) {
-		// TODO: investigate mouse input etc
+		// TODO: don't ignore mods
 		if (key > 0 && key < keys.length)
 			keys[key] = action;
 	}
 
 	/**
+	 * This method receives scroll event
+	 * 
+	 * @param window
+	 * @param xoffset
+	 * @param yoffset
+	 */
+	private void scrollEvent(long window, double xoffset, double yoffset) {
+		this.lastScrollDeltaX = xoffset;
+		this.lastScrollDeltaX = yoffset;
+		this.scrollX += this.lastScrollDeltaX;
+		this.scrollY += this.lastScrollDeltaY;
+	}
+
+	/**
+	 * This method receives mouse button events
+	 * 
+	 * @param window
+	 * @param button
+	 * @param action
+	 * @param mods
+	 */
+	private void mouseButtonEvent(long window, int button, int action, int mods) {
+		// TODO: don't ignore mods
+		if (button > 0 && button < mouseButtons.length)
+			mouseButtons[button] = action;
+	}
+
+	private void cursorPosEvent(long window, double xpos, double ypos) {
+		// TODO: hacky fix for annoying problem
+		this.dropCursorEvent = !this.dropCursorEvent;
+		if (this.dropCursorEvent)
+			return;
+
+		Vector2f newPosition = new Vector2f((float) xpos, (float) ypos);
+		this.cursorDelta.addVector(newPosition.getSubtractionResult(this.cursorPos));
+		this.cursorPos = newPosition;
+
+		if (this.mouseGrabbed)
+			synchronized (this.gameDisplay) {
+				glfwSetCursorPos(this.gameDisplay.getWindowID(), this.gameDisplay.getWindowWidthInPixels() / 2,
+						this.gameDisplay.getWindowHeightInPixels() / 2);
+			}
+	}
+
+	/**
+	 * Grabs the mouse cursor
+	 */
+	public void setMouseGrabbed(boolean mouseGrabbed) {
+		this.mouseGrabbed = mouseGrabbed;
+		if (this.mouseGrabbed == true)
+			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		else
+			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
+	/**
 	 * Convenience method to ask whether a key is being pressed
 	 * 
-	 * @param glfwkeycode
+	 * @param key
 	 * @return
 	 */
-	public boolean isKeyDown(int glfwkeycode) {
-		return keys[glfwkeycode] != GLFW_RELEASE;
+	public boolean isKeyDown(int key) {
+		return keys[key] != GLFW_RELEASE;
+	}
+
+	/**
+	 * Convenience method to ask whether a mouse button is down
+	 */
+	public boolean isMouseButtonDown(int button) {
+		return mouseButtons[button] != GLFW_RELEASE;
 	}
 
 	/**
 	 * convenience method to ask whether or not a key is being repeated
 	 * 
-	 * @param glfwkeycode
+	 * @param key
 	 * @return
 	 */
-	public boolean isKeyRepeat(int glfwkeycode) {
-		return keys[glfwkeycode] == GLFW_REPEAT;
+	public boolean isKeyRepeat(int key) {
+		return keys[key] == GLFW_REPEAT;
+	}
+
+	/**
+	 * Returns the scroll x position
+	 * 
+	 * @return
+	 */
+	public double getScrollX() {
+		return this.scrollX;
+	}
+
+	/**
+	 * Returns the scroll y position
+	 * 
+	 * @return
+	 */
+	public double getScrollY() {
+		return scrollY;
+	}
+
+	/**
+	 * Returns the last scroll events x delta
+	 * 
+	 * @return
+	 */
+	public double getLastScrollDeltaX() {
+		return lastScrollDeltaX;
+	}
+
+	/**
+	 * Returns the last scroll events y delta
+	 * 
+	 * @return
+	 */
+	public double getLastScrollDeltaY() {
+		return lastScrollDeltaY;
+	}
+
+	/**
+	 * Retrieves the current cursors position
+	 * 
+	 * @return
+	 */
+	public Vector2f getCursorPos() {
+		return this.cursorPos;
+	}
+
+	/**
+	 * Retrieves the cursor delta since last invocation of this method
+	 * 
+	 * @return
+	 */
+	public Vector2f getCursorDelta() {
+		Vector2f returnValue = this.cursorDelta;
+		this.cursorDelta = new Vector2f();
+		return returnValue;
 	}
 
 	@Override

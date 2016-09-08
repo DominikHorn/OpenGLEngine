@@ -217,4 +217,8 @@ public class Vector3f {
 		return (this.x * otherVector.x + this.y * otherVector.y + this.z * otherVector.z);
 	}
 
+	@Override
+	public String toString() {
+		return "Vector3f: (" + this.x + ", " + this.y + ", " + this.z + ");";
+	}
 }

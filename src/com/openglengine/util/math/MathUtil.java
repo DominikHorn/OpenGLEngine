@@ -128,7 +128,7 @@ public class MathUtil {
 	/**
 	 * returns the rotation matrix
 	 * 
-	 * @param angle
+	 * @param radiansAngle
 	 *            amount of rotation
 	 * @param x
 	 *            rotation amount around x
@@ -138,20 +138,19 @@ public class MathUtil {
 	 *            rotation amount around z
 	 * @return
 	 */
-	public static Matrix4f createRotationMatrix(float angle, float x, float y, float z) {
-		float radiens = (float) Math.toRadians(angle);
+	public static Matrix4f createRotationMatrix(float radiansAngle, float x, float y, float z) {
 		Matrix4f matRotX = new Matrix4f();
 		Matrix4f matRotY = new Matrix4f();
 		Matrix4f matRotZ = new Matrix4f();
 
-		float cosX = (float) Math.cos(radiens * x);
-		float sinX = (float) Math.sin(radiens * x);
+		float cosX = (float) Math.cos(radiansAngle * x);
+		float sinX = (float) Math.sin(radiansAngle * x);
 
-		float cosY = (float) Math.cos(radiens * y);
-		float sinY = (float) Math.sin(radiens * y);
+		float cosY = (float) Math.cos(radiansAngle * y);
+		float sinY = (float) Math.sin(radiansAngle * y);
 
-		float cosZ = (float) Math.cos(radiens * z);
-		float sinZ = (float) Math.sin(radiens * z);
+		float cosZ = (float) Math.cos(radiansAngle * z);
+		float sinZ = (float) Math.sin(radiansAngle * z);
 
 		matRotX.matrixValues[1 + 1 * 4] = +cosX;
 		matRotX.matrixValues[1 + 2 * 4] = -sinX;

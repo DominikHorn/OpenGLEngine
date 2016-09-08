@@ -199,4 +199,8 @@ public class Vector2f {
 		return (this.x * otherVector.x + this.y * otherVector.y);
 	}
 
+	@Override
+	public String toString() {
+		return "Vector2f: (" + this.x + ", " + this.y + ");";
+	}
 }

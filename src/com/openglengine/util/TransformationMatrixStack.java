@@ -34,14 +34,14 @@ public class TransformationMatrixStack extends MatrixStack {
 	/**
 	 * rotate around all axis
 	 * 
-	 * @param angle
+	 * @param radiansAngle
 	 *            in radians
 	 * @param x
 	 * @param y
 	 * @param z
 	 */
-	public void rotate(float angle, float x, float y, float z) {
-		this.getCurrentMatrix().multiply(MathUtil.createRotationMatrix(angle, x, y, z));
+	public void rotate(float radiansAngle, float x, float y, float z) {
+		this.getCurrentMatrix().multiply(MathUtil.createRotationMatrix(radiansAngle, x, y, z));
 	}
 
 	/**

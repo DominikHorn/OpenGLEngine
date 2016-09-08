@@ -24,7 +24,7 @@ public class Entity implements PropertyContainer {
 	private int entityUID = 0;
 
 	/** Entity's components */
-	private List<Component> components;
+	private List<EntityComponent> components;
 
 	/** Properties list */
 	private Map<String, Property<? extends Object>> properties;
@@ -77,7 +77,7 @@ public class Entity implements PropertyContainer {
 	 * @param component
 	 * @return convenience self return to make addComponent().addComponent().addComponent()... possible
 	 */
-	public Entity addComponent(Component component) {
+	public Entity addComponent(EntityComponent component) {
 		// TODO: maybe implement component reordering because some components might be execution order dependent
 		component.init(this);
 		this.components.add(component);
@@ -91,7 +91,7 @@ public class Entity implements PropertyContainer {
 	 * @param component
 	 * @return convenience self return to make removeComponent().removeComponent().removeComponent()... possible
 	 */
-	public Entity removeComponent(Component component) {
+	public Entity removeComponent(EntityComponent component) {
 		this.components.remove(component);
 
 		return this;
@@ -105,7 +105,7 @@ public class Entity implements PropertyContainer {
 	 * @param sender
 	 *            use "this" keyword for sender field
 	 */
-	public void notifyOtherComponents(BaseEvent event, Component sender) {
+	public void notifyOtherComponents(BaseEvent event, EntityComponent sender) {
 		this.components.forEach(c -> {
 			if (!sender.equals(c))
 				c.receiveEvent(event);
