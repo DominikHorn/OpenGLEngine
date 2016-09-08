@@ -17,6 +17,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 	private float distanceFromPlayer = 50;
 	private float angleAroundTrackedEntity = 0;
 	private float scroll = 0;
+	private float pitch = 0;
 
 	private Vector3f cameraPosition;
 	private Vector3f cameraRotation;
@@ -47,13 +48,14 @@ public class CameraComponentFollowEntity extends EntityComponent {
 		scroll = clamp(scroll, -25, 45);
 		this.distanceFromPlayer = 50 - scroll;
 
-		// Calculate the pitch
-		if (input.isMouseButtonDown(InputManager.BUTTON_RIGHT))
-			this.cameraRotation.x = clamp((float) Math.toRadians(cursorDelta.y * 0.1f), 0.12f, 0.9f);
-
-		// Calculate angle around tracked entity
-		if (input.isMouseButtonDown(InputManager.BUTTON_LEFT))
+		// Calculate pitch and angle around tracked entity offset
+		if (input.isMouseButtonDown(InputManager.BUTTON_LEFT)) {
 			this.angleAroundTrackedEntity -= Math.toRadians(cursorDelta.x * 4f);
+
+			pitch += (float) Math.toRadians(cursorDelta.y * 0.2f);
+			pitch = clamp(pitch, 0.12f, 1.5f);
+			this.cameraRotation.x = pitch;
+		}
 	}
 
 	private void updateViewMatrix(Entity entity) {
