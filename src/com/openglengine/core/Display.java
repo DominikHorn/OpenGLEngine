@@ -90,7 +90,7 @@ public class Display implements ResourceManager {
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent the window from being resized
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
 		// Create the window
 		if (fullscreen)
@@ -137,9 +137,8 @@ public class Display implements ResourceManager {
 	/**
 	 * swaps buffers and polls events
 	 */
-	protected void update() {
+	protected void swapBuffers() {
 		glfwSwapBuffers(windowID);
-		glfwPollEvents();
 	}
 
 	/**

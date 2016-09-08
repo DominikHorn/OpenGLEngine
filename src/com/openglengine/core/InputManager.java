@@ -47,13 +47,9 @@ public class InputManager implements ResourceManager {
 	private double lastScrollDeltaX;
 	private double lastScrollDeltaY;
 
-	/** mouse grab stuff */
+	/** mouse stuff */
+	private Vector2f previousCursorPos;
 	private boolean mouseGrabbed;
-
-	/** Cursor information */
-	private boolean dropCursorEvent;
-	private Vector2f cursorPos;
-	private Vector2f cursorDelta;
 
 	/** Window id */
 	private Display gameDisplay;
@@ -62,9 +58,7 @@ public class InputManager implements ResourceManager {
 	 * Setup input manager
 	 */
 	public InputManager() {
-		this.cursorPos = new Vector2f();
-		this.cursorDelta = new Vector2f();
-		this.dropCursorEvent = true;
+		this.previousCursorPos = new Vector2f();
 
 		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class,
 				e -> setupListeners((DisplayCreatedEvent) e));
@@ -82,8 +76,6 @@ public class InputManager implements ResourceManager {
 				(window, xoffset, yoffset) -> scrollEvent(window, xoffset, yoffset));
 		glfwSetMouseButtonCallback(this.gameDisplay.getWindowID(),
 				(window, button, action, mods) -> mouseButtonEvent(window, button, action, mods));
-		glfwSetCursorPosCallback(this.gameDisplay.getWindowID(),
-				(window, xpos, ypos) -> cursorPosEvent(window, xpos, ypos));
 	}
 
 	/**
@@ -110,7 +102,7 @@ public class InputManager implements ResourceManager {
 	 */
 	private void scrollEvent(long window, double xoffset, double yoffset) {
 		this.lastScrollDeltaX = xoffset;
-		this.lastScrollDeltaX = yoffset;
+		this.lastScrollDeltaY = yoffset;
 		this.scrollX += this.lastScrollDeltaX;
 		this.scrollY += this.lastScrollDeltaY;
 	}
@@ -125,34 +117,17 @@ public class InputManager implements ResourceManager {
 	 */
 	private void mouseButtonEvent(long window, int button, int action, int mods) {
 		// TODO: don't ignore mods
-		if (button > 0 && button < mouseButtons.length)
+		if (button >= 0 && button < mouseButtons.length)
 			mouseButtons[button] = action;
 	}
 
-	private void cursorPosEvent(long window, double xpos, double ypos) {
-		// TODO: hacky fix for annoying problem
-		this.dropCursorEvent = !this.dropCursorEvent;
-		if (this.dropCursorEvent)
-			return;
-
-		Vector2f newPosition = new Vector2f((float) xpos, (float) ypos);
-		this.cursorDelta.addVector(newPosition.getSubtractionResult(this.cursorPos));
-		this.cursorPos = newPosition;
-
-		if (this.mouseGrabbed)
-			synchronized (this.gameDisplay) {
-				glfwSetCursorPos(this.gameDisplay.getWindowID(), this.gameDisplay.getWindowWidthInPixels() / 2,
-						this.gameDisplay.getWindowHeightInPixels() / 2);
-			}
-	}
-
 	/**
-	 * Grabs the mouse cursor
+	 * Hides mouse cursor. GetCursorDelta() will do the actual grabbing part (fixing cursor @ center of screen)
 	 */
 	public void setMouseGrabbed(boolean mouseGrabbed) {
 		this.mouseGrabbed = mouseGrabbed;
 		if (this.mouseGrabbed == true)
-			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		else
 			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
@@ -199,7 +174,7 @@ public class InputManager implements ResourceManager {
 	 * @return
 	 */
 	public double getScrollY() {
-		return scrollY;
+		return this.scrollY;
 	}
 
 	/**
@@ -208,7 +183,9 @@ public class InputManager implements ResourceManager {
 	 * @return
 	 */
 	public double getLastScrollDeltaX() {
-		return lastScrollDeltaX;
+		double returnValue = lastScrollDeltaX;
+		lastScrollDeltaX = 0;
+		return returnValue;
 	}
 
 	/**
@@ -217,16 +194,22 @@ public class InputManager implements ResourceManager {
 	 * @return
 	 */
 	public double getLastScrollDeltaY() {
-		return lastScrollDeltaY;
+		double returnValue = lastScrollDeltaY;
+		lastScrollDeltaY = 0;
+		return returnValue;
 	}
 
 	/**
-	 * Retrieves the current cursors position
+	 * Retrieves current cursor position
 	 * 
 	 * @return
 	 */
-	public Vector2f getCursorPos() {
-		return this.cursorPos;
+	public Vector2f getCursorPosition() {
+		double[] xpos = new double[1];
+		double[] ypos = new double[1];
+		glfwGetCursorPos(this.gameDisplay.getWindowID(), xpos, ypos);
+
+		return new Vector2f((float) xpos[0], (float) ypos[0]);
 	}
 
 	/**
@@ -235,9 +218,22 @@ public class InputManager implements ResourceManager {
 	 * @return
 	 */
 	public Vector2f getCursorDelta() {
-		Vector2f returnValue = this.cursorDelta;
-		this.cursorDelta = new Vector2f();
-		return returnValue;
+		Vector2f delta = new Vector2f();
+		if (this.mouseGrabbed) {
+			// Calculate delta
+			Vector2f screenCenter = new Vector2f(this.gameDisplay.getWindowWidthInPixels() / 2,
+					this.gameDisplay.getWindowHeightInPixels() / 2);
+			delta = this.getCursorPosition().subtractVector(screenCenter);
+
+			// Move cursor back to center of screen
+			glfwSetCursorPos(this.gameDisplay.getWindowID(), screenCenter.x, screenCenter.y);
+		} else {
+			Vector2f newCursorPos = getCursorPosition();
+			delta = newCursorPos.getSubtractionResult(this.previousCursorPos);
+			this.previousCursorPos = newCursorPos;
+		}
+
+		return delta;
 	}
 
 	@Override

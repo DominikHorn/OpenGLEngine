@@ -40,26 +40,24 @@ public class GlobalEventManager implements ResourceManager {
 	 *         a second time successfully
 	 */
 	public boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, GlobalEventListener listener) {
-		synchronized (this.listeners) {
-			// Extract previous values
-			List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
-			boolean alreadyRegistered = false;
+		// Extract previous values
+		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
+		boolean alreadyRegistered = false;
 
-			// Make sure we actually have an array list, and if we do make sure we don't duplicate listeners
-			if (eventListenerList == null)
-				eventListenerList = new ArrayList<>();
-			else
-				alreadyRegistered = eventListenerList.contains(listener);
+		// Make sure we actually have an array list, and if we do make sure we don't duplicate listeners
+		if (eventListenerList == null)
+			eventListenerList = new ArrayList<>();
+		else
+			alreadyRegistered = eventListenerList.contains(listener);
 
-			// Add listener
-			if (!alreadyRegistered)
-				eventListenerList.add(listener);
+		// Add listener
+		if (!alreadyRegistered)
+			eventListenerList.add(listener);
 
-			// Readd to map
-			this.listeners.put(eventClass, eventListenerList);
+		// Readd to map
+		this.listeners.put(eventClass, eventListenerList);
 
-			return !alreadyRegistered;
-		}
+		return !alreadyRegistered;
 	}
 
 	/**
@@ -70,18 +68,15 @@ public class GlobalEventManager implements ResourceManager {
 	 * @return whether or not deletion was successful. Note: this can be unsuccessful if the listener was not actually
 	 *         registered previously
 	 */
-	public synchronized boolean deleteListenerForEvent(GlobalEventListener listener,
-			Class<? extends BaseEvent> eventClass) {
-		synchronized (this.listeners) {
-			List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
+	public boolean deleteListenerForEvent(GlobalEventListener listener, Class<? extends BaseEvent> eventClass) {
+		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
 
-			if (eventListenerList != null && eventListenerList.contains(listener)) {
-				eventListenerList.remove(listener);
-				return true;
-			}
-
-			return false;
+		if (eventListenerList != null && eventListenerList.contains(listener)) {
+			eventListenerList.remove(listener);
+			return true;
 		}
+
+		return false;
 	}
 
 	@Override

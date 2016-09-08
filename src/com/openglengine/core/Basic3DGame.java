@@ -1,5 +1,7 @@
 package com.openglengine.core;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 import java.io.*;
 
 import org.lwjgl.opengl.*;
@@ -137,6 +139,9 @@ public abstract class Basic3DGame {
 					continue;
 				}
 
+				// Poll events
+				glfwPollEvents();
+
 				// Update
 				while (steps >= this.secsPerUpdate) {
 					// send update event
@@ -145,21 +150,15 @@ public abstract class Basic3DGame {
 					upsCounter++;
 				}
 
+				// Clear new backbuffer
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
 				// Render our scene
 				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));
 				fpsCounter++;
 
-				// Swap buffers (this will, due to vsync, limit to the monitor refresh rate)
-				synchronized (this.gameDisplay) {
-					// Critical line to keep buffers from flickering ..
-					GL11.glFlush();
-
-					// Clear new backbuffer
-					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-					// Swap out buffers
-					this.gameDisplay.update();
-				}
+				// Swap out buffers
+				this.gameDisplay.swapBuffers();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
