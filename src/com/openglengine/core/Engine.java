@@ -33,7 +33,7 @@ public class Engine {
 	private static final ProjectionMatrixStack PROJECTION_MATRIX_STACK = new ProjectionMatrixStack();
 
 	/** Event dispatch/receive system manager */
-	private static final GlobalEventManager GLOBAL_EVENT_MANAGER = new GlobalEventManager();
+	private static final EventManager<BaseEvent> GLOBAL_EVENT_MANAGER = new EventManager<>();
 
 	/** Logger that can be used for conveniently printing messages to the console */
 	private static final Logger LOGGER = new Logger();
@@ -66,7 +66,7 @@ public class Engine {
 		return PROJECTION_MATRIX_STACK;
 	}
 
-	public static GlobalEventManager getGlobalEventManager() {
+	public static EventManager<BaseEvent> getGlobalEventManager() {
 		return GLOBAL_EVENT_MANAGER;
 	}
 

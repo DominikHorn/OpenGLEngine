@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.openglengine.core.*;
 import com.openglengine.entitity.component.*;
-import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.eventsystem.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 import com.openglengine.util.property.*;
@@ -25,6 +25,9 @@ public class Entity implements PropertyContainer {
 
 	/** Entity's components */
 	private List<EntityComponent> components;
+
+	/** Event manager for component events */
+	private EventManager<ComponentEvent> componentEventSystem;
 
 	/** Properties list */
 	private Map<String, Property<? extends Object>> properties;
@@ -56,6 +59,7 @@ public class Entity implements PropertyContainer {
 	public Entity(Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.entityUID = globalID++;
 		this.components = new ArrayList<>();
+		this.componentEventSystem = new EventManager<>();
 		this.properties = new HashMap<>();
 		this.position = position;
 		this.rotation = rotation;
@@ -78,7 +82,7 @@ public class Entity implements PropertyContainer {
 	 * @return convenience self return to make addComponent().addComponent().addComponent()... possible
 	 */
 	public Entity addComponent(EntityComponent component) {
-		// TODO: maybe implement component reordering because some components might be execution order dependent
+		// TODO: implement component reordering because some components might be execution order dependent
 		component.init(this);
 		this.components.add(component);
 
@@ -95,21 +99,6 @@ public class Entity implements PropertyContainer {
 		this.components.remove(component);
 
 		return this;
-	}
-
-	/**
-	 * notify all other components of this entity that something happened
-	 * 
-	 * 
-	 * @param event
-	 * @param sender
-	 *            use "this" keyword for sender field
-	 */
-	public void notifyOtherComponents(BaseEvent event, EntityComponent sender) {
-		this.components.forEach(c -> {
-			if (!sender.equals(c))
-				c.receiveEvent(event);
-		});
 	}
 
 	/**
@@ -145,6 +134,10 @@ public class Entity implements PropertyContainer {
 
 	public void deinitRenderCode() {
 		Engine.getModelMatrixStack().pop();
+	}
+
+	public EventManager<ComponentEvent> getComponentEventSystem() {
+		return this.componentEventSystem;
 	}
 
 	/** Property container */

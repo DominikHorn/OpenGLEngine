@@ -1,7 +1,5 @@
 package com.openglengine.core;
 
-import static org.lwjgl.glfw.GLFW.*;
-
 import java.io.*;
 
 import org.lwjgl.opengl.*;
@@ -139,9 +137,6 @@ public abstract class Basic3DGame {
 					continue;
 				}
 
-				// Poll events
-				glfwPollEvents();
-
 				// Update
 				while (steps >= this.secsPerUpdate) {
 					// send update event
@@ -149,9 +144,6 @@ public abstract class Basic3DGame {
 					steps -= secsPerUpdate;
 					upsCounter++;
 				}
-
-				// Clear new backbuffer
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 				// Render our scene
 				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));

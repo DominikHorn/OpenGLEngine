@@ -138,7 +138,17 @@ public class Display implements ResourceManager {
 	 * swaps buffers and polls events
 	 */
 	protected void swapBuffers() {
+		// Finish rendering process
+		GL11.glFinish();
+
+		// Swap the buffer
 		glfwSwapBuffers(windowID);
+
+		// Clear the new backbuffer
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+		// Poll events
+		glfwPollEvents();
 	}
 
 	/**

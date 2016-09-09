@@ -1,7 +1,5 @@
 package com.openglengine.eventsystem;
 
-import com.openglengine.eventsystem.defaultevents.*;
-
 /**
  * Interface that needs to be implemented in order for a class to receive Events from EventManager. Lambas are
  * recommended instead of a full implementation
@@ -9,7 +7,7 @@ import com.openglengine.eventsystem.defaultevents.*;
  * @author Dominik
  *
  */
-public interface GlobalEventListener {
+public interface EventListener {
 
 	/**
 	 * Implementing classes will receive any event they registered for as a listener in this method. Either implement a

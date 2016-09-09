@@ -3,7 +3,6 @@ package com.openglengine.entitity.component.defaultcomponents;
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.entitity.component.*;
-import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
@@ -101,11 +100,6 @@ public class CameraComponentFlyoverObserver extends EntityComponent {
 		Vector2f cursorDelta = input.getCursorDelta();
 		entity.rotation.x += Math.toRadians(cursorDelta.y) * this.cameraRotationSpeed;
 		entity.rotation.y += Math.toRadians(cursorDelta.x) * this.cameraRotationSpeed;
-	}
-
-	@Override
-	public void receiveEvent(BaseEvent event) {
-		// Do nothing
 	}
 
 	@Override

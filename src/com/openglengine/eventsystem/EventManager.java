@@ -2,7 +2,6 @@ package com.openglengine.eventsystem;
 
 import java.util.*;
 
-import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 
 /**
@@ -11,11 +10,11 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public class GlobalEventManager implements ResourceManager {
+public class EventManager<EventClass extends BaseEvent> implements ResourceManager {
 	/** listeners data this class operates on */
-	private Map<Class<? extends BaseEvent>, List<GlobalEventListener>> listeners;
+	private Map<Class<? extends EventClass>, List<EventListener>> listeners;
 
-	public GlobalEventManager() {
+	public EventManager() {
 		this.listeners = new HashMap<>();
 	}
 
@@ -26,7 +25,7 @@ public class GlobalEventManager implements ResourceManager {
 	 * 
 	 * @param event
 	 */
-	public void dispatch(BaseEvent event) {
+	public void dispatch(EventClass event) {
 		// Dispatch this event to all listeners
 		listeners.get(event.getClass()).forEach(listener -> listener.eventReceived(event));
 	}
@@ -39,9 +38,9 @@ public class GlobalEventManager implements ResourceManager {
 	 * @return true if the listener was added, false if it previously had been registered already and thus was not added
 	 *         a second time successfully
 	 */
-	public boolean registerListenerForEvent(Class<? extends BaseEvent> eventClass, GlobalEventListener listener) {
+	public boolean registerListenerForEvent(Class<? extends EventClass> eventClass, EventListener listener) {
 		// Extract previous values
-		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
+		List<EventListener> eventListenerList = this.listeners.get(eventClass);
 		boolean alreadyRegistered = false;
 
 		// Make sure we actually have an array list, and if we do make sure we don't duplicate listeners
@@ -68,8 +67,8 @@ public class GlobalEventManager implements ResourceManager {
 	 * @return whether or not deletion was successful. Note: this can be unsuccessful if the listener was not actually
 	 *         registered previously
 	 */
-	public boolean deleteListenerForEvent(GlobalEventListener listener, Class<? extends BaseEvent> eventClass) {
-		List<GlobalEventListener> eventListenerList = this.listeners.get(eventClass);
+	public boolean deleteListenerForEvent(EventListener listener, Class<? extends EventClass> eventClass) {
+		List<EventListener> eventListenerList = this.listeners.get(eventClass);
 
 		if (eventListenerList != null && eventListenerList.contains(listener)) {
 			eventListenerList.remove(listener);

@@ -1,12 +1,14 @@
 package com.openglengine.eventsystem.defaultevents;
 
+import com.openglengine.eventsystem.*;
+
 /**
  * Global update event, sent 60 times a second
  * 
  * @author Dominik
  *
  */
-public class UpdateEvent extends BaseEvent {
+public class UpdateEvent extends GlobalEvent {
 	private double deltatime;
 
 	/**

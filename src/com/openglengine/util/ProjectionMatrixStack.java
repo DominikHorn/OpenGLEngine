@@ -18,7 +18,7 @@ public class ProjectionMatrixStack extends MatrixStack {
 	 * @param zfar
 	 */
 	public void setPerspectiveMatrix(float fov, float aspectRatio, float znear, float zfar) {
-		this.setCurrentMatrix(MathUtil.createPerspectiveMatrix(fov, aspectRatio, znear, zfar));
+		this.setCurrentMatrix(MathUtils.createPerspectiveMatrix(fov, aspectRatio, znear, zfar));
 	}
 
 	/**
@@ -32,6 +32,6 @@ public class ProjectionMatrixStack extends MatrixStack {
 	 * @param far
 	 */
 	public void setOrthographicMatrix(float left, float right, float bottom, float top, float near, float far) {
-		this.setCurrentMatrix(MathUtil.createOrthographicMatrix(left, right, bottom, top, near, far));
+		this.setCurrentMatrix(MathUtils.createOrthographicMatrix(left, right, bottom, top, near, far));
 	}
 }

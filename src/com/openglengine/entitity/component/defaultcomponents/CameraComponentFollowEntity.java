@@ -3,7 +3,7 @@ package com.openglengine.entitity.component.defaultcomponents;
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.entitity.component.*;
-import com.openglengine.eventsystem.defaultevents.*;
+import com.openglengine.eventsystem.defaultcomponentevents.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
@@ -24,10 +24,16 @@ public class CameraComponentFollowEntity extends EntityComponent {
 
 	@Override
 	public void init(Entity entity) {
+		entity.getComponentEventSystem().registerListenerForEvent(FollowedEntityMovedEvent.class, e -> {
+			this.angleAroundTrackedEntity = 0;
+			this.pitch = 0.4f;
+		});
+
 		this.cameraPosition = new Vector3f();
 		this.cameraRotation = new Vector3f(0.35f, 3.14f, 0f);
 
 		this.updateViewMatrix(entity);
+
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 
 		// Calculate the zoom (distance from player) TODO: limit zooming to some bounds
 		scroll += input.getLastScrollDeltaY() * 2.5;
-		scroll = clamp(scroll, -25, 45);
+		scroll = MathUtils.clamp(scroll, -25, 45);
 		this.distanceFromPlayer = 50 - scroll;
 
 		// Calculate pitch and angle around tracked entity offset
@@ -53,9 +59,9 @@ public class CameraComponentFollowEntity extends EntityComponent {
 			this.angleAroundTrackedEntity -= Math.toRadians(cursorDelta.x * 4f);
 
 			pitch += (float) Math.toRadians(cursorDelta.y * 0.2f);
-			pitch = clamp(pitch, 0.12f, 1.5f);
-			this.cameraRotation.x = pitch;
+			pitch = MathUtils.clamp(pitch, 0.12f, 1.5f);
 		}
+		this.cameraRotation.x = pitch;
 	}
 
 	private void updateViewMatrix(Entity entity) {
@@ -84,24 +90,9 @@ public class CameraComponentFollowEntity extends EntityComponent {
 		this.cameraPosition.y = entity.position.y + verticalDistance;
 	}
 
-	private float clamp(float value, float min, float max) {
-		if (value < min)
-			return min;
-
-		if (value > max)
-			return max;
-
-		return value;
-	}
-
-	@Override
-	public void receiveEvent(BaseEvent event) {
-
-	}
-
 	@Override
 	public void cleanup(Entity entity) {
-
+		// Do nothing
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.openglengine.eventsystem.defaultevents;
 
 import com.openglengine.core.*;
+import com.openglengine.eventsystem.*;
 
 /**
  * This event is sent when a new Display was successfully created
@@ -8,7 +9,7 @@ import com.openglengine.core.*;
  * @author Dominik
  *
  */
-public class DisplayCreatedEvent extends BaseEvent {
+public class DisplayCreatedEvent extends GlobalEvent {
 	// TODO: refactor
 	private Display sender;
 

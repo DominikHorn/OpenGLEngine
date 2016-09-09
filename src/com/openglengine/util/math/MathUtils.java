@@ -6,7 +6,7 @@ package com.openglengine.util.math;
  * @author Dominik
  *
  */
-public class MathUtil {
+public class MathUtils {
 	/**
 	 * Returns orthographic matrix, useful for 2D games
 	 * 
@@ -86,7 +86,7 @@ public class MathUtil {
 		result.matrixValues[2 + 1 * 4] = -f.y;
 		result.matrixValues[2 + 2 * 4] = -f.z;
 
-		return result.multiply(MathUtil.createTranslationMatrix(-eye.x, -eye.y, -eye.z));
+		return result.multiply(MathUtils.createTranslationMatrix(-eye.x, -eye.y, -eye.z));
 	}
 
 	/**
@@ -168,6 +168,24 @@ public class MathUtil {
 		matRotZ.matrixValues[1 + 1 * 4] = +cosZ;
 
 		return matRotX.multiply(matRotY.multiply(matRotZ));
+	}
+
+	/**
+	 * Clamps a value to the given bounds.
+	 * 
+	 * @param value
+	 * @param min
+	 * @param max
+	 * @return value, guaranteed to not be smaller than min or bigger than max
+	 */
+	public static float clamp(float value, float min, float max) {
+		if (value < min)
+			return min;
+
+		if (value > max)
+			return max;
+
+		return value;
 	}
 
 	/**

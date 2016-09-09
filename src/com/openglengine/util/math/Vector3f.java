@@ -51,7 +51,7 @@ public class Vector3f {
 	 * @return
 	 */
 	public Vector3f reNormalize() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 		this.x /= length;
 		this.y /= length;
 		this.z /= length;
@@ -67,7 +67,7 @@ public class Vector3f {
 	 * @return
 	 */
 	public Vector3f getReNormalizeResult() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 
 		return new Vector3f(this.x / length, this.y / length, this.z / length);
 	}
@@ -220,5 +220,17 @@ public class Vector3f {
 	@Override
 	public String toString() {
 		return "Vector3f: (" + this.x + ", " + this.y + ", " + this.z + ");";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Vector3f))
+			return false;
+
+		Vector3f other = (Vector3f) obj;
+		if (other.x != this.x || other.y != this.y || other.z != this.z)
+			return false;
+
+		return true;
 	}
 }

@@ -1,7 +1,6 @@
 package com.openglengine.entitity.component;
 
 import com.openglengine.entitity.*;
-import com.openglengine.eventsystem.defaultevents.*;
 
 /**
  * Behavioural code for an entity goes in here
@@ -24,13 +23,6 @@ public abstract class EntityComponent {
 	 * @param entity
 	 */
 	public abstract void update(Entity entity);
-
-	/**
-	 * This method will be called when another component from this entity wants to notify about certain changes
-	 * 
-	 * @param event
-	 */
-	public abstract void receiveEvent(BaseEvent event);
 
 	/**
 	 * Use this method to cleanup all resources

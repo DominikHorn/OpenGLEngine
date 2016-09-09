@@ -63,7 +63,7 @@ public class Vector4f {
 	 * @return
 	 */
 	public Vector4f reNormalize() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 		this.x /= length;
 		this.y /= length;
 		this.z /= length;
@@ -80,7 +80,7 @@ public class Vector4f {
 	 * @return
 	 */
 	public Vector4f getReNormalizeResult() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 
 		return new Vector4f(this.x / length, this.y / length, this.z / length, this.w / length);
 	}
@@ -202,5 +202,17 @@ public class Vector4f {
 	@Override
 	public String toString() {
 		return "Vector4f: (" + this.x + ", " + this.y + ", " + this.z + this.w + ");";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Vector4f))
+			return false;
+
+		Vector4f other = (Vector4f) obj;
+		if (other.x != this.x || other.y != this.y || other.z != this.z || other.w != this.w)
+			return false;
+
+		return true;
 	}
 }

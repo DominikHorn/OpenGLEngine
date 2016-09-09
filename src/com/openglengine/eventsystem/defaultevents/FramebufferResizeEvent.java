@@ -1,12 +1,14 @@
 package com.openglengine.eventsystem.defaultevents;
 
+import com.openglengine.eventsystem.*;
+
 /**
  * This event is sent when display's framebuffer was resized
  * 
  * @author Dominik
  *
  */
-public class FramebufferResizeEvent extends BaseEvent {
+public class FramebufferResizeEvent extends GlobalEvent {
 	/** new framebuffer width */
 	private int newWidth;
 

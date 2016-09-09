@@ -17,7 +17,7 @@ public class TransformationMatrixStack extends MatrixStack {
 	 * @param z
 	 */
 	public void translate(float x, float y, float z) {
-		this.getCurrentMatrix().multiply(MathUtil.createTranslationMatrix(x, y, z));
+		this.getCurrentMatrix().multiply(MathUtils.createTranslationMatrix(x, y, z));
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class TransformationMatrixStack extends MatrixStack {
 	 * @param z
 	 */
 	public void rotate(float radiansAngle, float x, float y, float z) {
-		this.getCurrentMatrix().multiply(MathUtil.createRotationMatrix(radiansAngle, x, y, z));
+		this.getCurrentMatrix().multiply(MathUtils.createRotationMatrix(radiansAngle, x, y, z));
 	}
 
 	/**
@@ -79,6 +79,6 @@ public class TransformationMatrixStack extends MatrixStack {
 	 * @param z
 	 */
 	public void scale(float x, float y, float z) {
-		this.getCurrentMatrix().multiply(MathUtil.createScaleMatrix(x, y, z));
+		this.getCurrentMatrix().multiply(MathUtils.createScaleMatrix(x, y, z));
 	}
 }

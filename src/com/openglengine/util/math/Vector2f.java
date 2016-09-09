@@ -48,7 +48,7 @@ public class Vector2f {
 	 * @return
 	 */
 	public Vector2f reNormalize() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 		this.x /= length;
 		this.y /= length;
 
@@ -63,7 +63,7 @@ public class Vector2f {
 	 * @return
 	 */
 	public Vector2f getReNormalizedResult() {
-		float length = MathUtil.fastSqrt(this.getSquaredLength());
+		float length = MathUtils.fastSqrt(this.getSquaredLength());
 
 		return new Vector2f(this.x / length, this.y / length);
 	}
@@ -202,5 +202,17 @@ public class Vector2f {
 	@Override
 	public String toString() {
 		return "Vector2f: (" + this.x + ", " + this.y + ");";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Vector2f))
+			return false;
+
+		Vector2f other = (Vector2f) obj;
+		if (other.x != this.x || other.y != this.y)
+			return false;
+
+		return true;
 	}
 }

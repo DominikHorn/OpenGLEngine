@@ -1,7 +1,7 @@
-package com.openglengine.eventsystem.defaultevents;
+package com.openglengine.eventsystem;
 
 /**
- * Base Event class from which all events sent through EventManager must be derived
+ * Base Event class from which all events sent through an EventManager must be derived
  * 
  * NOTE: each event will have a unique identifier (UID) which makes it possible to track events through the event system
  * or record event playback data
