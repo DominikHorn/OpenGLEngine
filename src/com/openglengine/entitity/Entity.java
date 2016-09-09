@@ -5,6 +5,8 @@ import java.util.*;
 import com.openglengine.core.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
+import com.openglengine.renderer.*;
+import com.openglengine.renderer.model.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 import com.openglengine.util.property.*;
@@ -16,7 +18,7 @@ import com.openglengine.util.property.*;
  * @author Dominik
  *
  */
-public class Entity implements PropertyContainer {
+public class Entity implements PropertyContainer, RenderDelegate {
 	/** Each entity has a unique global id. This is used to generate those ids */
 	private static int globalID = 0;
 
@@ -40,6 +42,9 @@ public class Entity implements PropertyContainer {
 
 	/** Entity's scale in all three directions */
 	public Vector3f scale;
+
+	/** the entities model. may be null */
+	public Model model;
 
 	/**
 	 * Initialize this entity
@@ -114,13 +119,12 @@ public class Entity implements PropertyContainer {
 	public void cleanup() {
 		this.components.forEach(c -> c.cleanup(this));
 		this.properties.clear();
+
+		if (this.model != null)
+			this.model.cleanup();
 	}
 
-	/**
-	 * Prepares this instance for rendering
-	 * 
-	 * @param shader
-	 */
+	@Override
 	public void initRendercode() {
 		// Set model transform
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
@@ -132,7 +136,8 @@ public class Entity implements PropertyContainer {
 		tms.scale(this.scale.x, this.scale.y, this.scale.z);
 	}
 
-	public void deinitRenderCode() {
+	@Override
+	public void deinitRendercode() {
 		Engine.getModelMatrixStack().pop();
 	}
 

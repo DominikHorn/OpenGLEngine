@@ -17,13 +17,17 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 */
 	private int textureID;
 
+	/** Texture path. This is stored purely for debug purposes but should not matter too much */
+	private String texturePath;
+
 	/**
 	 * Initialize Texture
 	 * 
 	 * @param textureID
 	 */
-	protected Texture(int textureID) {
+	protected Texture(int textureID, String texturePath) {
 		this.textureID = textureID;
+		this.texturePath = texturePath;
 	}
 
 	/**
@@ -39,7 +43,8 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	public void forceDelete() {
 		if (this.numReferences > 0)
 			Engine.getLogger().warn(
-					"Force deleting texture(" + this.textureID + ") that has " + numReferences + " references left!");
+					"Force deleting texture(id: " + this.textureID + ", path: " + this.texturePath + ") that has "
+							+ numReferences + " references left!");
 
 		// Actually delete this texture
 		GL11.glDeleteTextures(this.textureID);

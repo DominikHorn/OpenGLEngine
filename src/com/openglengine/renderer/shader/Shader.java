@@ -7,7 +7,7 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
-import com.openglengine.entitity.*;
+import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.util.math.*;
 
@@ -94,7 +94,7 @@ public class Shader {
 	 * 
 	 * NOTE: that you'll have to call startUsingShader() beforehand
 	 */
-	public void uploadEntityUniforms(Entity entity) {
+	public void uploadRenderDelegateUniforms(RenderDelegate renderDelegate) {
 		if (!this.shaderInUse)// TODO: performance relevant?
 			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
 

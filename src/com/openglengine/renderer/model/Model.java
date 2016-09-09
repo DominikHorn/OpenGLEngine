@@ -24,7 +24,7 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	private Shader shader; // TODO: refactor
 
 	/** Material used when rendering this model */
-	private Material material = null;
+	private Material material;
 
 	/**
 	 * Initialize Model
@@ -32,9 +32,12 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	 * @param vaoID
 	 * @param indicesCount
 	 */
-	protected Model(int vaoID, int indicesCount) {
+	protected Model(int vaoID, int indicesCount, Shader shader, Material material) {
 		this.vaoID = vaoID;
 		this.indicesCount = indicesCount;
+		this.shader = shader;
+		this.material = material;
+
 	}
 
 	@Override

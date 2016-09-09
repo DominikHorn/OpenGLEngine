@@ -3,7 +3,6 @@ package com.openglengine.renderer;
 import java.util.*;
 
 import com.openglengine.core.*;
-import com.openglengine.entitity.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.util.*;
@@ -20,7 +19,7 @@ public class RenderManager implements ResourceManager {
 	private Renderer renderer;
 
 	/** Batch rendering storage. This list maintains all entities that need to be rendered */
-	private Map<Model, List<Entity>> texturedEntitiesBatch;
+	private Map<Model, List<RenderDelegate>> texturedEntitiesBatch;
 
 	/**
 	 * Create new RenderManager
@@ -38,18 +37,14 @@ public class RenderManager implements ResourceManager {
 		texturedEntitiesBatch.clear();
 	}
 
-	public void processEntity(Entity entity) {
-		Model model = (Model) entity.getPropertyValue(RenderableEntityProperties.PROPERTY_MODEL);
-		if (model == null)
-			Engine.getLogger().err("This entity(" + entity + ") has no model property set and is thus not renderable!");
-
-		List<Entity> batch = texturedEntitiesBatch.get(model);
+	public void processRenderObject(Model model, RenderDelegate renderDelegate) {
+		List<RenderDelegate> batch = texturedEntitiesBatch.get(model);
 		if (batch == null) {
 			batch = new ArrayList<>();
 			texturedEntitiesBatch.put(model, batch);
 		}
 
-		batch.add(entity);
+		batch.add(renderDelegate);
 	}
 
 	@Override

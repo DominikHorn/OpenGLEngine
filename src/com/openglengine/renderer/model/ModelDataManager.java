@@ -20,6 +20,7 @@ public class ModelDataManager implements ResourceManager {
 
 	@Override
 	public void cleanup() {
+		this.loadedModelDatas.values().forEach(d -> d.cleanup());
 		this.loadedModelDatas.clear();
 	}
 

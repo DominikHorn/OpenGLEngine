@@ -35,7 +35,7 @@ public class Vector3f {
 	 * 
 	 * @return convenience return
 	 */
-	public Vector3f normalize() {
+	public Vector3f normalise() {
 		double length = getLength();
 		this.x /= length;
 		this.y /= length;

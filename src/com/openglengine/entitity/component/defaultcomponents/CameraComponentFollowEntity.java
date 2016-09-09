@@ -14,13 +14,18 @@ import com.openglengine.util.math.*;
  *
  */
 public class CameraComponentFollowEntity extends EntityComponent {
-	private float distanceFromPlayer = 50;
+	private float distanceFromPlayer = 20;
 	private float angleAroundTrackedEntity = 0;
 	private float scroll = 0;
-	private float pitch = 0;
+	private float pitch = 0.4f;
 
 	private Vector3f cameraPosition;
 	private Vector3f cameraRotation;
+
+	private float maxDistance = -20;
+	private float minDistance = 45;
+	private float minPitch = 0.1f;
+	private float maxPitch = 1.5f;
 
 	@Override
 	public void init(Entity entity) {
@@ -51,7 +56,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 
 		// Calculate the zoom (distance from player) TODO: limit zooming to some bounds
 		scroll += input.getLastScrollDeltaY() * 2.5;
-		scroll = MathUtils.clamp(scroll, -25, 45);
+		scroll = MathUtils.clamp(scroll, this.maxDistance, this.minDistance);
 		this.distanceFromPlayer = 50 - scroll;
 
 		// Calculate pitch and angle around tracked entity offset
@@ -59,7 +64,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 			this.angleAroundTrackedEntity -= Math.toRadians(cursorDelta.x * 4f);
 
 			pitch += (float) Math.toRadians(cursorDelta.y * 0.2f);
-			pitch = MathUtils.clamp(pitch, 0.12f, 1.5f);
+			pitch = MathUtils.clamp(pitch, minPitch, maxPitch);
 		}
 		this.cameraRotation.x = pitch;
 	}

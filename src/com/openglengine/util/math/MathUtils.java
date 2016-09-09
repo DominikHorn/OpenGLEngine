@@ -70,8 +70,8 @@ public class MathUtils {
 	public static Matrix4f createLookAtMatrix(Vector3f eye, Vector3f center, Vector3f up) {
 		Matrix4f result = new Matrix4f();
 
-		Vector3f f = center.getSubtractionResult(eye).normalize();
-		Vector3f s = f.getCrossProductResult(up.getNormalizeResult()).normalize();
+		Vector3f f = center.getSubtractionResult(eye).normalise();
+		Vector3f s = f.getCrossProductResult(up.getNormalizeResult()).normalise();
 		Vector3f u = s.getCrossProductResult(f);
 
 		result.matrixValues[0 + 0 * 4] = s.x;
