@@ -1,5 +1,7 @@
 package com.openglengine.core;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 import java.io.*;
 
 import org.lwjgl.opengl.*;
@@ -7,8 +9,8 @@ import org.lwjgl.opengl.*;
 import com.openglengine.eventsystem.defaultevents.*;
 
 /**
- * This class implements the basic functionality aswell as automatically initializing this engine. Subclass this as a
- * starting point for your game entry point
+ * This class implements the basic functionality as well as automatically initializing the engine. Subclass this as a
+ * starting point for your game
  * 
  * @author Dominik
  *
@@ -27,12 +29,27 @@ public abstract class Basic3DGame {
 	/** These settings are used for projection matricy setup in resize() */
 	private float fov, nearPlane, farPlane;
 
+	/**
+	 * Creates a new Basic3d game
+	 * 
+	 * @param fov
+	 * @param near_plane
+	 * @param far_plane
+	 * @throws IOException
+	 */
 	public Basic3DGame(float fov, float near_plane, float far_plane) throws IOException {
 		this.fov = fov;
 		this.nearPlane = near_plane;
 		this.farPlane = far_plane;
 
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> this.run());
+		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> {
+			// Start rendering in seperate Thread
+			new Thread(() -> this.loop()).start();
+
+			while (!this.quit) {
+				glfwWaitEvents();
+			}
+		});
 		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this
 				.setViewSize(((FramebufferResizeEvent) e).getNewWidth(), ((FramebufferResizeEvent) e).getNewHeight()));
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
@@ -42,7 +59,7 @@ public abstract class Basic3DGame {
 	}
 
 	/**
-	 * GL init code
+	 * Initializes OpenGL
 	 * 
 	 * @param screenWidth
 	 * @param screenHeight
@@ -68,6 +85,12 @@ public abstract class Basic3DGame {
 		this.setViewSize(pixelWidth, pixeleight);
 	}
 
+	/**
+	 * Sets the view size
+	 * 
+	 * @param pixelWidth
+	 * @param pixelHeight
+	 */
 	private void setViewSize(int pixelWidth, int pixelHeight) {
 		// Setup viewport
 		GL11.glViewport(0, 0, pixelWidth, pixelHeight);
@@ -75,14 +98,6 @@ public abstract class Basic3DGame {
 		// Setup projection matrix
 		Engine.getProjectionMatrixStack().setPerspectiveMatrix(this.fov, (float) pixelWidth / (float) pixelHeight,
 				this.nearPlane, this.farPlane);
-	}
-
-	private void run() {
-		// Start rendering thread
-		this.loop();
-
-		// If we quit, wait for last render loop pass and quit
-		this.quit();
 	}
 
 	/**
@@ -114,6 +129,9 @@ public abstract class Basic3DGame {
 					this.gameDisplay.updateWindowTitle(fpsCounter + "fps");
 					fpsCounter = 0;
 				}
+
+				// Fetch events for this thread
+				Engine.getGlobalEventManager().fetchForRenderthread();
 
 				// Send update event
 				Engine.getGlobalEventManager().dispatch(new UpdateEvent(elapsed));

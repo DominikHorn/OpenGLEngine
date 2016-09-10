@@ -88,9 +88,8 @@ public class Display implements ResourceManager {
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are already the default
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Prevent the window from being resized
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 
 		// Create the window
 		if (fullscreen)
@@ -138,17 +137,11 @@ public class Display implements ResourceManager {
 	 * swaps buffers and polls events
 	 */
 	protected void swapBuffers() {
-		// Finish rendering process
-		GL11.glFinish();
-
 		// Swap the buffer
 		glfwSwapBuffers(windowID);
 
 		// Clear the new backbuffer
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-		// Poll events
-		glfwPollEvents();
 	}
 
 	/**
@@ -204,7 +197,8 @@ public class Display implements ResourceManager {
 			this.windowWidthInPixels = width;
 			this.windowHeightInPixels = height;
 			Engine.getGlobalEventManager()
-					.dispatch(new FramebufferResizeEvent(this.windowWidthInPixels, this.windowHeightInPixels));
+					.queueForRenderthread(
+							new FramebufferResizeEvent(this.windowWidthInPixels, this.windowHeightInPixels));
 		}
 	}
 }

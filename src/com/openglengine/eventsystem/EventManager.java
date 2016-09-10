@@ -12,7 +12,7 @@ import com.openglengine.util.*;
  */
 public class EventManager<EventClass extends BaseEvent> implements ResourceManager {
 	/** listeners data this class operates on */
-	private Map<Class<? extends EventClass>, List<EventListener>> listeners;
+	protected Map<Class<? extends EventClass>, List<EventListener>> listeners;
 
 	public EventManager() {
 		this.listeners = new HashMap<>();
