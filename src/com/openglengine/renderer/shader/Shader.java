@@ -7,8 +7,6 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
-import com.openglengine.renderer.*;
-import com.openglengine.renderer.model.*;
 import com.openglengine.util.math.*;
 
 // TODO: refactor. f.e. implement ShaderManager etc
@@ -21,7 +19,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class Shader {
+public abstract class Shader {
 	/** uniform name of model matrix */
 	private static final String UNIFORM_NAME_MODEL_MATRIX = "transformationMatrix";
 
@@ -49,9 +47,6 @@ public class Shader {
 	/** uniform location of view matrix */
 	private int location_viewMatrix;
 
-	/** whether or not startUsingShader() was called */
-	private boolean shaderInUse;
-
 	/** Float buffer used to upload 4x4 matrices to shader */
 	private static FloatBuffer matrixFloatBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
@@ -62,42 +57,23 @@ public class Shader {
 	 * @param fragmentShaderPath
 	 */
 	protected Shader() {
-		this.shaderInUse = false;
 		this.vertexShaderID = this.fragmentShaderID = -1;
 	}
 
-	/**
-	 * Upload uniforms that don't need to change for each draw call. These are dependent on the rendered frame
-	 * 
-	 * NOTE: that you'll have to call startUsingShader() beforehand
-	 */
-	public void uploadGlobalUniforms() {
-		if (!this.shaderInUse) // TODO: performance relevant?
-			Engine.getLogger().warn("startUsingShader() has not been called before static uniform upload");
+	public abstract void uploadGlobalUniforms();
 
+	/**
+	 * Uploads projection and view matrix
+	 */
+	public void uploadProjectionAndViewMatrix() {
 		this.loadMatrix4f(this.location_projectionMatrix, Engine.getProjectionMatrixStack().getCurrentMatrix());
 		this.loadMatrix4f(this.location_viewMatrix, Engine.getViewMatrixStack().getCurrentMatrix());
 	}
 
 	/**
-	 * Upload uniforms that need to change for each model we render. These are model dependent
-	 * 
-	 * NOTE: that you'll have to call startUsingShader() beforehand
+	 * Uploads the model view matrix
 	 */
-	public void uploadModelUniforms(Model model) {
-		if (!this.shaderInUse)// TODO: performance relevant?
-			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
-	}
-
-	/**
-	 * Upload uniforms that need to change for each draw call. These are entity dependent
-	 * 
-	 * NOTE: that you'll have to call startUsingShader() beforehand
-	 */
-	public void uploadRenderDelegateUniforms(RenderDelegate renderDelegate) {
-		if (!this.shaderInUse)// TODO: performance relevant?
-			Engine.getLogger().warn("startUsingShader() has not been called before dynamic uniform upload");
-
+	public void uploadModelViewMatrixUniform() {
 		this.loadMatrix4f(this.location_modelMatrix, Engine.getModelMatrixStack().getCurrentMatrix());
 	}
 
@@ -106,7 +82,6 @@ public class Shader {
 	 */
 	public void startUsingShader() {
 		GL20.glUseProgram(this.programID);
-		this.shaderInUse = true;
 	}
 
 	/**
@@ -114,7 +89,6 @@ public class Shader {
 	 */
 	public void stopUsingShader() {
 		GL20.glUseProgram(0);
-		this.shaderInUse = false;
 	}
 
 	public void forceDelete() {
@@ -210,7 +184,7 @@ public class Shader {
 	 * @param location
 	 * @param matrix
 	 */
-	protected void loadMatrix4f(int location, Matrix4f matrix) {
+	public void loadMatrix4f(int location, Matrix4f matrix) {
 		matrix.storeInFloatBuffer(matrixFloatBuffer);
 		GL20.glUniformMatrix4fv(location, false, matrixFloatBuffer);
 	}
@@ -221,7 +195,7 @@ public class Shader {
 	 * @param location
 	 * @param vector
 	 */
-	protected void loadVector3f(int location, Vector3f vector) {
+	public void loadVector3f(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
 	}
 
@@ -231,7 +205,7 @@ public class Shader {
 	 * @param location
 	 * @param value
 	 */
-	protected void loadFloat(int location, float value) {
+	public void loadFloat(int location, float value) {
 		GL20.glUniform1f(location, value);
 	}
 
@@ -241,7 +215,7 @@ public class Shader {
 	 * @param location
 	 * @param value
 	 */
-	protected void loadInt(int location, int value) {
+	public void loadInt(int location, int value) {
 		GL20.glUniform1i(location, value);
 	}
 

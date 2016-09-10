@@ -3,6 +3,7 @@ package com.openglengine.renderer.model;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
+import com.openglengine.renderer.*;
 import com.openglengine.renderer.material.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
@@ -13,7 +14,7 @@ import com.openglengine.util.*;
  * @author Dominik
  *
  */
-public abstract class Model extends ReferenceCountedDeletableContainer {
+public abstract class Model<ShaderClass extends Shader> extends ReferenceCountedDeletableContainer {
 	/** VAOs are like a list that stores all data needed for rendering */
 	private int vaoID;
 
@@ -21,10 +22,10 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	private int indicesCount;
 
 	/** Shader used when rendering this model */
-	private Shader shader; // TODO: refactor
+	protected ShaderClass shader; // TODO: refactor
 
 	/** Material used when rendering this model */
-	private Material material;
+	private Material<ShaderClass> material;
 
 	/**
 	 * Initialize Model
@@ -32,12 +33,11 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	 * @param vaoID
 	 * @param indicesCount
 	 */
-	protected Model(int vaoID, int indicesCount, Shader shader, Material material) {
+	protected Model(int vaoID, int indicesCount, ShaderClass shader, Material<ShaderClass> material) {
 		this.vaoID = vaoID;
 		this.indicesCount = indicesCount;
 		this.shader = shader;
 		this.material = material;
-
 	}
 
 	@Override
@@ -80,33 +80,29 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 	 * 
 	 * @param shader
 	 */
-	public void setShader(Shader shader) {
+	public void setShader(ShaderClass shader) {
 		this.shader = shader;
-	}
-
-	/**
-	 * Retrieve the shader for this model
-	 * 
-	 * @return
-	 */
-	public Shader getShader() {
-		return this.shader;
 	}
 
 	/**
 	 * Set material
 	 */
-	public void setMaterial(Material material) {
+	public void setMaterial(Material<ShaderClass> material) {
 		this.material = material;
 	}
 
 	/**
-	 * Retrieve this model's material
-	 * 
-	 * @return
+	 * Inits this model for rendering
 	 */
-	public Material getMaterial() {
-		return this.material;
+	public void init() {
+		// Init shader
+		shader.startUsingShader();
+		shader.uploadProjectionAndViewMatrix();
+		shader.uploadGlobalUniforms();
+
+		this.initRendercode();
+
+		this.material.initRendercode(this.shader);
 	}
 
 	/**
@@ -123,6 +119,37 @@ public abstract class Model extends ReferenceCountedDeletableContainer {
 
 		// Enable vertex attrib array 2 (Normal data)
 		GL20.glEnableVertexAttribArray(2);
+	}
+
+	/**
+	 * Inits a render delegate for rendering
+	 * 
+	 * @param delegate
+	 */
+	public void initRenderDelegate(RenderDelegate delegate) {
+		// Allow entity to init render code
+		delegate.initRendercode(this.shader);
+
+		// Do this as an engine service
+		this.shader.uploadModelViewMatrixUniform();
+	}
+
+	/**
+	 * Deinits a renderdelegate from rendering
+	 * 
+	 * @param delegate
+	 */
+	public void deinitRenderDelegate(RenderDelegate delegate) {
+		delegate.deinitRendercode();
+	}
+
+	/**
+	 * Deinits this model for rendering
+	 */
+	public void deinit() {
+		this.deinitRendercode();
+		this.material.deinitRendercode();
+		this.shader.stopUsingShader();
 	}
 
 	/**

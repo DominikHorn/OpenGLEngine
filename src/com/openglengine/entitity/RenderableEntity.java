@@ -7,6 +7,7 @@ import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
+import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
@@ -36,13 +37,13 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	public Vector3f scale;
 
 	/** the entities model. may be null */
-	public Model model;
+	public Model<? extends Shader> model;
 
 	/**
 	 * 
 	 * @param model
 	 */
-	public RenderableEntity(Model model) {
+	public RenderableEntity(Model<? extends Shader> model) {
 		this(model, new Vector3f());
 	}
 
@@ -51,7 +52,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param model
 	 * @param position
 	 */
-	public RenderableEntity(Model model, Vector3f position) {
+	public RenderableEntity(Model<? extends Shader> model, Vector3f position) {
 		this(model, position, new Vector3f());
 	}
 
@@ -62,7 +63,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param rotation
 	 * @param scale
 	 */
-	public RenderableEntity(Model model, Vector3f position, Vector3f scale) {
+	public RenderableEntity(Model<? extends Shader> model, Vector3f position, Vector3f scale) {
 		this(model, position, new Vector3f(), scale);
 	}
 
@@ -73,7 +74,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param rotation
 	 * @param scale
 	 */
-	public RenderableEntity(Model model, Vector3f position, Vector3f rotation, Vector3f scale) {
+	public RenderableEntity(Model<? extends Shader> model, Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.entityUID = EntityUIDContainer.GLOBAL_ENTITY_ID_CNT++;
 		this.position = position;
 		this.rotation = rotation;
@@ -125,12 +126,17 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 		this.components.forEach(c -> c.update(this));
 	}
 
+	/**
+	 * Retrieve the event system of this entity
+	 * 
+	 * @return
+	 */
 	public EventManager<ComponentEvent> getComponentEventSystem() {
 		return this.componentEventSystem;
 	}
 
 	@Override
-	public void initRendercode() {
+	public void initRendercode(Shader shader) {
 		// Set model transform
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();

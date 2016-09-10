@@ -2,10 +2,13 @@ package com.openglengine.renderer;
 
 import java.util.*;
 
+import org.lwjgl.opengl.*;
+
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.renderer.model.*;
+import com.openglengine.renderer.shader.*;
 import com.openglengine.util.*;
 
 /**
@@ -16,17 +19,13 @@ import com.openglengine.util.*;
  *
  */
 public class RenderManager implements ResourceManager {
-	/** actual renderer containing rendering code */
-	private Renderer renderer;
-
 	/** Batch rendering storage. This list maintains all entities that need to be rendered */
-	private Map<Model, List<RenderDelegate>> texturedEntitiesBatch;
+	private Map<Model<? extends Shader>, List<RenderDelegate>> texturedEntitiesBatch;
 
 	/**
 	 * Create new RenderManager
 	 */
 	public RenderManager() {
-		this.renderer = new Renderer();
 		this.texturedEntitiesBatch = new HashMap<>();
 
 		Engine.getGlobalEventManager().registerListenerForEvent(RenderEvent.class, e -> render());
@@ -34,11 +33,11 @@ public class RenderManager implements ResourceManager {
 
 	public void render() {
 		/** rendering */
-		renderer.render(this.texturedEntitiesBatch);
+		this.render(this.texturedEntitiesBatch);
 		texturedEntitiesBatch.clear();
 	}
 
-	public void processRenderObject(Model model, RenderDelegate renderDelegate) {
+	public void processRenderObject(Model<? extends Shader> model, RenderDelegate renderDelegate) {
 		List<RenderDelegate> batch = texturedEntitiesBatch.get(model);
 		if (batch == null) {
 			batch = new ArrayList<>();
@@ -50,6 +49,30 @@ public class RenderManager implements ResourceManager {
 
 	public void processRenderableEntity(RenderableEntity e) {
 		this.processRenderObject(e.model, e);
+	}
+
+	public void render(Map<Model<? extends Shader>, List<RenderDelegate>> renderDelegates) {
+		renderDelegates.keySet().forEach(model -> {
+			// Prepare model
+			model.init();
+
+			// Retrieve all entities
+			List<RenderDelegate> batch = renderDelegates.get(model);
+
+			// Prepare instance
+			batch.forEach(renderDelegate -> {
+				model.initRenderDelegate(renderDelegate);
+
+				// Draw prepared data
+				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getIndicesCount(), GL11.GL_UNSIGNED_INT, 0);
+
+				// Deinit entity rendercode
+				model.deinitRenderDelegate(renderDelegate);
+			});
+
+			// Unbind all stuff
+			model.deinit();
+		});
 	}
 
 	@Override
