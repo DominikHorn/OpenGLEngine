@@ -27,7 +27,9 @@ public class EventManager<EventClass extends BaseEvent> implements ResourceManag
 	 */
 	public void dispatch(EventClass event) {
 		// Dispatch this event to all listeners
-		listeners.get(event.getClass()).forEach(listener -> listener.eventReceived(event));
+		List<EventListener> lList = this.listeners.get(event.getClass());
+		if (lList != null)
+			lList.forEach(listener -> listener.eventReceived(event));
 	}
 
 	/**

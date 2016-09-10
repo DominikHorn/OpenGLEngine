@@ -201,7 +201,7 @@ public class Vector2f {
 
 	@Override
 	public String toString() {
-		return "Vector2f: (" + this.x + ", " + this.y + ");";
+		return "Vector2f: (" + this.x + ", " + this.y + ")";
 	}
 
 	@Override

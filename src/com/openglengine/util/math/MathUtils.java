@@ -189,6 +189,23 @@ public class MathUtils {
 	}
 
 	/**
+	 * Calculate y value from triangle defined by p1, p2 and p3 at x-z coordinate pos
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @param pos
+	 * @return
+	 */
+	public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {
+		float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+		float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+		float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+		float l3 = 1.0f - l1 - l2;
+		return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+	}
+
+	/**
 	 * This uses polynomial approximation to get results. The polynom used is a second degree polynom. This function's
 	 * results will only be accurate around x=0.75 up to x=1.25, meaning this is only useful for renormalizing almost
 	 * normalized vectors (floating point error fixing f.e.)
