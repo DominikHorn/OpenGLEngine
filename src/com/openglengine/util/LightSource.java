@@ -1,4 +1,4 @@
-package com.openglengine.renderer;
+package com.openglengine.util;
 
 import com.openglengine.util.math.*;
 
@@ -9,7 +9,6 @@ import com.openglengine.util.math.*;
  *
  */
 public class LightSource {
-	// TODO: refactor
 	public Vector3f position;
 	public Vector3f color;
 	public float brightness;

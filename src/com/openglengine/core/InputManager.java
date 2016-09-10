@@ -23,6 +23,7 @@ public class InputManager implements ResourceManager {
 			KEY_D = GLFW_KEY_D,
 			KEY_Q = GLFW_KEY_Q,
 			KEY_E = GLFW_KEY_E,
+			KEY_F1 = GLFW_KEY_F1,
 			KEY_ESC = GLFW_KEY_ESCAPE,
 			KEY_SPACE = GLFW_KEY_SPACE,
 			KEY_LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT,
@@ -37,6 +38,7 @@ public class InputManager implements ResourceManager {
 
 	/** internal structure holding all the key information */
 	private int[] keys = new int[GLFW_KEY_LAST];
+	private boolean[] pressedKeys = new boolean[GLFW_KEY_LAST];
 
 	/** internal structure holding all mouse button information */
 	private int[] mouseButtons = new int[GLFW_MOUSE_BUTTON_LAST];
@@ -89,8 +91,12 @@ public class InputManager implements ResourceManager {
 	 */
 	private void keyEvent(long window, int key, int scancode, int action, int mods) {
 		// TODO: don't ignore mods
-		if (key > 0 && key < keys.length)
+		if (key > 0 && key < keys.length) {
 			keys[key] = action;
+
+			if (action == GLFW_PRESS)
+				pressedKeys[key] = true;
+		}
 	}
 
 	/**
@@ -140,6 +146,12 @@ public class InputManager implements ResourceManager {
 	 */
 	public boolean isKeyDown(int key) {
 		return keys[key] != GLFW_RELEASE;
+	}
+
+	public boolean wasKeyPressed(int key) {
+		boolean result = pressedKeys[key];
+		pressedKeys[key] = false;
+		return result;
 	}
 
 	/**

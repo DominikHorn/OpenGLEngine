@@ -20,6 +20,9 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	/** Texture path. This is stored purely for debug purposes but should not matter too much */
 	private String texturePath;
 
+	/** Number of rows (used for texture atlases) */
+	private int numberOfRows = 1;
+
 	/**
 	 * Initialize Texture
 	 * 
@@ -39,12 +42,29 @@ public class Texture extends ReferenceCountedDeletableContainer {
 		return this.textureID;
 	}
 
+	/**
+	 * Retrieve number of rows in this texture atlas (1 if it is no atlas)
+	 * 
+	 * @return
+	 */
+	public int getNumberOfRows() {
+		return numberOfRows;
+	}
+
+	/**
+	 * Set number of rows in this texture atlas (1 if this is no atlas). Default value is 1
+	 * 
+	 * @param numberOfRows
+	 */
+	public void setNumberOfRows(int numberOfRows) {
+		this.numberOfRows = numberOfRows;
+	}
+
 	@Override
 	public void forceDelete() {
 		if (this.numReferences > 0)
-			Engine.getLogger().warn(
-					"Force deleting texture(id: " + this.textureID + ", path: " + this.texturePath + ") that has "
-							+ numReferences + " references left!");
+			Engine.getLogger().warn("Force deleting texture(id: " + this.textureID + ", path: " + this.texturePath
+					+ ") that has " + numReferences + " references left!");
 
 		// Actually delete this texture
 		GL11.glDeleteTextures(this.textureID);

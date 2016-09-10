@@ -12,7 +12,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class CameraComponentFollowEntity extends EntityComponent {
+public class CameraComponentFollowEntity implements RenderableEntityComponent {
 	private float distanceFromPlayer = 20;
 	private float angleAroundTrackedEntity = 0;
 	private float scroll = 0;
@@ -27,7 +27,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 	private float maxPitch = 1.5f;
 
 	@Override
-	public void init(Entity entity) {
+	public void init(RenderableEntity entity) {
 		this.cameraPosition = new Vector3f();
 		this.cameraRotation = new Vector3f(0.35f, 3.14f, 0f);
 
@@ -36,7 +36,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 	}
 
 	@Override
-	public void update(Entity entity) {
+	public void update(RenderableEntity entity) {
 		this.processInput();
 
 		this.updateViewMatrix(entity);
@@ -63,7 +63,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 		this.cameraRotation.x = pitch;
 	}
 
-	private void updateViewMatrix(Entity entity) {
+	private void updateViewMatrix(RenderableEntity entity) {
 		// Calculate stuff
 		float horizontalDistance = (float) (this.distanceFromPlayer * Math.cos(this.cameraRotation.x));
 		float verticalDistance = (float) (this.distanceFromPlayer * Math.sin(this.cameraRotation.x));
@@ -78,7 +78,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 		vm.translate(this.cameraPosition.getInvertResult());
 	}
 
-	private void calculateCameraPosition(Entity entity, float horizontalDistance, float verticalDistance) {
+	private void calculateCameraPosition(RenderableEntity entity, float horizontalDistance, float verticalDistance) {
 		float theta = entity.rotation.y + (float) Math.toRadians(this.angleAroundTrackedEntity);
 		float offsetX = (float) (horizontalDistance * Math.sin(theta));
 		float offsetZ = (float) (horizontalDistance * Math.cos(theta));
@@ -90,7 +90,7 @@ public class CameraComponentFollowEntity extends EntityComponent {
 	}
 
 	@Override
-	public void cleanup(Entity entity) {
+	public void cleanup() {
 		// Do nothing
 	}
 

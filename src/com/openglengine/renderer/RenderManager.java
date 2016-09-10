@@ -48,7 +48,7 @@ public class RenderManager implements ResourceManager {
 		batch.add(renderDelegate);
 	}
 
-	public void processEntity(Entity e) {
+	public void processRenderableEntity(RenderableEntity e) {
 		this.processRenderObject(e.model, e);
 	}
 

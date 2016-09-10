@@ -13,7 +13,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class CameraComponentFlyoverObserver extends EntityComponent {
+public class CameraComponentFlyoverObserver implements EntityComponent {
 	private static final double ANGLE_OFFSET = 90.0 * Math.PI / 180.0;
 
 	private float cameraTranslationSpeed;
@@ -103,7 +103,7 @@ public class CameraComponentFlyoverObserver extends EntityComponent {
 	}
 
 	@Override
-	public void cleanup(Entity entity) {
+	public void cleanup() {
 		// No resources -> no cleanup needed
 	}
 }

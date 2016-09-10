@@ -2,24 +2,26 @@ package com.openglengine.entitity;
 
 import java.util.*;
 
+import com.openglengine.core.*;
 import com.openglengine.entitity.component.*;
 import com.openglengine.eventsystem.*;
+import com.openglengine.renderer.*;
+import com.openglengine.renderer.model.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
 /**
- * Entity class. One entity may contain multiple components, all of which should be as independent of one another as
- * possible
+ * An entity which may be rendered
  * 
  * @author Dominik
  *
  */
-public class Entity implements ResourceManager {
+public class RenderableEntity implements RenderDelegate, ResourceManager {
 	/** Entity's globally unique id */
 	private int entityUID = 0;
 
 	/** Entity's components */
-	private List<EntityComponent> components;
+	private List<RenderableEntityComponent> components;
 
 	/** Event manager for component events */
 	private EventManager<ComponentEvent> componentEventSystem;
@@ -30,32 +32,55 @@ public class Entity implements ResourceManager {
 	/** Entity's rotation on all three axis */
 	public Vector3f rotation;
 
+	/** Entity's scale in all three directions */
+	public Vector3f scale;
+
+	/** the entities model. may be null */
+	public Model model;
+
 	/**
-	 * Initialize this entity
+	 * 
+	 * @param model
 	 */
-	public Entity() {
-		this(new Vector3f());
+	public RenderableEntity(Model model) {
+		this(model, new Vector3f());
 	}
 
 	/**
 	 * 
+	 * @param model
 	 * @param position
 	 */
-	public Entity(Vector3f position) {
-		this(position, new Vector3f());
+	public RenderableEntity(Model model, Vector3f position) {
+		this(model, position, new Vector3f());
 	}
 
 	/**
 	 * 
+	 * @param model
 	 * @param position
 	 * @param rotation
+	 * @param scale
 	 */
-	public Entity(Vector3f position, Vector3f rotation) {
+	public RenderableEntity(Model model, Vector3f position, Vector3f scale) {
+		this(model, position, new Vector3f(), scale);
+	}
+
+	/**
+	 * 
+	 * @param model
+	 * @param position
+	 * @param rotation
+	 * @param scale
+	 */
+	public RenderableEntity(Model model, Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.entityUID = EntityUIDContainer.GLOBAL_ENTITY_ID_CNT++;
-		this.components = new ArrayList<>();
-		this.componentEventSystem = new EventManager<>();
 		this.position = position;
 		this.rotation = rotation;
+		this.scale = scale;
+		this.model = model;
+		this.components = new ArrayList<>();
+		this.componentEventSystem = new EventManager<>();
 	}
 
 	/**
@@ -73,7 +98,7 @@ public class Entity implements ResourceManager {
 	 * @param component
 	 * @return convenience self return to make addComponent().addComponent().addComponent()... possible
 	 */
-	public Entity addComponent(EntityComponent component) {
+	public RenderableEntity addComponent(RenderableEntityComponent component) {
 		// TODO: implement component reordering because some components might be execution order dependent
 		component.init(this);
 		this.components.add(component);
@@ -87,7 +112,7 @@ public class Entity implements ResourceManager {
 	 * @param component
 	 * @return convenience self return to make removeComponent().removeComponent().removeComponent()... possible
 	 */
-	public Entity removeComponent(EntityComponent component) {
+	public RenderableEntity removeComponent(RenderableEntityComponent component) {
 		this.components.remove(component);
 
 		return this;
@@ -104,11 +129,27 @@ public class Entity implements ResourceManager {
 		return this.componentEventSystem;
 	}
 
-	/**
-	 * Cleans this entity's resources
-	 */
+	@Override
+	public void initRendercode() {
+		// Set model transform
+		TransformationMatrixStack tms = Engine.getModelMatrixStack();
+		tms.push();
+		tms.translate(this.position);
+		tms.rotateX(this.rotation.x);
+		tms.rotateY(this.rotation.y);
+		tms.rotateZ(this.rotation.z);
+		tms.scale(this.scale.x, this.scale.y, this.scale.z);
+	}
+
+	@Override
+	public void deinitRendercode() {
+		Engine.getModelMatrixStack().pop();
+	}
+
 	@Override
 	public void cleanup() {
 		this.components.forEach(c -> c.cleanup());
+
+		this.model.cleanup();
 	}
 }

@@ -20,16 +20,6 @@ public abstract class Basic3DGame {
 	private Display gameDisplay;
 
 	/**
-	 * amount of seconds that pass between updates
-	 */
-	private double secsPerUpdate = 1.0 / 60.0;
-
-	/**
-	 * amount of seconds that have to pass in one gameloop tick before updates are skipped
-	 */
-	private double updateSkipThreshold = 20 * secsPerUpdate;
-
-	/**
 	 * Whether or not we should quit the gameloop
 	 */
 	private boolean quit = false;
@@ -126,7 +116,7 @@ public abstract class Basic3DGame {
 				}
 
 				// Send update event
-				Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
+				Engine.getGlobalEventManager().dispatch(new UpdateEvent(elapsed));
 
 				// Render our scene
 				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));
@@ -148,29 +138,6 @@ public abstract class Basic3DGame {
 		this.fov = fov;
 		this.nearPlane = nearPlane;
 		this.farPlane = farPlane;
-	}
-
-	/**
-	 * Use this method to dynamically set how many ups and therefore fps you want to receive (Rendering more fps than
-	 * ups does not make sense as the game will stutter regardless)
-	 * 
-	 * @param ups
-	 */
-	public void setUPS(double ups) {
-		this.secsPerUpdate = 1.0 / ups;
-	}
-
-	/**
-	 * Set the update skip threshold.
-	 * 
-	 * Explanation: If the game loop is paused for some reason (f.e. user drags window), and starts up again the
-	 * gameloop will try to send every update that it missed. This will cause a lag spike and the game zip-forwards many
-	 * seconds. If this threshold is surpassed updates will simply be skipped.
-	 * 
-	 * @param seconds
-	 */
-	public void setUpdateSkipThreshold(double seconds) {
-		this.updateSkipThreshold = seconds;
 	}
 
 	/**
