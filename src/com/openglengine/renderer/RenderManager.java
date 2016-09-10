@@ -3,6 +3,7 @@ package com.openglengine.renderer;
 import java.util.*;
 
 import com.openglengine.core.*;
+import com.openglengine.entitity.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.util.*;
@@ -45,6 +46,10 @@ public class RenderManager implements ResourceManager {
 		}
 
 		batch.add(renderDelegate);
+	}
+
+	public void processEntity(Entity e) {
+		this.processRenderObject(e.model, e);
 	}
 
 	@Override

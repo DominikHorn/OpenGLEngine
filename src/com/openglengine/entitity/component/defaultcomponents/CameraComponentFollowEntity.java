@@ -3,7 +3,6 @@ package com.openglengine.entitity.component.defaultcomponents;
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
 import com.openglengine.entitity.component.*;
-import com.openglengine.eventsystem.defaultcomponentevents.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
@@ -29,11 +28,6 @@ public class CameraComponentFollowEntity extends EntityComponent {
 
 	@Override
 	public void init(Entity entity) {
-		entity.getComponentEventSystem().registerListenerForEvent(FollowedEntityMovedEvent.class, e -> {
-			this.angleAroundTrackedEntity = 0;
-			this.pitch = 0.4f;
-		});
-
 		this.cameraPosition = new Vector3f();
 		this.cameraRotation = new Vector3f(0.35f, 3.14f, 0f);
 
