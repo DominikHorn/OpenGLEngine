@@ -106,11 +106,9 @@ public abstract class Basic3DGame {
 
 			final double nanoToSecondFactor = 1000000000.0;
 			long previous = System.nanoTime();
-			double steps = 0.0;
 
 			// Simple fps and ups counter logic
 			double secondCounter = 0.0;
-			int upsCounter = 0;
 			int fpsCounter = 0;
 
 			// Actual gameloop
@@ -120,30 +118,15 @@ public abstract class Basic3DGame {
 				long elapsed = now - previous;
 				secondCounter += elapsed / nanoToSecondFactor;
 				previous = now;
-				steps += elapsed / nanoToSecondFactor;
 
 				if (secondCounter > 1.0) {
 					secondCounter -= 1.0;
-					this.gameDisplay.updateWindowTitle(fpsCounter + "fps | " + upsCounter + "ups");
-					upsCounter = 0;
+					this.gameDisplay.updateWindowTitle(fpsCounter + "fps");
 					fpsCounter = 0;
 				}
 
-				// Skip steps if we have to many
-				if (steps >= this.updateSkipThreshold) {
-					Engine.getLogger().info("Skipping all updates because we went over the threshold of "
-							+ this.updateSkipThreshold + " seconds");
-					steps = 0;
-					continue;
-				}
-
-				// Update
-				while (steps >= this.secsPerUpdate) {
-					// send update event
-					Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
-					steps -= secsPerUpdate;
-					upsCounter++;
-				}
+				// Send update event
+				Engine.getGlobalEventManager().dispatch(new UpdateEvent(secsPerUpdate));
 
 				// Render our scene
 				Engine.getGlobalEventManager().dispatch(new RenderEvent(elapsed));
