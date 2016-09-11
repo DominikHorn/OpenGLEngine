@@ -189,6 +189,17 @@ public class MathUtils {
 	}
 
 	/**
+	 * Returns the minumum of both values (e.g. the smaller one)
+	 * 
+	 * @param value1
+	 * @param value2
+	 * @return
+	 */
+	public static float min(float value1, float value2) {
+		return value1 > value2 ? value2 : value1;
+	}
+
+	/**
 	 * Calculate y value from triangle defined by p1, p2 and p3 at x-z coordinate pos
 	 * 
 	 * @param p1
