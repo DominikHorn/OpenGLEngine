@@ -9,14 +9,14 @@ public interface RenderableEntityComponent {
 	 * 
 	 * @param entity
 	 */
-	public void init(RenderableEntity entity);
+	public void init(RenderableEntity<?> entity);
 
 	/**
 	 * Use this to update component state / state of the renderableentity
 	 * 
 	 * @param entity
 	 */
-	public void update(RenderableEntity entity);
+	public void update(RenderableEntity<?> entity);
 
 	/**
 	 * Use this method to cleanup all resources

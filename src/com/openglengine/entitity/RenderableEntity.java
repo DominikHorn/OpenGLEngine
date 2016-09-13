@@ -8,6 +8,7 @@ import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.shader.*;
+import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
@@ -17,7 +18,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class RenderableEntity implements RenderDelegate, ResourceManager {
+public class RenderableEntity<ShaderClass extends Shader> implements RenderDelegate<ShaderClass>, ResourceManager {
 	/** Entity's globally unique id */
 	private int entityUID = 0;
 
@@ -26,6 +27,12 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 
 	/** Event manager for component events */
 	private EventManager<ComponentEvent> componentEventSystem;
+
+	/** the entities model. may be null */
+	private Model<?> model;
+
+	/** index in texture atlas that should be used to render this entity */
+	private int textureAtlasIndex;
 
 	/** Entity's position in the game world */
 	public Vector3f position;
@@ -36,14 +43,11 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	/** Entity's scale in all three directions */
 	public Vector3f scale;
 
-	/** the entities model. may be null */
-	public Model<? extends Shader> model;
-
 	/**
 	 * 
 	 * @param model
 	 */
-	public RenderableEntity(Model<? extends Shader> model) {
+	public RenderableEntity(Model<?> model) {
 		this(model, new Vector3f());
 	}
 
@@ -52,7 +56,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param model
 	 * @param position
 	 */
-	public RenderableEntity(Model<? extends Shader> model, Vector3f position) {
+	public RenderableEntity(Model<?> model, Vector3f position) {
 		this(model, position, new Vector3f());
 	}
 
@@ -63,7 +67,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param rotation
 	 * @param scale
 	 */
-	public RenderableEntity(Model<? extends Shader> model, Vector3f position, Vector3f scale) {
+	public RenderableEntity(Model<?> model, Vector3f position, Vector3f scale) {
 		this(model, position, new Vector3f(), scale);
 	}
 
@@ -74,13 +78,14 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param rotation
 	 * @param scale
 	 */
-	public RenderableEntity(Model<? extends Shader> model, Vector3f position, Vector3f rotation, Vector3f scale) {
+	public RenderableEntity(Model<?> model, Vector3f position, Vector3f rotation, Vector3f scale) {
 		this.entityUID = EntityUIDContainer.GLOBAL_ENTITY_ID_CNT++;
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
 		this.model = model;
 		this.components = new ArrayList<>();
+		this.textureAtlasIndex = 0;
 		this.componentEventSystem = new EventManager<>();
 	}
 
@@ -94,12 +99,39 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	}
 
 	/**
+	 * Set the texture atlas index
+	 * 
+	 * @param textureAtlasIndex
+	 */
+	public void setTextureAtlasIndex(int textureAtlasIndex) {
+		this.textureAtlasIndex = textureAtlasIndex;
+	}
+
+	/**
+	 * Retrieve this entity's model
+	 * 
+	 * @return
+	 */
+	public Model<?> getModel() {
+		return this.model;
+	}
+
+	/**
+	 * Set this entity's model
+	 * 
+	 * @param model
+	 */
+	public void setModel(Model<?> model) {
+		this.model = model;
+	}
+
+	/**
 	 * add a component to this entity
 	 * 
 	 * @param component
 	 * @return convenience self return to make addComponent().addComponent().addComponent()... possible
 	 */
-	public RenderableEntity addComponent(RenderableEntityComponent component) {
+	public RenderableEntity<ShaderClass> addComponent(RenderableEntityComponent component) {
 		// TODO: implement component reordering because some components might be execution order dependent
 		component.init(this);
 		this.components.add(component);
@@ -113,7 +145,7 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	 * @param component
 	 * @return convenience self return to make removeComponent().removeComponent().removeComponent()... possible
 	 */
-	public RenderableEntity removeComponent(RenderableEntityComponent component) {
+	public RenderableEntity<ShaderClass> removeComponent(RenderableEntityComponent component) {
 		this.components.remove(component);
 
 		return this;
@@ -136,8 +168,8 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	}
 
 	@Override
-	public void initRendercode(Shader shader) {
-		// Set model transform
+	public void initRendercode(ShaderClass shader) {
+		// Set model transform matrix
 		TransformationMatrixStack tms = Engine.getModelMatrixStack();
 		tms.push();
 		tms.translate(this.position);
@@ -150,6 +182,18 @@ public class RenderableEntity implements RenderDelegate, ResourceManager {
 	@Override
 	public void deinitRendercode() {
 		Engine.getModelMatrixStack().pop();
+	}
+
+	@Override
+	public float getTextureOffsetX(Texture texture) {
+		return (float) ((int) this.textureAtlasIndex % texture.getTextureAtlasRows())
+				/ (float) texture.getTextureAtlasRows();
+	}
+
+	@Override
+	public float getTextureOffsetY(Texture texture) {
+		return (float) ((int) this.textureAtlasIndex / texture.getTextureAtlasRows())
+				/ (float) texture.getTextureAtlasRows();
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 	private float maxPitch = 1.5f;
 
 	@Override
-	public void init(RenderableEntity entity) {
+	public void init(RenderableEntity<?> entity) {
 		this.cameraPosition = new Vector3f();
 		this.cameraRotation = new Vector3f(0.35f, 3.14f, 0f);
 
@@ -36,7 +36,7 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 	}
 
 	@Override
-	public void update(RenderableEntity entity) {
+	public void update(RenderableEntity<?> entity) {
 		this.processInput();
 
 		this.updateViewMatrix(entity);
@@ -54,7 +54,7 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 		this.distanceFromPlayer = 50 - scroll;
 
 		// Calculate pitch and angle around tracked entity offset
-		if (input.isMouseButtonDown(InputManager.BUTTON_LEFT)) {
+		if (input.isMouseButtonDown(InputManager.BUTTON_MIDDLE)) {
 			this.angleAroundTrackedEntity -= Math.toRadians(cursorDelta.x * 4f);
 
 			pitch += (float) Math.toRadians(cursorDelta.y * 0.2f);
@@ -63,7 +63,7 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 		this.cameraRotation.x = pitch;
 	}
 
-	private void updateViewMatrix(RenderableEntity entity) {
+	private void updateViewMatrix(RenderableEntity<?> entity) {
 		// Calculate stuff
 		float horizontalDistance = (float) (this.distanceFromPlayer * Math.cos(this.cameraRotation.x));
 		float verticalDistance = (float) (this.distanceFromPlayer * Math.sin(this.cameraRotation.x));
@@ -78,7 +78,7 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 		vm.translate(this.cameraPosition.getInvertResult());
 	}
 
-	private void calculateCameraPosition(RenderableEntity entity, float horizontalDistance, float verticalDistance) {
+	private void calculateCameraPosition(RenderableEntity<?> entity, float horizontalDistance, float verticalDistance) {
 		float theta = entity.rotation.y + (float) Math.toRadians(this.angleAroundTrackedEntity);
 		float offsetX = (float) (horizontalDistance * Math.sin(theta));
 		float offsetZ = (float) (horizontalDistance * Math.cos(theta));

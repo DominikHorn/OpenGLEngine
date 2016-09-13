@@ -141,7 +141,9 @@ public abstract class Basic3DGame {
 				fpsCounter++;
 
 				// Swap out buffers
-				this.gameDisplay.swapBuffers();
+				synchronized (this.gameDisplay) {
+					this.gameDisplay.swapBuffers();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

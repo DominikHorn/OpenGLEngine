@@ -8,6 +8,7 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.stb.*;
 
+import com.openglengine.core.*;
 import com.openglengine.util.*;
 
 /**
@@ -26,8 +27,6 @@ public class TextureManager implements ResourceManager {
 		this.loadedTextures = new HashMap<>();
 	}
 
-	// TODO: refactor http://wiki.lwjgl.org/wiki/The_Quad_textured (tex parameters might not be good since texture turns
-	// blury when rotated)
 	/**
 	 * Loads a texture file
 	 * 
@@ -36,6 +35,17 @@ public class TextureManager implements ResourceManager {
 	 * @throws IOException
 	 */
 	public Texture loadTexture(String texturePath) {
+		return this.loadTexture(texturePath, 1);
+	}
+
+	/**
+	 * Loads a texture file
+	 * 
+	 * @param texturePath
+	 * @return
+	 * @throws IOException
+	 */
+	public Texture loadTexture(String texturePath, int textureAtlasRows) {
 		Texture loadedTexture = this.loadedTextures.get(texturePath);
 
 		if (loadedTexture == null) {
@@ -50,7 +60,7 @@ public class TextureManager implements ResourceManager {
 
 			// Create OpenGL Texture
 			int texID = GL11.glGenTextures();
-			GL13.glActiveTexture(GL13.GL_TEXTURE0); // TODO: refactor, support multiple texture layers
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 
 			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
@@ -65,7 +75,7 @@ public class TextureManager implements ResourceManager {
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.5f);
 
-			loadedTexture = new Texture(texID, texturePath);
+			loadedTexture = new Texture(texID, texturePath, textureAtlasRows);
 
 			// Unbind
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -75,6 +85,15 @@ public class TextureManager implements ResourceManager {
 
 		// Increase references
 		loadedTexture.use();
+
+		// TODO: revisit/refactor/enhance system to allow for definite answer here without confusing
+		if (loadedTexture.getTextureAtlasRows() != textureAtlasRows) {
+			Engine.getLogger()
+					.warn("Texture \"" + texturePath
+							+ "\" is already loaded with a differing number of textureAtlasRows("
+							+ loadedTexture.getTextureAtlasRows() + "). Changing to (" + textureAtlasRows + ".");
+			loadedTexture.setTextureAtlasRows(textureAtlasRows);
+		}
 
 		// Return
 		return loadedTexture;

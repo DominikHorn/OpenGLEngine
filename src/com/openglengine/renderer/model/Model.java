@@ -21,10 +21,10 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 	/** Amount of indices to render (usually amount of indices contained) */
 	private int indicesCount;
 
-	/** Shader used when rendering this model */
-	protected ShaderClass shader; // TODO: refactor
+	/** shader used when rendering this model */
+	private ShaderClass shader;
 
-	/** Material used when rendering this model */
+	/** Models material */
 	private Material<ShaderClass> material;
 
 	/**
@@ -33,8 +33,7 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 	 * @param vaoID
 	 * @param indicesCount
 	 */
-	protected Model(int vaoID, int indicesCount, ShaderClass shader, Material<ShaderClass> material) {
-		this.vaoID = vaoID;
+	protected Model(int indicesCount, ShaderClass shader, Material<ShaderClass> material) {
 		this.indicesCount = indicesCount;
 		this.shader = shader;
 		this.material = material;
@@ -76,7 +75,16 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 	}
 
 	/**
-	 * Set shader for this model
+	 * Retrieve shader used when rendering this model
+	 * 
+	 * @return
+	 */
+	public ShaderClass getShader() {
+		return this.shader;
+	}
+
+	/**
+	 * Set shader with which this model will be rendered
 	 * 
 	 * @param shader
 	 */
@@ -85,26 +93,23 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 	}
 
 	/**
-	 * Set material
+	 * Retrieve material with which this model will be rendered
+	 * 
+	 * @return
+	 */
+	public Material<ShaderClass> getMaterial() {
+		return material;
+	}
+
+	/**
+	 * Set material with which this model will be rendered
+	 * 
+	 * @param material
 	 */
 	public void setMaterial(Material<ShaderClass> material) {
 		this.material = material;
 	}
-
-	/**
-	 * Inits this model for rendering
-	 */
-	public void init() {
-		// Init shader
-		shader.startUsingShader();
-		shader.uploadProjectionAndViewMatrix();
-		shader.uploadGlobalUniforms();
-
-		this.initRendercode();
-
-		this.material.initRendercode(this.shader);
-	}
-
+	
 	/**
 	 * Call this method before rendering
 	 * 
@@ -122,37 +127,6 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 	}
 
 	/**
-	 * Inits a render delegate for rendering
-	 * 
-	 * @param delegate
-	 */
-	public void initRenderDelegate(RenderDelegate delegate) {
-		// Allow entity to init render code
-		delegate.initRendercode(this.shader);
-
-		// Do this as an engine service
-		this.shader.uploadModelViewMatrixUniform();
-	}
-
-	/**
-	 * Deinits a renderdelegate from rendering
-	 * 
-	 * @param delegate
-	 */
-	public void deinitRenderDelegate(RenderDelegate delegate) {
-		delegate.deinitRendercode();
-	}
-
-	/**
-	 * Deinits this model for rendering
-	 */
-	public void deinit() {
-		this.deinitRendercode();
-		this.material.deinitRendercode();
-		this.shader.stopUsingShader();
-	}
-
-	/**
 	 * Call this method after rendering
 	 */
 	public void deinitRendercode() {
@@ -164,5 +138,9 @@ public abstract class Model<ShaderClass extends Shader> extends ReferenceCounted
 
 		// Unbind vao
 		GL30.glBindVertexArray(0);
+	}
+
+	public void uploadRenderdelegateSpecificData(RenderDelegate<?> delegate) {
+		// Do nothing by default
 	}
 }

@@ -20,7 +20,7 @@ import com.openglengine.util.*;
  */
 public class RenderManager implements ResourceManager {
 	/** Batch rendering storage. This list maintains all entities that need to be rendered */
-	private Map<Model<? extends Shader>, List<RenderDelegate>> texturedEntitiesBatch;
+	private Map<Model<?>, List<RenderDelegate<?>>> texturedEntitiesBatch;
 
 	/**
 	 * Create new RenderManager
@@ -37,8 +37,8 @@ public class RenderManager implements ResourceManager {
 		texturedEntitiesBatch.clear();
 	}
 
-	public void processRenderObject(Model<? extends Shader> model, RenderDelegate renderDelegate) {
-		List<RenderDelegate> batch = texturedEntitiesBatch.get(model);
+	public void processRenderObject(Model<?> model, RenderDelegate<?> renderDelegate) {
+		List<RenderDelegate<?>> batch = texturedEntitiesBatch.get(model);
 		if (batch == null) {
 			batch = new ArrayList<>();
 			texturedEntitiesBatch.put(model, batch);
@@ -47,31 +47,53 @@ public class RenderManager implements ResourceManager {
 		batch.add(renderDelegate);
 	}
 
-	public void processRenderableEntity(RenderableEntity e) {
-		this.processRenderObject(e.model, e);
+	public void processRenderableEntity(RenderableEntity<?> e) {
+		this.processRenderObject(e.getModel(), e);
 	}
 
-	public void render(Map<Model<? extends Shader>, List<RenderDelegate>> renderDelegates) {
+	protected void render(Map<Model<?>, List<RenderDelegate<?>>> renderDelegates) {
 		renderDelegates.keySet().forEach(model -> {
+			// Retrieve shader
+			Shader shader = model.getShader();
+
+			// Configure shader
+			shader.startUsingShader();
+			shader.uploadProjectionAndViewMatrix();
+			shader.uploadGlobalUniforms();
+
 			// Prepare model
-			model.init();
+			model.initRendercode();
+
+			// Init model material
+			model.getMaterial()._initSelfTypecast(shader);
 
 			// Retrieve all entities
-			List<RenderDelegate> batch = renderDelegates.get(model);
+			List<RenderDelegate<?>> batch = renderDelegates.get(model);
 
 			// Prepare instance
 			batch.forEach(renderDelegate -> {
-				model.initRenderDelegate(renderDelegate);
+				// Init renderDelegate
+				renderDelegate._initSelfTypecast(shader);
+
+				// Upload model matrix
+				shader.uploadModelMatrixUniform();
+
+				// Configure entity specific model data stuff
+				model.uploadRenderdelegateSpecificData(renderDelegate);
 
 				// Draw prepared data
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getIndicesCount(), GL11.GL_UNSIGNED_INT, 0);
 
 				// Deinit entity rendercode
-				model.deinitRenderDelegate(renderDelegate);
+				// renderDelegate._deinitSelfTypecast(model.getShader());
+				renderDelegate.deinitRendercode();
 			});
 
 			// Unbind all stuff
-			model.deinit();
+			// this.material._deinitSelfTypecast(this.shader);
+			model.getMaterial().deinitRendercode();
+			model.deinitRendercode();
+			shader.stopUsingShader();
 		});
 	}
 

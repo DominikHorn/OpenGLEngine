@@ -134,7 +134,7 @@ public class Display implements ResourceManager {
 	}
 
 	/**
-	 * swaps buffers and polls events
+	 * swaps buffers and clears new backbuffer (in preparation for drawing)
 	 */
 	protected void swapBuffers() {
 		// Swap the buffer

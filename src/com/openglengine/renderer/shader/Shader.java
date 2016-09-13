@@ -21,13 +21,19 @@ import com.openglengine.util.math.*;
  */
 public abstract class Shader {
 	/** uniform name of model matrix */
-	private static final String UNIFORM_NAME_MODEL_MATRIX = "transformationMatrix";
+	public static final String UNIFORM_NAME_MODEL_MATRIX = "transformationMatrix";
 
 	/** uniform name of view matrix */
-	private static final String UNIFORM_NAME_VIEW_MATRIX = "viewMatrix";
+	public static final String UNIFORM_NAME_VIEW_MATRIX = "viewMatrix";
 
 	/** uniform name of projection matrix */
-	private static final String UNIFORM_NAME_PROJECTION_MATRIX = "projectionMatrix";
+	public static final String UNIFORM_NAME_PROJECTION_MATRIX = "projectionMatrix";
+
+	/** uniform name of projection matrix */
+	public static final String UNIFORM_NAME_TEX_ATLAS_ROW_COUNT = "texAtlasRowCount";
+
+	/** uniform name of projection matrix */
+	public static final String UNIFORM_NAME_TEX_ATLAS_OFFSET = "texOffset";
 
 	/** shader program id */
 	private int programID;
@@ -47,6 +53,12 @@ public abstract class Shader {
 	/** uniform location of view matrix */
 	private int location_viewMatrix;
 
+	/** uniform location of tex atlas row count data */
+	private int location_texAtlasRowCount;
+
+	/** uniform location of tex atlas index */
+	private int location_texOffset;
+
 	/** Float buffer used to upload 4x4 matrices to shader */
 	private static FloatBuffer matrixFloatBuffer = BufferUtils.createFloatBuffer(4 * 4);
 
@@ -63,6 +75,17 @@ public abstract class Shader {
 	public abstract void uploadGlobalUniforms();
 
 	/**
+	 * Upload texture atlas data
+	 * 
+	 * @param texAtlasRowCount
+	 * @param texAtlasIndex
+	 */
+	public void uploadTextureAtlasData(int texAtlasRowCount, Vector2f texOffset) {
+		this.loadInt(this.location_texAtlasRowCount, texAtlasRowCount);
+		this.loadVector2f(this.location_texOffset, texOffset);
+	}
+
+	/**
 	 * Uploads projection and view matrix
 	 */
 	public void uploadProjectionAndViewMatrix() {
@@ -73,7 +96,7 @@ public abstract class Shader {
 	/**
 	 * Uploads the model view matrix
 	 */
-	public void uploadModelViewMatrixUniform() {
+	public void uploadModelMatrixUniform() {
 		this.loadMatrix4f(this.location_modelMatrix, Engine.getModelMatrixStack().getCurrentMatrix());
 	}
 
@@ -143,6 +166,8 @@ public abstract class Shader {
 		this.location_projectionMatrix = this.getUniformLocation(UNIFORM_NAME_PROJECTION_MATRIX);
 		this.location_modelMatrix = this.getUniformLocation(UNIFORM_NAME_MODEL_MATRIX);
 		this.location_viewMatrix = this.getUniformLocation(UNIFORM_NAME_VIEW_MATRIX);
+		this.location_texAtlasRowCount = this.getUniformLocation(UNIFORM_NAME_TEX_ATLAS_ROW_COUNT);
+		this.location_texOffset = this.getUniformLocation(UNIFORM_NAME_TEX_ATLAS_OFFSET);
 	}
 
 	/**
@@ -190,13 +215,23 @@ public abstract class Shader {
 	}
 
 	/**
-	 * Upload a vector to the shader
+	 * Upload a 3d vector to the shader
 	 * 
 	 * @param location
 	 * @param vector
 	 */
 	public void loadVector3f(int location, Vector3f vector) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+	}
+
+	/**
+	 * Upload a 2d vector to the shader
+	 * 
+	 * @param location
+	 * @param vector
+	 */
+	public void loadVector2f(int location, Vector2f vector) {
+		GL20.glUniform2f(location, vector.x, vector.y);
 	}
 
 	/**

@@ -21,7 +21,7 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	private String texturePath;
 
 	/** Number of rows (used for texture atlases) */
-	private int numberOfRows = 1;
+	private int textureAtlasRows;
 
 	/**
 	 * Initialize Texture
@@ -29,8 +29,13 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 * @param textureID
 	 */
 	protected Texture(int textureID, String texturePath) {
+		this(textureID, texturePath, 1);
+	}
+
+	protected Texture(int textureID, String texturePath, int textureAtlasRows) {
 		this.textureID = textureID;
 		this.texturePath = texturePath;
+		this.textureAtlasRows = textureAtlasRows;
 	}
 
 	/**
@@ -47,17 +52,17 @@ public class Texture extends ReferenceCountedDeletableContainer {
 	 * 
 	 * @return
 	 */
-	public int getNumberOfRows() {
-		return numberOfRows;
+	public int getTextureAtlasRows() {
+		return textureAtlasRows;
 	}
 
 	/**
-	 * Set number of rows in this texture atlas (1 if this is no atlas). Default value is 1
+	 * Set the number of rows in this texture (1 if it is no atlas)
 	 * 
-	 * @param numberOfRows
+	 * @return
 	 */
-	public void setNumberOfRows(int numberOfRows) {
-		this.numberOfRows = numberOfRows;
+	public void setTextureAtlasRows(int textureAtlasRows) {
+		this.textureAtlasRows = textureAtlasRows;
 	}
 
 	@Override
