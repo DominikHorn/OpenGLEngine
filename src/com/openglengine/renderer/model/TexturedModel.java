@@ -4,7 +4,6 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
 import com.openglengine.core.*;
@@ -12,6 +11,7 @@ import com.openglengine.renderer.*;
 import com.openglengine.renderer.material.*;
 import com.openglengine.renderer.shader.*;
 import com.openglengine.renderer.texture.*;
+import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
 /**
@@ -175,7 +175,7 @@ public class TexturedModel<ShaderClass extends Shader> extends Model<ShaderClass
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indicesID);
 
 		// Convert indices data to appropriate format
-		IntBuffer buffer = convertToIntBuffer(indices);
+		IntBuffer buffer = Utils.convertToIntBuffer(indices);
 
 		// Upload buffer data
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
@@ -191,34 +191,6 @@ public class TexturedModel<ShaderClass extends Shader> extends Model<ShaderClass
 
 		// Unbind VAO
 		GL30.glBindVertexArray(0);
-	}
-
-	/**
-	 * Convert int array to IntBuffer
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private IntBuffer convertToIntBuffer(int[] data) {
-		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
-		buffer.put(data);
-		buffer.flip();
-
-		return buffer;
-	}
-
-	/**
-	 * Convert float array to FloatBuffer
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private FloatBuffer convertToFloatBuffer(float[] data) {
-		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
-		buffer.put(data);
-		buffer.flip();
-
-		return buffer;
 	}
 
 	/**
@@ -239,7 +211,7 @@ public class TexturedModel<ShaderClass extends Shader> extends Model<ShaderClass
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
 
 		// Convert to correct data format
-		FloatBuffer buffer = convertToFloatBuffer(data);
+		FloatBuffer buffer = Utils.convertToFloatBuffer(data);
 
 		// Upload to vbo
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);

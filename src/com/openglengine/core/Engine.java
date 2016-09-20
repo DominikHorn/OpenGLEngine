@@ -2,6 +2,7 @@ package com.openglengine.core;
 
 import com.openglengine.eventsystem.*;
 import com.openglengine.renderer.*;
+import com.openglengine.renderer.gui.*;
 import com.openglengine.renderer.model.*;
 import com.openglengine.renderer.texture.*;
 import com.openglengine.util.*;
@@ -35,6 +36,9 @@ public class Engine {
 	/** Event dispatch/receive system manager */
 	private static final GlobalEventManager GLOBAL_EVENT_MANAGER = new GlobalEventManager();
 
+	/** GUI Manager system */
+	private static GuiManager GUI_MANAGER;
+
 	/** Logger that can be used for conveniently printing messages to the console */
 	private static final Logger LOGGER = new Logger();
 
@@ -49,6 +53,7 @@ public class Engine {
 
 	/** Input system manager */
 	private static InputManager INPUT_MANAGER = new InputManager();
+
 
 	public static String getEngineVersion() {
 		return ENGINE_VERSION;
@@ -82,6 +87,12 @@ public class Engine {
 		return INPUT_MANAGER;
 	}
 
+	public static GuiManager getGuiManager() {
+		if (GUI_MANAGER == null)
+			GUI_MANAGER = new GuiManager();
+		return GUI_MANAGER;
+	}
+
 	public static Logger getLogger() {
 		return LOGGER;
 	}
@@ -103,5 +114,6 @@ public class Engine {
 		MODEL_MANAGER.cleanup();
 		INPUT_MANAGER.cleanup();
 		RENDER_MANAGER.cleanup();
+		GUI_MANAGER.cleanup();
 	}
 }

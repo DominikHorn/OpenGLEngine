@@ -36,6 +36,8 @@ public class Texture extends ReferenceCountedDeletableContainer {
 		this.textureID = textureID;
 		this.texturePath = texturePath;
 		this.textureAtlasRows = textureAtlasRows;
+
+		Engine.getLogger().info("Texture loaded: " + this);
 	}
 
 	/**
@@ -73,5 +75,10 @@ public class Texture extends ReferenceCountedDeletableContainer {
 
 		// Actually delete this texture
 		GL11.glDeleteTextures(this.textureID);
+	}
+
+	@Override
+	public String toString() {
+		return "Texture(" + this.textureID + "): \"" + this.texturePath + "\"";
 	}
 }
