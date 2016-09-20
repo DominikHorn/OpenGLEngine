@@ -52,7 +52,8 @@ public abstract class Basic3DGame {
 		});
 		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this
 				.setViewSize(((FramebufferResizeEvent) e).getNewWidth(), ((FramebufferResizeEvent) e).getNewHeight()));
-		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class, e -> this.update());
+		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class,
+				e -> this.update(((UpdateEvent) e).getDeltatime()));
 
 		this.gameDisplay = this.setupDisplay();
 		this.gameDisplay.create();
@@ -190,8 +191,11 @@ public abstract class Basic3DGame {
 
 	/**
 	 * Use this to update your game
+	 * 
+	 * @param deltatime
+	 *            time interval between the last update() call and this one
 	 */
-	protected abstract void update();
+	protected abstract void update(double deltatime);
 
 	/**
 	 * Use this to clean leftover resources
