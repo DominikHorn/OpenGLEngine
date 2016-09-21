@@ -219,7 +219,7 @@ public class Vector3f {
 
 	@Override
 	public String toString() {
-		return "Vector3f: (" + this.x + ", " + this.y + ", " + this.z + ")";
+		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
 	@Override
