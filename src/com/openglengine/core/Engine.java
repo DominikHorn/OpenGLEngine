@@ -54,7 +54,6 @@ public class Engine {
 	/** Input system manager */
 	private static InputManager INPUT_MANAGER = new InputManager();
 
-
 	public static String getEngineVersion() {
 		return ENGINE_VERSION;
 	}
@@ -114,6 +113,8 @@ public class Engine {
 		MODEL_MANAGER.cleanup();
 		INPUT_MANAGER.cleanup();
 		RENDER_MANAGER.cleanup();
-		GUI_MANAGER.cleanup();
+
+		if (GUI_MANAGER != null)
+			GUI_MANAGER.cleanup();
 	}
 }
