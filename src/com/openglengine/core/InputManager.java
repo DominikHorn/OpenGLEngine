@@ -2,6 +2,7 @@ package com.openglengine.core;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+import com.openglengine.eventsystem.*;
 import com.openglengine.eventsystem.defaultevents.*;
 import com.openglengine.util.*;
 import com.openglengine.util.math.*;
@@ -60,6 +61,22 @@ public class InputManager implements ResourceManager {
 
 	/** Window id */
 	private Display gameDisplay;
+
+	/** Multithreading makes this necessary :( */
+	private Vector2f accumulatedDelta = new Vector2f();
+	private EventListener setCursorPosListener = new EventListener() {
+		@Override
+		public void eventReceived(BaseEvent event) {
+			// Move cursor back to center of screen
+			synchronized (gameDisplay) {
+				Vector2f screenCenter = new Vector2f(gameDisplay.getWindowWidthInPixels() / 2,
+						gameDisplay.getWindowHeightInPixels() / 2);
+				accumulatedDelta.addVector(getCursorPosition().subtractVector(screenCenter));
+
+				glfwSetCursorPos(gameDisplay.getWindowID(), screenCenter.x, screenCenter.y);
+			}
+		}
+	};
 
 	/**
 	 * Setup input manager
@@ -137,10 +154,18 @@ public class InputManager implements ResourceManager {
 	 */
 	public void setMouseGrabbed(boolean mouseGrabbed) {
 		this.mouseGrabbed = mouseGrabbed;
-		if (this.mouseGrabbed == true)
-			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-		else
-			glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+		synchronized (gameDisplay) {
+			if (this.mouseGrabbed == true) {
+				glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+				Engine.getGlobalEventManager().registerListenerForEvent(MainthreadUpdateEvent.class,
+						this.setCursorPosListener);
+			} else {
+				glfwSetInputMode(this.gameDisplay.getWindowID(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				Engine.getGlobalEventManager().deleteListenerForEvent(MainthreadUpdateEvent.class,
+						this.setCursorPosListener);
+			}
+		}
 	}
 
 	/**
@@ -224,7 +249,9 @@ public class InputManager implements ResourceManager {
 	public Vector2f getCursorPosition() {
 		double[] xpos = new double[1];
 		double[] ypos = new double[1];
-		glfwGetCursorPos(this.gameDisplay.getWindowID(), xpos, ypos);
+		synchronized (gameDisplay) {
+			glfwGetCursorPos(this.gameDisplay.getWindowID(), xpos, ypos);
+		}
 
 		return new Vector2f((float) xpos[0], (float) ypos[0]);
 	}
@@ -237,13 +264,8 @@ public class InputManager implements ResourceManager {
 	public Vector2f getCursorDelta() {
 		Vector2f delta = new Vector2f();
 		if (this.mouseGrabbed) {
-			// Calculate delta
-			Vector2f screenCenter = new Vector2f(this.gameDisplay.getWindowWidthInPixels() / 2,
-					this.gameDisplay.getWindowHeightInPixels() / 2);
-			delta = this.getCursorPosition().subtractVector(screenCenter);
-
-			// Move cursor back to center of screen
-			glfwSetCursorPos(this.gameDisplay.getWindowID(), screenCenter.x, screenCenter.y);
+			delta = accumulatedDelta;
+			accumulatedDelta = new Vector2f();
 		} else {
 			Vector2f newCursorPos = getCursorPosition();
 			delta = newCursorPos.getSubtractionResult(this.previousCursorPos);

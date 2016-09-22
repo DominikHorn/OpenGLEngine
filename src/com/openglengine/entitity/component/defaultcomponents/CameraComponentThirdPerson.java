@@ -12,7 +12,7 @@ import com.openglengine.util.math.*;
  * @author Dominik
  *
  */
-public class CameraComponentFollowEntity implements RenderableEntityComponent {
+public class CameraComponentThirdPerson implements RenderableEntityComponent {
 	private float distanceFromPlayer = 20;
 	private float angleAroundTrackedEntity = 0;
 	private float scroll = 0;
@@ -32,7 +32,6 @@ public class CameraComponentFollowEntity implements RenderableEntityComponent {
 		this.cameraRotation = new Vector3f(0.35f, 3.14f, 0f);
 
 		this.updateViewMatrix(entity);
-
 	}
 
 	@Override

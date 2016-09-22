@@ -8,13 +8,14 @@ import java.util.*;
  * @author Dominik
  *
  */
-// TODO: search for better way to handle this
 public class GlobalEventManager extends EventManager<GlobalEvent> {
 	private List<GlobalEvent> renderThreadQueue;
+	private List<GlobalEvent> mainThreadQueue;
 
 	public GlobalEventManager() {
 		super();
 		this.renderThreadQueue = new ArrayList<>();
+		this.mainThreadQueue = new ArrayList<>();
 	}
 
 	/**
@@ -30,12 +31,33 @@ public class GlobalEventManager extends EventManager<GlobalEvent> {
 	}
 
 	/**
+	 * Queues an event for the main thread.
+	 * 
+	 * @param event
+	 */
+	public void queuForMainthread(GlobalEvent event) {
+		synchronized (this.mainThreadQueue) {
+			this.mainThreadQueue.add(event);
+		}
+	}
+
+	/**
 	 * Dispatches all queued events immediately on the calling thread. Make sure this is only called by the renderthread
 	 */
 	public void fetchForRenderthread() {
 		synchronized (this.renderThreadQueue) {
 			this.renderThreadQueue.forEach(event -> this.dispatch(event));
 			this.renderThreadQueue.clear();
+		}
+	}
+
+	/**
+	 * Dispatches all queud events immediately on calling thread. Make sure this is only called by main thread
+	 */
+	public void fetchForMainthread() {
+		synchronized (this.mainThreadQueue) {
+			this.mainThreadQueue.forEach(event -> this.dispatch(event));
+			this.mainThreadQueue.clear();
 		}
 	}
 }

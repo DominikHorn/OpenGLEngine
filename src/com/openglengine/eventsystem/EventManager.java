@@ -69,7 +69,7 @@ public class EventManager<EventClass extends BaseEvent> implements ResourceManag
 	 * @return whether or not deletion was successful. Note: this can be unsuccessful if the listener was not actually
 	 *         registered previously
 	 */
-	public boolean deleteListenerForEvent(EventListener listener, Class<? extends EventClass> eventClass) {
+	public boolean deleteListenerForEvent(Class<? extends EventClass> eventClass, EventListener listener) {
 		List<EventListener> eventListenerList = this.listeners.get(eventClass);
 
 		if (eventListenerList != null && eventListenerList.contains(listener)) {

@@ -48,6 +48,8 @@ public abstract class Basic3DGame {
 
 			while (!this.quit) {
 				glfwWaitEvents();
+				Engine.getGlobalEventManager().queuForMainthread(new MainthreadUpdateEvent());
+				Engine.getGlobalEventManager().fetchForMainthread();
 			}
 		});
 		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this

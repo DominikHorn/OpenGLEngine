@@ -90,6 +90,33 @@ public class MathUtils {
 	}
 
 	/**
+	 * Converts a set of three euler angles into a directional vector
+	 * 
+	 * @param angleX
+	 * @param angleY
+	 * @param angleZ
+	 * @return
+	 */
+	public static Vector3f getLookatVector(float angleX, float angleY, float angleZ) {
+		Vector3f lookat = new Vector3f();
+		lookat.x = (float) (Math.cos(angleX) * Math.sin(angleY));
+		lookat.y = (float) (Math.sin(angleX));
+		lookat.z = (float) (Math.cos(angleX) * Math.cos(angleY));
+
+		return lookat;
+	}
+
+	/**
+	 * Converts a set of three euler angles into a directional vector
+	 * 
+	 * @param angles
+	 * @return
+	 */
+	public static Vector3f getLookatVector(Vector3f angles) {
+		return getLookatVector(angles.x, angles.y, angles.z);
+	}
+
+	/**
 	 * returns new translation matrix
 	 * 
 	 * @param x
