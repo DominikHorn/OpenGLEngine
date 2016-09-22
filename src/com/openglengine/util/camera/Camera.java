@@ -5,12 +5,12 @@ import com.openglengine.util.*;
 import com.openglengine.util.math.*;
 
 /**
- * Camera class. Subclass this to create your own camera
+ * Abstract Camera class. Subclass this to create your own camera
  * 
  * @author Dominik
  *
  */
-public class Camera {
+public abstract class Camera {
 	protected Vector3f position;
 	protected float pitch, yaw, roll;
 
@@ -25,7 +25,7 @@ public class Camera {
 		this.roll = roll;
 	}
 
-	public void update() {
+	protected void update() {
 		TransformationMatrixStack vm = Engine.getViewMatrixStack();
 		vm.loadIdentity();
 		vm.rotate(this.pitch, 1, 0, 0);

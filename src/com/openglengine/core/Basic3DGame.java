@@ -42,16 +42,6 @@ public abstract class Basic3DGame {
 		this.nearPlane = near_plane;
 		this.farPlane = far_plane;
 
-		Engine.getGlobalEventManager().registerListenerForEvent(DisplayCreatedEvent.class, e -> {
-			// Start rendering in seperate Thread
-			new Thread(() -> this.loop()).start();
-
-			while (!this.quit) {
-				glfwWaitEvents();
-				Engine.getGlobalEventManager().queuForMainthread(new MainthreadUpdateEvent());
-				Engine.getGlobalEventManager().fetchForMainthread();
-			}
-		});
 		Engine.getGlobalEventManager().registerListenerForEvent(FramebufferResizeEvent.class, e -> this
 				.setViewSize(((FramebufferResizeEvent) e).getNewWidth(), ((FramebufferResizeEvent) e).getNewHeight()));
 		Engine.getGlobalEventManager().registerListenerForEvent(UpdateEvent.class,
@@ -59,6 +49,19 @@ public abstract class Basic3DGame {
 
 		this.gameDisplay = this.setupDisplay();
 		this.gameDisplay.create();
+	}
+
+	/**
+	 * Starts game execution
+	 */
+	public void startGame() {
+		new Thread(() -> this.loop()).start();
+
+		while (!this.quit) {
+			glfwWaitEvents();
+			Engine.getGlobalEventManager().queuForMainthread(new MainthreadUpdateEvent());
+			Engine.getGlobalEventManager().fetchForMainthread();
+		}
 	}
 
 	/**
