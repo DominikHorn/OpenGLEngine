@@ -97,7 +97,7 @@ public class MathUtils {
 	 * @param angleZ
 	 * @return
 	 */
-	public static Vector3f getLookatVector(float angleX, float angleY, float angleZ) {
+	public static Vector3f createLookatVector(float angleX, float angleY, float angleZ) {
 		Vector3f lookat = new Vector3f();
 		lookat.x = (float) (Math.cos(angleX) * Math.sin(angleY));
 		lookat.y = (float) (Math.sin(angleX));
@@ -112,8 +112,8 @@ public class MathUtils {
 	 * @param angles
 	 * @return
 	 */
-	public static Vector3f getLookatVector(Vector3f angles) {
-		return getLookatVector(angles.x, angles.y, angles.z);
+	public static Vector3f createLookatVector(Vector3f angles) {
+		return createLookatVector(angles.x, angles.y, angles.z);
 	}
 
 	/**

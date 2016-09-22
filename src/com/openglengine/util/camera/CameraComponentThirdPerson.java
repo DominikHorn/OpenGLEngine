@@ -1,4 +1,4 @@
-package com.openglengine.entitity.component.defaultcomponents;
+package com.openglengine.util.camera;
 
 import com.openglengine.core.*;
 import com.openglengine.entitity.*;
