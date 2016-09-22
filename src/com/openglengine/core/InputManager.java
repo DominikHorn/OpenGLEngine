@@ -23,7 +23,12 @@ public class InputManager implements ResourceManager {
 			KEY_D = GLFW_KEY_D,
 			KEY_Q = GLFW_KEY_Q,
 			KEY_E = GLFW_KEY_E,
+			KEY_PLUS = GLFW_KEY_RIGHT_BRACKET,	// TODO: this will break on other keyboard layouts
+			KEY_MINUS = GLFW_KEY_SLASH,	// TODO: this will break on other keyboard layouts
 			KEY_F1 = GLFW_KEY_F1,
+			KEY_F2 = GLFW_KEY_F2,
+			KEY_F3 = GLFW_KEY_F3,
+			KEY_F4 = GLFW_KEY_F4,
 			KEY_ESC = GLFW_KEY_ESCAPE,
 			KEY_SPACE = GLFW_KEY_SPACE,
 			KEY_LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT,
